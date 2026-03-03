@@ -1,0 +1,2219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Microsoft Defensive Cloud Atlas — Azure & M365 Log Intelligence</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@300;400;500;600;700&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#080c14; --bg2:#0d1520; --bg3:#111d2e;
+    --grid:rgba(0,180,255,0.04);
+    --border:rgba(0,180,255,0.15); --border-bright:rgba(0,180,255,0.5);
+    --cyan:#00b4ff; --cyan2:#00e5ff; --green:#00ff9d;
+    --orange:#ff8c00; --red:#ff3860; --yellow:#ffe600; --purple:#b44fff;
+    --purview:#00c8d4;
+    --text:#c8dff0; --text-dim:#5a7a95; --text-bright:#e8f4ff;
+    --card-bg:rgba(13,21,32,0.9);
+    --glow-cyan:0 0 20px rgba(0,180,255,0.3);
+    --glow-green:0 0 20px rgba(0,255,157,0.3);
+    --glow-orange:0 0 20px rgba(255,140,0,0.3);
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{background:var(--bg);color:var(--text);font-family:'Rajdhani',sans-serif;font-size:15px;line-height:1.6;overflow-x:hidden;}
+  body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
+  body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.025) 2px,rgba(0,0,0,0.025) 4px);pointer-events:none;z-index:0;}
+
+  /* ── TOP BAR ── */
+  .topbar{position:sticky;top:0;z-index:100;background:rgba(8,12,20,0.97);border-bottom:1px solid var(--border);backdrop-filter:blur(12px);padding:0 20px;display:flex;align-items:center;gap:16px;height:54px;}
+  .topbar-logo{font-family:'Orbitron',monospace;font-size:12px;font-weight:900;color:var(--cyan);letter-spacing:3px;white-space:nowrap;text-shadow:var(--glow-cyan);}
+  .topbar-logo span{color:var(--green);}
+  .topbar-logo sub{font-size:9px;color:var(--text-dim);letter-spacing:1px;vertical-align:middle;margin-left:4px;}
+  .topbar-div{width:1px;height:28px;background:var(--border);}
+  .topbar-nav{display:flex;gap:3px;flex:1;overflow-x:auto;}
+  .topbar-nav::-webkit-scrollbar{display:none;}
+  .nav-btn{background:transparent;border:1px solid transparent;color:var(--text-dim);font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:600;letter-spacing:.8px;padding:5px 12px;cursor:pointer;border-radius:2px;transition:all .2s;white-space:nowrap;}
+  .nav-btn:hover,.nav-btn.active{color:var(--cyan);border-color:var(--border-bright);background:rgba(0,180,255,0.06);}
+  .print-btn{background:rgba(0,255,157,0.07);border:1px solid rgba(0,255,157,0.25);color:var(--green);font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:700;letter-spacing:1px;padding:5px 14px;cursor:pointer;border-radius:2px;transition:all .2s;white-space:nowrap;display:flex;align-items:center;gap:6px;}
+  .print-btn:hover{background:rgba(0,255,157,0.14);border-color:var(--green);box-shadow:0 0 10px rgba(0,255,157,0.2);}
+
+  /* ── LICENSE PANEL ── */
+  .license-panel{background:rgba(8,12,20,0.98);border-bottom:1px solid var(--border);position:sticky;top:54px;z-index:99;backdrop-filter:blur(10px);}
+  .lic-panel-header{display:flex;align-items:center;gap:12px;padding:8px 20px;border-bottom:1px solid rgba(0,180,255,0.08);}
+  .lic-label{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--text-dim);letter-spacing:2px;text-transform:uppercase;white-space:nowrap;}
+  .lic-header-actions{display:flex;gap:6px;margin-left:auto;}
+  .lic-ctrl-btn{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:var(--text-dim);font-family:'Share Tech Mono',monospace;font-size:10px;padding:3px 10px;border-radius:2px;cursor:pointer;transition:all .18s;letter-spacing:.5px;}
+  .lic-ctrl-btn:hover{border-color:var(--border-bright);color:var(--cyan);}
+  .lic-ctrl-btn.collapse-btn{border-color:rgba(0,180,255,0.2);color:var(--cyan);}
+  .lic-active-count{font-family:'Share Tech Mono',monospace;font-size:10px;padding:3px 10px;border-radius:2px;background:rgba(0,180,255,0.08);border:1px solid rgba(0,180,255,0.2);color:var(--cyan);letter-spacing:.5px;}
+  .lic-groups-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:0;padding:0;transition:max-height .3s ease,padding .3s ease;max-height:500px;overflow:hidden;}
+  .lic-groups-grid.collapsed{max-height:0;}
+  .lic-group{padding:8px 16px;border-right:1px solid rgba(0,180,255,0.07);border-bottom:1px solid rgba(0,180,255,0.07);}
+  .lic-group:last-child{border-right:none;}
+  .lic-grp-header{display:flex;align-items:center;gap:8px;margin-bottom:7px;}
+  .lic-grp-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+  .lic-grp-lbl{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;}
+  .lic-grp-lbl.m365{color:#4db8ff;}
+  .lic-grp-lbl.defender{color:var(--orange);}
+  .lic-grp-lbl.sentinel{color:#cc88ff;}
+  .lic-grp-lbl.azure{color:var(--cyan2);}
+  .lic-grp-lbl.purview{color:var(--purview);}
+  .lic-toggles{display:flex;flex-wrap:wrap;gap:4px;}
+
+  .lic-toggle{display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:3px;padding:4px 10px;cursor:pointer;font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:600;color:var(--text-dim);transition:all .22s;user-select:none;position:relative;white-space:nowrap;}
+  .lic-toggle:hover{border-color:rgba(255,255,255,0.22);color:rgba(255,255,255,0.6);}
+  .lic-toggle .dot{width:6px;height:6px;border-radius:50%;background:currentColor;flex-shrink:0;opacity:0.4;transition:all .22s;}
+
+  /* M365 active */
+  .lic-toggle.am365{color:#4db8ff;border-color:#0078d4;background:rgba(0,120,212,0.2);box-shadow:0 0 10px rgba(0,120,212,0.3),inset 0 0 8px rgba(0,120,212,0.06);font-weight:700;}
+  .lic-toggle.am365 .dot{opacity:1;box-shadow:0 0 5px currentColor;}
+  /* Defender active */
+  .lic-toggle.adefender{color:var(--orange);border-color:var(--orange);background:rgba(255,140,0,0.18);box-shadow:0 0 10px rgba(255,140,0,0.3),inset 0 0 8px rgba(255,140,0,0.06);font-weight:700;}
+  .lic-toggle.adefender .dot{opacity:1;box-shadow:0 0 5px currentColor;}
+  /* Sentinel active */
+  .lic-toggle.asentinel{color:#cc88ff;border-color:var(--purple);background:rgba(180,79,255,0.18);box-shadow:0 0 10px rgba(180,79,255,0.3),inset 0 0 8px rgba(180,79,255,0.06);font-weight:700;}
+  .lic-toggle.asentinel .dot{opacity:1;box-shadow:0 0 5px currentColor;}
+  /* Azure active */
+  .lic-toggle.aazure{color:var(--cyan2);border-color:var(--cyan);background:rgba(0,180,255,0.15);box-shadow:0 0 10px rgba(0,180,255,0.3),inset 0 0 8px rgba(0,180,255,0.06);font-weight:700;}
+  .lic-toggle.aazure .dot{opacity:1;box-shadow:0 0 5px currentColor;}
+  /* Purview active */
+  .lic-toggle.apurview{color:var(--purview);border-color:var(--purview);background:rgba(0,200,212,0.15);box-shadow:0 0 10px rgba(0,200,212,0.3),inset 0 0 8px rgba(0,200,212,0.06);font-weight:700;}
+  .lic-toggle.apurview .dot{opacity:1;box-shadow:0 0 5px currentColor;}
+
+  /* ── INCLUDED (bundled) states — unified amber/gold, clearly distinct from selected ── */
+  /* All included licences use the same amber colour so it's immediately obvious they are
+     "unlocked via bundle" rather than directly chosen.                                     */
+  .lic-toggle.included{
+    color:#f5c842;
+    border:1px dashed rgba(245,200,66,0.65);
+    background:rgba(245,200,66,0.09);
+    box-shadow:0 0 8px rgba(245,200,66,0.18),inset 0 0 6px rgba(245,200,66,0.05);
+  }
+  .lic-toggle.included .dot{
+    background:#f5c842;
+    opacity:0.75;
+    box-shadow:0 0 4px rgba(245,200,66,0.6);
+  }
+  /* small "INCL" badge top-right */
+  .lic-toggle.included::after{
+    content:'INC';
+    position:absolute;
+    top:-6px;right:-2px;
+    font-size:7px;font-family:'Share Tech Mono',monospace;font-weight:700;letter-spacing:.5px;
+    color:#f5c842;
+    background:rgba(8,12,20,0.95);
+    border:1px solid rgba(245,200,66,0.4);
+    padding:0 3px;border-radius:2px;line-height:1.4;
+  }
+
+  /* Legend row */
+  .lic-legend{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--text-dim);padding:4px 20px 6px;letter-spacing:.5px;display:flex;align-items:center;gap:14px;border-top:1px solid rgba(0,180,255,0.06);}
+  .lic-legend-item{display:flex;align-items:center;gap:5px;}
+  .leg-swatch{display:inline-block;width:22px;height:13px;border-radius:2px;vertical-align:middle;}
+  .leg-selected{border:1px solid #4db8ff;background:rgba(0,120,212,0.2);box-shadow:0 0 6px rgba(0,120,212,0.3);}
+  .leg-included{border:1px dashed rgba(245,200,66,0.65);background:rgba(245,200,66,0.09);box-shadow:0 0 5px rgba(245,200,66,0.15);}
+
+  .lic-subtier{width:100%;font-family:'Share Tech Mono',monospace;font-size:8px;letter-spacing:1.5px;color:var(--text-dim);padding:4px 2px 2px;margin-top:3px;border-top:1px solid rgba(255,255,255,0.06);text-transform:uppercase;}
+  .lic-subtier:first-child{border-top:none;margin-top:0;}
+
+  /* ── MAIN ── */
+  main{position:relative;z-index:1;}
+  .page{padding:28px 20px;max-width:1640px;margin:0 auto;display:none;}
+  .page.on{display:block;animation:fadeIn .25s ease;}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+  /* ── SECTION HEADER ── */
+  .sec-hdr{display:flex;align-items:baseline;gap:14px;margin-bottom:24px;border-bottom:1px solid var(--border);padding-bottom:12px;}
+  .sec-title{font-family:'Orbitron',monospace;font-size:16px;font-weight:700;color:var(--text-bright);letter-spacing:2px;}
+  .sec-cnt{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-dim);}
+  .sec-sub{font-size:13px;color:var(--text-dim);margin-bottom:20px;max-width:900px;}
+
+  /* ── CARDS ── */
+  .cat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(350px,1fr));gap:14px;}
+  .cat-card{background:var(--card-bg);border:1px solid var(--border);border-radius:4px;overflow:hidden;transition:all .22s;position:relative;}
+  .cat-card:hover{border-color:var(--border-bright);box-shadow:var(--glow-cyan);}
+  .cat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--accent-color,var(--cyan));}
+  .cat-hdr{padding:12px 14px;display:flex;align-items:center;gap:10px;background:rgba(255,255,255,0.02);}
+  .cat-icon{font-size:20px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.04);border-radius:3px;border:1px solid var(--border);flex-shrink:0;}
+  .cat-name{font-family:'Orbitron',monospace;font-size:10px;font-weight:700;color:var(--text-bright);letter-spacing:1.5px;}
+  .cat-desc{font-size:11px;color:var(--text-dim);margin-top:2px;}
+  .cat-body{padding:10px 12px;}
+
+  /* ── LOG ITEMS ── */
+  .log-item{padding:8px 10px;border:1px solid rgba(255,255,255,0.05);border-radius:3px;margin-bottom:5px;cursor:pointer;transition:all .18s;position:relative;}
+  .log-item:hover{border-color:var(--border-bright);background:rgba(0,180,255,0.035);}
+  .log-item.unavail{opacity:0.28;cursor:default;filter:grayscale(0.4);}
+  .log-item.unavail:hover{border-color:rgba(255,255,255,0.05);background:transparent;}
+  .log-item-top{display:flex;align-items:center;gap:7px;flex-wrap:wrap;}
+  .log-name{font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--text-bright);flex:1;min-width:0;}
+  .log-badges{display:flex;gap:3px;flex-wrap:wrap;}
+
+  /* ── BADGES ── */
+  .b{font-size:10px;font-weight:700;letter-spacing:.7px;padding:2px 6px;border-radius:2px;text-transform:uppercase;white-space:nowrap;}
+  .b-on{background:rgba(0,255,157,0.13);color:var(--green);border:1px solid rgba(0,255,157,0.28);}
+  .b-off{background:rgba(255,140,0,0.13);color:var(--orange);border:1px solid rgba(255,140,0,0.28);}
+  .b-prem{background:rgba(180,79,255,0.13);color:var(--purple);border:1px solid rgba(180,79,255,0.28);}
+  .b-e3{background:rgba(0,120,212,0.18);color:#5ab8ff;border:1px solid rgba(0,120,212,0.35);}
+  .b-e5{background:rgba(255,140,0,0.18);color:var(--orange);border:1px solid rgba(255,140,0,0.35);}
+  .b-p1{background:rgba(0,200,120,0.14);color:#00d490;border:1px solid rgba(0,200,120,0.28);}
+  .b-p2{background:rgba(180,79,255,0.13);color:var(--purple);border:1px solid rgba(180,79,255,0.28);}
+  .b-sent{background:rgba(180,79,255,0.13);color:var(--purple);border:1px solid rgba(180,79,255,0.28);}
+  .b-mdo{background:rgba(255,80,80,0.14);color:#ff9090;border:1px solid rgba(255,80,80,0.28);}
+  .b-mde{background:rgba(255,140,0,0.14);color:var(--orange);border:1px solid rgba(255,140,0,0.28);}
+  .b-free{background:rgba(0,255,157,0.1);color:var(--green);border:1px solid rgba(0,255,157,0.22);}
+  .b-locked{background:rgba(255,56,96,0.14);color:var(--red);border:1px solid rgba(255,56,96,0.28);}
+  .b-crit{background:rgba(255,56,96,0.18);color:#ff6b85;border:1px solid rgba(255,56,96,0.35);font-size:9px;}
+  .b-high{background:rgba(255,140,0,0.18);color:var(--orange);border:1px solid rgba(255,140,0,0.35);font-size:9px;}
+  .b-med{background:rgba(0,180,255,0.14);color:var(--cyan);border:1px solid rgba(0,180,255,0.28);font-size:9px;}
+  .b-purview{background:rgba(0,200,212,0.14);color:var(--purview);border:1px solid rgba(0,200,212,0.3);}
+
+  /* ── DFIR FLAG ── */
+  .dfir-flag{display:inline-flex;align-items:center;gap:4px;background:linear-gradient(90deg,rgba(255,56,96,0.22),rgba(255,140,0,0.15));border:1px solid rgba(255,100,60,0.5);border-radius:2px;padding:2px 7px;font-size:10px;font-weight:900;letter-spacing:1.5px;color:#ff8060;text-transform:uppercase;}
+  .dfir-flag::before{content:'◈';font-size:9px;}
+
+  /* ── LOG DETAIL ── */
+  .log-desc{font-size:12px;color:var(--text-dim);margin-top:5px;line-height:1.45;display:none;}
+  .log-item.exp .log-desc{display:block;}
+  .det-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-top:8px;}
+  .det-cell{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:2px;padding:5px 8px;}
+  .det-lbl{font-size:10px;color:var(--text-dim);letter-spacing:.9px;text-transform:uppercase;font-family:'Share Tech Mono',monospace;}
+  .det-val{font-size:12px;color:var(--text-bright);margin-top:2px;}
+  .det-val.mono{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--cyan);word-break:break-all;}
+  .unavail-msg{font-size:10px;color:var(--red);margin-top:3px;font-family:'Share Tech Mono',monospace;}
+
+  /* ── SEARCH ── */
+  .search-row{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap;}
+  .s-input{background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:3px;color:var(--text-bright);font-family:'Share Tech Mono',monospace;font-size:12px;padding:8px 14px;width:320px;outline:none;transition:border-color .2s;}
+  .s-input:focus{border-color:var(--cyan);}
+  .s-input::placeholder{color:var(--text-dim);}
+
+  /* ── TABS ── */
+  .stabs{display:flex;gap:5px;margin-bottom:18px;flex-wrap:wrap;}
+  .stab{background:transparent;border:1px solid var(--border);color:var(--text-dim);font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:600;padding:5px 14px;border-radius:2px;cursor:pointer;transition:all .18s;letter-spacing:.5px;}
+  .stab.on,.stab:hover{color:var(--cyan);border-color:var(--border-bright);background:rgba(0,180,255,0.06);}
+
+  /* ── HERO ── */
+  .hero-title{font-family:'Orbitron',monospace;font-size:clamp(20px,3.5vw,40px);font-weight:900;color:var(--text-bright);letter-spacing:3px;line-height:1.2;margin-bottom:8px;}
+  .hero-title em{font-style:normal;color:var(--cyan);text-shadow:var(--glow-cyan);}
+  .hero-sub{font-size:15px;color:var(--text-dim);max-width:720px;margin-bottom:28px;}
+  .stats-row{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:36px;}
+  .stat-box{background:var(--card-bg);border:1px solid var(--border);border-radius:3px;padding:14px 18px;min-width:110px;}
+  .stat-n{font-family:'Orbitron',monospace;font-size:26px;font-weight:700;color:var(--cyan);text-shadow:var(--glow-cyan);}
+  .stat-l{font-size:11px;color:var(--text-dim);letter-spacing:1px;}
+  .overview-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px;margin-top:6px;}
+  .map-node{background:var(--card-bg);border:1px solid var(--border);border-radius:4px;padding:14px;cursor:pointer;transition:all .2s;text-align:center;}
+  .map-node:hover{border-color:var(--border-bright);transform:translateY(-3px);box-shadow:var(--glow-cyan);}
+  .map-node-icon{font-size:26px;margin-bottom:7px;}
+  .map-node-name{font-family:'Orbitron',monospace;font-size:10px;font-weight:700;color:var(--text-bright);letter-spacing:1px;}
+  .map-node-count{font-size:11px;color:var(--text-dim);margin-top:3px;transition:color 0.3s;}
+  .map-node-bar{height:2px;border-radius:2px;background:var(--border);margin-top:9px;overflow:hidden;}
+  .map-node-bar-fill{height:100%;background:var(--accent-color,var(--cyan));border-radius:2px;transition:width 0.5s cubic-bezier(0.4,0,0.2,1),background 0.4s;}
+  .warn-box{background:rgba(255,56,96,0.05);border:1px solid rgba(255,56,96,0.2);border-radius:4px;padding:14px 18px;margin-top:28px;}
+  .warn-title{font-family:'Orbitron',monospace;font-size:10px;color:var(--red);letter-spacing:2px;margin-bottom:7px;}
+  .warn-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:6px;font-size:12px;color:var(--text-dim);}
+
+  /* ── RETENTION TABLE ── */
+  .ret-table{width:100%;border-collapse:collapse;font-size:12px;}
+  .ret-table th{background:rgba(255,255,255,0.04);border:1px solid var(--border);padding:9px 12px;text-align:left;font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:1px;color:var(--text-dim);text-transform:uppercase;}
+  .ret-table td{border:1px solid rgba(255,255,255,0.05);padding:8px 12px;vertical-align:top;}
+  .ret-table tr:hover td{background:rgba(0,180,255,0.025);}
+  .ret-table .mono{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--cyan);}
+  .ret-table tr.hidden-row{display:none;}
+
+  /* ── ROLES ── */
+  .role-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(400px,1fr));gap:12px;}
+  .role-card{background:var(--card-bg);border:1px solid var(--border);border-radius:4px;padding:14px;transition:all .2s;position:relative;}
+  .role-card:hover{border-color:var(--border-bright);}
+  .role-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--rc,var(--cyan));}
+  .role-name{font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--text-bright);margin-bottom:5px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+  .role-scope-tag{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.8px;padding:2px 7px;border-radius:2px;margin-bottom:7px;text-transform:uppercase;}
+  .rs-azure{background:rgba(0,120,212,0.18);color:#5ab8ff;}
+  .rs-m365{background:rgba(0,180,255,0.14);color:var(--cyan);}
+  .rs-both{background:rgba(0,200,120,0.13);color:var(--green);}
+  .rs-sent{background:rgba(180,79,255,0.14);color:var(--purple);}
+  .rs-def{background:rgba(255,140,0,0.14);color:var(--orange);}
+  .rs-purview{background:rgba(0,200,212,0.13);color:var(--purview);}
+  .role-desc{font-size:12px;color:var(--text-dim);line-height:1.5;}
+  .role-perms{margin-top:9px;display:flex;flex-wrap:wrap;gap:4px;}
+  .perm-tag{font-size:10px;padding:2px 7px;border-radius:2px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);color:var(--text-dim);font-family:'Share Tech Mono',monospace;}
+  .perm-warn{color:var(--red) !important;}
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar{width:5px;height:5px;}
+  ::-webkit-scrollbar-track{background:var(--bg);}
+  ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+  ::-webkit-scrollbar-thumb:hover{background:var(--border-bright);}
+
+  @media(max-width:700px){.cat-grid{grid-template-columns:1fr;}.role-grid{grid-template-columns:1fr;}.det-grid{grid-template-columns:1fr;}.lic-groups-grid{grid-template-columns:1fr;}}
+
+  /* ── ANIMATED COUNTER ── */
+  .stat-n{transition:color 0.3s;}
+  @keyframes statPop{0%{transform:scale(1);}40%{transform:scale(1.15);}100%{transform:scale(1);}}
+  .stat-n.pop{animation:statPop 0.35s ease;}
+
+  /* ── EXECUTIVE SUMMARY MODAL ── */
+  .exec-overlay{position:fixed;inset:0;background:rgba(4,8,16,0.92);z-index:500;display:none;align-items:flex-start;justify-content:center;padding:30px 20px;overflow-y:auto;backdrop-filter:blur(6px);}
+  .exec-overlay.open{display:flex;}
+  .exec-modal{background:var(--bg2);border:1px solid var(--border-bright);border-radius:6px;width:100%;max-width:900px;position:relative;box-shadow:0 0 60px rgba(0,180,255,0.15);}
+  .exec-modal-header{padding:18px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:14px;}
+  .exec-modal-title{font-family:'Orbitron',monospace;font-size:14px;font-weight:700;color:var(--text-bright);letter-spacing:2px;flex:1;}
+  .exec-modal-close{background:rgba(255,255,255,0.06);border:1px solid var(--border);color:var(--text-dim);font-size:13px;cursor:pointer;padding:5px 12px;border-radius:2px;font-family:'Rajdhani',sans-serif;font-weight:600;transition:all .18s;}
+  .exec-modal-close:hover{color:var(--red);border-color:var(--red);}
+  .exec-modal-body{padding:24px;}
+  .exec-print-btn{background:rgba(0,255,157,0.1);border:1px solid rgba(0,255,157,0.3);color:var(--green);font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;padding:8px 20px;border-radius:3px;cursor:pointer;letter-spacing:1px;transition:all .2s;}
+  .exec-print-btn:hover{background:rgba(0,255,157,0.2);box-shadow:0 0 15px rgba(0,255,157,0.2);}
+  .exec-section{margin-bottom:22px;}
+  .exec-section-title{font-family:'Orbitron',monospace;font-size:10px;font-weight:700;color:var(--cyan);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;padding-bottom:5px;border-bottom:1px solid var(--border);}
+  .exec-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px;margin-bottom:10px;}
+  .exec-stat{background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:3px;padding:10px 12px;}
+  .exec-stat-n{font-family:'Orbitron',monospace;font-size:22px;font-weight:700;color:var(--cyan);}
+  .exec-stat-l{font-size:11px;color:var(--text-dim);letter-spacing:1px;}
+  .exec-lic-tags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px;}
+  .exec-lic-tag{font-size:11px;font-weight:700;letter-spacing:.5px;padding:3px 10px;border-radius:2px;}
+  .exec-table{width:100%;border-collapse:collapse;font-size:12px;margin-top:6px;}
+  .exec-table th{background:rgba(255,255,255,0.04);border:1px solid var(--border);padding:7px 10px;text-align:left;font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:.8px;color:var(--text-dim);text-transform:uppercase;}
+  .exec-table td{border:1px solid rgba(255,255,255,0.05);padding:6px 10px;vertical-align:top;font-size:11px;}
+  .exec-gap-item{display:flex;align-items:flex-start;gap:8px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.04);font-size:12px;color:var(--text-dim);}
+  .exec-gap-icon{flex-shrink:0;margin-top:2px;}
+  .exec-checklist{display:grid;grid-template-columns:1fr 1fr;gap:4px;}
+  .exec-check-item{font-size:11px;color:var(--text-dim);display:flex;align-items:flex-start;gap:6px;padding:3px 0;}
+
+  /* ── PRINT STYLES ── */
+  @media print{
+    body{background:#fff !important;color:#000 !important;font-size:11pt;}
+    .topbar,.license-panel,.exec-modal-header .exec-print-btn,.exec-modal-close{display:none !important;}
+    .exec-overlay{position:static !important;display:block !important;background:#fff !important;padding:0 !important;}
+    .exec-modal{background:#fff !important;border:none !important;box-shadow:none !important;max-width:100% !important;}
+    .exec-modal-header{border-bottom:2px solid #000 !important;padding:12px 0 !important;}
+    .exec-modal-title{color:#000 !important;font-size:14pt !important;}
+    .exec-section-title{color:#000 !important;border-color:#000 !important;}
+    .exec-stat{border:1px solid #ccc !important;background:#f9f9f9 !important;}
+    .exec-stat-n{color:#000 !important;}
+    .exec-stat-l{color:#555 !important;}
+    .exec-table th{background:#eee !important;color:#000 !important;border-color:#ccc !important;}
+    .exec-table td{border-color:#ddd !important;color:#222 !important;}
+    .exec-lic-tag{border:1px solid #ccc !important;}
+    .exec-gap-item,.exec-check-item{color:#333 !important;}
+    main,.page{display:none !important;}
+  }
+</style>
+</head>
+<body>
+
+<!-- ══ TOP BAR ══ -->
+<div class="topbar">
+  <div class="topbar-logo">MICROSOFT <span>DEFENSIVE</span> CLOUD ATLAS<sub>v1.0</sub></div>
+  <div class="topbar-div"></div>
+  <div class="topbar-nav">
+    <button class="nav-btn active" onclick="nav('overview',this)">⬡ Overview</button>
+    <button class="nav-btn" onclick="nav('azure',this)">☁ Azure Platform</button>
+    <button class="nav-btn" onclick="nav('entra',this)">🔑 Entra ID</button>
+    <button class="nav-btn" onclick="nav('m365',this)">📧 M365 / Office</button>
+    <button class="nav-btn" onclick="nav('defender',this)">🛡 Defender XDR</button>
+    <button class="nav-btn" onclick="nav('sentinel',this)">🔭 Sentinel</button>
+    <button class="nav-btn" onclick="nav('purview',this)">🔒 Purview</button>
+    <button class="nav-btn" onclick="nav('retention',this)">📅 Retention</button>
+    <button class="nav-btn" onclick="nav('roles',this)">👤 Roles & Access</button>
+  </div>
+  <button class="print-btn" onclick="openExecSummary()">🖨 Executive Summary</button>
+</div>
+
+<!-- ══ LICENSE PANEL (REDESIGNED) ══ -->
+<div class="license-panel">
+  <div class="lic-panel-header">
+    <span class="lic-label">⚙ License Scope Filter</span>
+    <span class="lic-active-count" id="lic-active-count">0 licenses active</span>
+    <div class="lic-header-actions">
+      <button class="lic-ctrl-btn" onclick="clearAllLics()">✕ Clear All</button>
+      <button class="lic-ctrl-btn collapse-btn" id="lic-collapse-btn" onclick="toggleLicPanel()">▲ Collapse</button>
+    </div>
+  </div>
+  <div class="lic-groups-grid" id="lic-groups">
+
+    <!-- M365 GROUP -->
+    <div class="lic-group" style="min-width:300px;">
+      <div class="lic-grp-header">
+        <div class="lic-grp-dot" style="background:#4db8ff;box-shadow:0 0 5px #4db8ff;"></div>
+        <span class="lic-grp-lbl m365">Microsoft 365</span>
+      </div>
+      <div class="lic-toggles">
+        <div class="lic-subtier">ENTERPRISE</div>
+        <div class="lic-toggle" id="lt-m365-f1"  onclick="toggleL('m365-f1')"><div class="dot"></div>F1</div>
+        <div class="lic-toggle" id="lt-m365-f3"  onclick="toggleL('m365-f3')"><div class="dot"></div>F3</div>
+        <div class="lic-toggle" id="lt-m365-e3"  onclick="toggleL('m365-e3')"><div class="dot"></div>E3</div>
+        <div class="lic-toggle" id="lt-m365-e5"  onclick="toggleL('m365-e5')"><div class="dot"></div>E5</div>
+        <div class="lic-subtier">BUSINESS</div>
+        <div class="lic-toggle" id="lt-biz-basic" onclick="toggleL('biz-basic')"><div class="dot"></div>Basic</div>
+        <div class="lic-toggle" id="lt-biz-std"  onclick="toggleL('biz-std')"><div class="dot"></div>Standard</div>
+        <div class="lic-toggle" id="lt-m365-bp"  onclick="toggleL('m365-bp')"><div class="dot"></div>Premium</div>
+        <div class="lic-subtier">OFFICE 365</div>
+        <div class="lic-toggle" id="lt-o365-e1"  onclick="toggleL('o365-e1')"><div class="dot"></div>O365 E1</div>
+        <div class="lic-toggle" id="lt-o365-e3"  onclick="toggleL('o365-e3')"><div class="dot"></div>O365 E3</div>
+        <div class="lic-toggle" id="lt-o365-e5"  onclick="toggleL('o365-e5')"><div class="dot"></div>O365 E5</div>
+      </div>
+    </div>
+
+    <!-- DEFENDER GROUP -->
+    <div class="lic-group">
+      <div class="lic-grp-header">
+        <div class="lic-grp-dot" style="background:var(--orange);box-shadow:0 0 5px var(--orange);"></div>
+        <span class="lic-grp-lbl defender">Defender XDR</span>
+      </div>
+      <div class="lic-toggles">
+        <div class="lic-toggle" id="lt-mde-p1"  onclick="toggleL('mde-p1')"><div class="dot"></div>MDE P1</div>
+        <div class="lic-toggle" id="lt-mde-p2"  onclick="toggleL('mde-p2')"><div class="dot"></div>MDE P2</div>
+        <div class="lic-toggle" id="lt-mdo-p1"  onclick="toggleL('mdo-p1')"><div class="dot"></div>MDO P1</div>
+        <div class="lic-toggle" id="lt-mdo-p2"  onclick="toggleL('mdo-p2')"><div class="dot"></div>MDO P2</div>
+        <div class="lic-toggle" id="lt-mdi"     onclick="toggleL('mdi')"><div class="dot"></div>MDI</div>
+        <div class="lic-toggle" id="lt-mdca"    onclick="toggleL('mdca')"><div class="dot"></div>MDCA</div>
+        <div class="lic-toggle" id="lt-mde5s"   onclick="toggleL('mde5s')"><div class="dot"></div>E5 Security</div>
+        <div class="lic-toggle" id="lt-mdfc"    onclick="toggleL('mdfc')"><div class="dot"></div>Defender for Cloud</div>
+      </div>
+    </div>
+
+    <!-- SENTINEL GROUP -->
+    <div class="lic-group">
+      <div class="lic-grp-header">
+        <div class="lic-grp-dot" style="background:#cc88ff;box-shadow:0 0 5px #cc88ff;"></div>
+        <span class="lic-grp-lbl sentinel">Microsoft Sentinel</span>
+      </div>
+      <div class="lic-toggles">
+        <div class="lic-toggle" id="lt-sentinel"      onclick="toggleL('sentinel')"><div class="dot"></div>Sentinel</div>
+        <div class="lic-toggle" id="lt-sentinel-free" onclick="toggleL('sentinel-free')"><div class="dot"></div>Free Connectors</div>
+      </div>
+    </div>
+
+    <!-- AZURE / ENTRA GROUP -->
+    <div class="lic-group">
+      <div class="lic-grp-header">
+        <div class="lic-grp-dot" style="background:var(--cyan2);box-shadow:0 0 5px var(--cyan2);"></div>
+        <span class="lic-grp-lbl azure">Azure / Entra ID</span>
+      </div>
+      <div class="lic-toggles">
+        <div class="lic-toggle" id="lt-az-free"  onclick="toggleL('az-free')"><div class="dot"></div>Azure Free</div>
+        <div class="lic-toggle" id="lt-entra-p1" onclick="toggleL('entra-p1')"><div class="dot"></div>Entra P1</div>
+        <div class="lic-toggle" id="lt-entra-p2" onclick="toggleL('entra-p2')"><div class="dot"></div>Entra P2</div>
+      </div>
+    </div>
+
+    <!-- PURVIEW GROUP -->
+    <div class="lic-group">
+      <div class="lic-grp-header">
+        <div class="lic-grp-dot" style="background:var(--purview);box-shadow:0 0 5px var(--purview);"></div>
+        <span class="lic-grp-lbl purview">Microsoft Purview</span>
+      </div>
+      <div class="lic-toggles">
+        <div class="lic-toggle" id="lt-purview-std"    onclick="toggleL('purview-std')"><div class="dot"></div>Compliance (E3)</div>
+        <div class="lic-toggle" id="lt-purview-e5c"    onclick="toggleL('purview-e5c')"><div class="dot"></div>E5 Compliance</div>
+        <div class="lic-toggle" id="lt-purview-adaudit"onclick="toggleL('purview-adaudit')"><div class="dot"></div>Advanced Audit</div>
+        <div class="lic-toggle" id="lt-purview-ip1"    onclick="toggleL('purview-ip1')"><div class="dot"></div>Info Protection P1</div>
+        <div class="lic-toggle" id="lt-purview-ip2"    onclick="toggleL('purview-ip2')"><div class="dot"></div>Info Protection P2</div>
+        <div class="lic-toggle" id="lt-purview-irm"    onclick="toggleL('purview-irm')"><div class="dot"></div>Insider Risk</div>
+        <div class="lic-toggle" id="lt-purview-edprem" onclick="toggleL('purview-edprem')"><div class="dot"></div>eDiscovery Premium</div>
+      </div>
+    </div>
+
+  </div>
+  <div class="lic-legend">
+    <div class="lic-legend-item"><div class="leg-swatch leg-selected"></div><span>Directly licensed</span></div>
+    <div class="lic-legend-item"><div class="leg-swatch leg-included"></div><span style="color:#f5c842;">Included via bundle (INC)</span></div>
+    <div class="lic-legend-item" style="color:rgba(255,255,255,0.2);">Click to select · click again to deselect</div>
+  </div>
+</div>
+
+<main>
+
+<!-- ══════════════════════════════════════════
+     OVERVIEW
+══════════════════════════════════════════ -->
+<div class="page on" id="pg-overview">
+  <div class="hero-title">MICROSOFT<br><em>DEFENSIVE CLOUD ATLAS</em></div>
+  <div class="hero-sub">A comprehensive interactive reference for Azure &amp; M365 log sources, license requirements, retention periods, data locations, and role-based access. Built for cloud incident response, digital forensics, and threat investigations.</div>
+
+  <div class="stats-row">
+    <div class="stat-box"><div class="stat-n" id="stat-sources">75+</div><div class="stat-l">Log Sources</div></div>
+    <div class="stat-box"><div class="stat-n" id="stat-categories">9</div><div class="stat-l">Categories</div></div>
+    <div class="stat-box"><div class="stat-n" id="stat-roles">50+</div><div class="stat-l">Roles Documented</div></div>
+    <div class="stat-box"><div class="stat-n" id="stat-licenses">0</div><div class="stat-l" id="stat-licenses-label">Licenses Active</div></div>
+    <div class="stat-box"><div class="stat-n" id="stat-retention">13</div><div class="stat-l">Retention Entries</div></div>
+  </div>
+
+  <div style="font-family:'Orbitron',monospace;font-size:11px;letter-spacing:2px;color:var(--text-dim);margin-bottom:12px;">NAVIGATE BY CATEGORY</div>
+  <div class="overview-grid">
+    <div class="map-node" onclick="nav('azure',null)" style="--accent-color:#00b4ff"><div class="map-node-icon">☁</div><div class="map-node-name">Azure Platform</div><div class="map-node-count" id="mn-azure">14 sources</div><div class="map-node-bar"><div class="map-node-bar-fill" id="mnb-azure" style="width:82%"></div></div></div>
+    <div class="map-node" onclick="nav('entra',null)" style="--accent-color:#4db3ff"><div class="map-node-icon">🔑</div><div class="map-node-name">Entra ID</div><div class="map-node-count" id="mn-entra">12 sources</div><div class="map-node-bar"><div class="map-node-bar-fill" id="mnb-entra" style="width:76%"></div></div></div>
+    <div class="map-node" onclick="nav('m365',null)" style="--accent-color:#0078d4"><div class="map-node-icon">📧</div><div class="map-node-name">M365 / Office</div><div class="map-node-count" id="mn-m365">14 sources</div><div class="map-node-bar"><div class="map-node-bar-fill" id="mnb-m365" style="width:90%"></div></div></div>
+    <div class="map-node" onclick="nav('defender',null)" style="--accent-color:#ff8c00"><div class="map-node-icon">🛡</div><div class="map-node-name">Defender XDR</div><div class="map-node-count" id="mn-defender">20 sources</div><div class="map-node-bar"><div class="map-node-bar-fill" id="mnb-defender" style="width:96%"></div></div></div>
+    <div class="map-node" onclick="nav('sentinel',null)" style="--accent-color:#b44fff"><div class="map-node-icon">🔭</div><div class="map-node-name">Sentinel</div><div class="map-node-count" id="mn-sentinel">9 sources</div><div class="map-node-bar"><div class="map-node-bar-fill" id="mnb-sentinel" style="width:68%"></div></div></div>
+    <div class="map-node" onclick="nav('purview',null)" style="--accent-color:#00c8d4"><div class="map-node-icon">🔒</div><div class="map-node-name">Purview</div><div class="map-node-count" id="mn-purview">11 sources</div><div class="map-node-bar"><div class="map-node-bar-fill" id="mnb-purview" style="width:72%"></div></div></div>
+    <div class="map-node" onclick="nav('retention',null)" style="--accent-color:#00ff9d"><div class="map-node-icon">📅</div><div class="map-node-name">Retention Guide</div><div class="map-node-count" id="mn-retention">13 entries</div><div class="map-node-bar"><div class="map-node-bar-fill" id="mnb-retention" style="width:60%"></div></div></div>
+    <div class="map-node" onclick="nav('roles',null)" style="--accent-color:#ffe600"><div class="map-node-icon">👤</div><div class="map-node-name">Roles & Access</div><div class="map-node-count" id="mn-roles">50+ roles</div><div class="map-node-bar"><div class="map-node-bar-fill" id="mnb-roles" style="width:55%"></div></div></div>
+  </div>
+
+  <div class="warn-box">
+    <div class="warn-title">⚠ FIRST RESPONSE — IMMEDIATE PRESERVATION CHECKLIST</div>
+    <div class="warn-grid">
+      <div>▶ Preserve Unified Audit Log (UAL) — 90-day default window</div>
+      <div>▶ Collect Entra Sign-In Logs — only 7–30 days in portal</div>
+      <div>▶ Verify Advanced Audit is ON (MailItemsAccessed, SearchQueryInitiated)</div>
+      <div>▶ Export MDE Advanced Hunting — 30-day rolling window</div>
+      <div>▶ Enable Diagnostic Settings if missing (Key Vault, Storage, NSG)</div>
+      <div>▶ Check MDCA / Cloud App activity logs for compromised accounts</div>
+      <div>▶ Run Get-HistoricalSearch for Exchange Message Trace (90 days)</div>
+      <div>▶ Screenshot / export Conditional Access policy state</div>
+      <div>▶ Preserve MDI timeline for on-prem AD lateral movement</div>
+      <div>▶ Capture current OAuth app consents and delegated permissions</div>
+      <div>▶ Place custodian mailboxes on Legal Hold via Purview eDiscovery</div>
+      <div>▶ Review Purview Insider Risk alerts for insider threat indicators</div>
+    </div>
+  </div>
+
+  <div style="margin-top:20px;background:rgba(255,140,0,0.05);border:1px solid rgba(255,140,0,0.18);border-radius:4px;padding:14px 18px;">
+    <div style="font-family:'Orbitron',monospace;font-size:10px;color:var(--orange);letter-spacing:2px;margin-bottom:8px;">HOW TO USE LICENSE FILTER</div>
+    <div style="font-size:13px;color:var(--text-dim);line-height:1.7;">
+      Toggle your active licenses in the panel above. Select multiple licenses across any scope — M365, Defender, Sentinel, Azure/Entra, and Purview. Log sources that require licenses you haven't selected will dim out. Click a selected license again to deselect it. Use <strong style="color:var(--text)">Clear All</strong> to reset. The <span class="dfir-flag" style="display:inline-flex;">DFIR</span> flag marks the most critical sources for cloud incident response. Hit <strong style="color:var(--green)">Executive Summary</strong> to generate a printable scope report.
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     AZURE PLATFORM
+══════════════════════════════════════════ -->
+<div class="page" id="pg-azure">
+  <div class="sec-hdr"><div class="sec-title">☁ AZURE PLATFORM LOGS</div><span class="sec-cnt" id="cnt-azure">14 sources</span></div>
+  <div class="sec-sub">Core Azure infrastructure telemetry: control-plane activity, resource diagnostics, network traffic, compute, storage, and key management logs.</div>
+  <div class="search-row"><input class="s-input" type="text" placeholder="Search Azure logs…" oninput="filterSection(this,'azure')"></div>
+  <div class="cat-grid" id="grid-azure">
+
+    <div class="cat-card" style="--accent-color:#00b4ff">
+      <div class="cat-hdr"><div class="cat-icon">📋</div><div><div class="cat-name">Control Plane — Activity Log</div><div class="cat-desc">Subscription-level operations</div></div></div>
+      <div class="cat-body">
+        <div class="log-item" onclick="xlog(this)">
+          <div class="log-item-top"><div class="log-name">AzureActivity</div><div class="log-badges"><span class="b b-on">Default ON</span><span class="b b-free">Free</span><span class="b b-crit">Critical</span><span class="dfir-flag">DFIR</span></div></div>
+          <div class="log-desc">Records every subscription-level management operation: who did what, when, from where, and what the result was. Covers resource creation/deletion, RBAC assignments, policy changes, and all ARM API calls. The backbone of Azure control-plane forensics.
+            <div class="det-grid">
+              <div class="det-cell"><div class="det-lbl">Retention</div><div class="det-val">90 days free in portal; extend via Diagnostic Settings → Log Analytics</div></div>
+              <div class="det-cell"><div class="det-lbl">License</div><div class="det-val">Free — no additional license required</div></div>
+              <div class="det-cell"><div class="det-lbl">Portal Location</div><div class="det-val mono">Azure Portal → Monitor → Activity Log</div></div>
+              <div class="det-cell"><div class="det-lbl">LA Table</div><div class="det-val mono">AzureActivity</div></div>
+              <div class="det-cell"><div class="det-lbl">Key DFIR Fields</div><div class="det-val">caller, operationName, resourceGroup, status, subStatus, httpRequest.clientIpAddress, claims.ipaddr</div></div>
+              <div class="det-cell"><div class="det-lbl">Enable Extended Retention</div><div class="det-val mono">Monitor → Diagnostic Settings → Export to Log Analytics</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="log-item" onclick="xlog(this)">
+          <div class="log-item-top"><div class="log-name">Resource Diagnostic Logs</div><div class="log-badges"><span class="b b-off">Not Default</span><span class="b b-free">Free to collect</span><span class="b b-high">High</span><span class="dfir-flag">DFIR</span></div></div>
+          <div class="log-desc">Per-resource telemetry emitted by individual Azure services. Must be explicitly enabled via Diagnostic Settings.
+            <div class="det-grid">
+              <div class="det-cell"><div class="det-lbl">Retention</div><div class="det-val">None by default — requires Diagnostic Settings</div></div>
+              <div class="det-cell"><div class="det-lbl">License</div><div class="det-val">Free to enable; Log Analytics ingestion GB cost applies</div></div>
+              <div class="det-cell"><div class="det-lbl">Enable via</div><div class="det-val mono">Resource → Monitoring → Diagnostic Settings → allLogs</div></div>
+              <div class="det-cell"><div class="det-lbl">CLI</div><div class="det-val mono">az monitor diagnostic-settings create --resource &lt;id&gt; --workspace &lt;id&gt;</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="log-item" onclick="xlog(this)">
+          <div class="log-item-top"><div class="log-name">Azure Key Vault Audit Logs</div><div class="log-badges"><span class="b b-off">Not Default</span><span class="b b-free">Free</span><span class="b b-crit">Critical</span><span class="dfir-flag">DFIR</span></div></div>
+          <div class="log-desc">Logs every access attempt to secrets, keys, and certificates. Critical for detecting credential theft and secret exfiltration.
+            <div class="det-grid">
+              <div class="det-cell"><div class="det-lbl">LA Table</div><div class="det-val mono">AzureDiagnostics (Category: AuditEvent) or KeyVaultAuditLogs</div></div>
+              <div class="det-cell"><div class="det-lbl">Key DFIR Fields</div><div class="det-val">identity.claim.oid, operationName, resultType, requestUri, clientInfo</div></div>
+              <div class="det-cell"><div class="det-lbl">Threat Signals</div><div class="det-val">Bulk secret LIST/GET, access from unknown IPs, SP first-time access, 403 then 200</div></div>
+              <div class="det-cell"><div class="det-lbl">Enable via</div><div class="det-val mono">Key Vault → Monitoring → Diagnostic Settings</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cat-card" style="--accent-color:#00e5ff">
+      <div class="cat-hdr"><div class="cat-icon">🌐</div><div><div class="cat-name">Network & Firewall</div><div class="cat-desc">Traffic flows, NSG, Azure Firewall, DDoS</div></div></div>
+      <div class="cat-body">
+        <div class="log-item" onclick="xlog(this)">
+          <div class="log-item-top"><div class="log-name">NSG Flow Logs v2</div><div class="log-badges"><span class="b b-off">Not Default</span><span class="b b-free">Requires Storage</span><span class="b b-high">High</span><span class="dfir-flag">DFIR</span></div></div>
+          <div class="log-desc">Network Security Group flow logs capture allowed and denied traffic. Essential for lateral movement detection, C2 identification, and data exfiltration analysis.
+            <div class="det-grid">
+              <div class="det-cell"><div class="det-lbl">Enable via</div><div class="det-val mono">Network Watcher → NSG Flow Logs → Enable</div></div>
+              <div class="det-cell"><div class="det-lbl">Key Fields</div><div class="det-val">src/dst IP, ports, protocol, decision (A/D), bytes, packets</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="log-item" onclick="xlog(this)">
+          <div class="log-item-top"><div class="log-name">Azure Firewall Logs (Structured)</div><div class="log-badges"><span class="b b-off">Not Default</span><span class="b b-prem">Premium = IDPS</span><span class="b b-high">High</span><span class="dfir-flag">DFIR</span></div></div>
+          <div class="log-desc">Full L3–L7 visibility including application rules, network rules, NAT rules, threat intelligence hits, and DNS proxy queries. Premium tier adds IDPS.
+            <div class="det-grid">
+              <div class="det-cell"><div class="det-lbl">LA Tables</div><div class="det-val mono">AZFWApplicationRule, AZFWNetworkRule, AZFWThreatIntel, AZFWDnsQuery, AZFWIdpsSignature</div></div>
+              <div class="det-cell"><div class="det-lbl">Enable via</div><div class="det-val mono">Azure Firewall → Diagnostic Settings → Resource-specific tables</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cat-card" style="--accent-color:#ff8c00">
+      <div class="cat-hdr"><div class="cat-icon">💾</div><div><div class="cat-name">Storage & Data Access</div><div class="cat-desc">Blob, File, Queue, Table, SQL access logs</div></div></div>
+      <div class="cat-body">
+        <div class="log-item" onclick="xlog(this)">
+          <div class="log-item-top"><div class="log-name">Azure Storage Diagnostic Logs</div><div class="log-badges"><span class="b b-off">Not Default</span><span class="b b-free">Free to collect</span><span class="b b-high">High</span><span class="dfir-flag">DFIR</span></div></div>
+          <div class="log-desc">Read/write/delete operations on Blob, File, Queue, and Table storage. Critical for detecting data exfiltration and SAS token abuse.
+            <div class="det-grid">
+              <div class="det-cell"><div class="det-lbl">LA Tables</div><div class="det-val mono">StorageBlobLogs, StorageFileLogs, StorageQueueLogs, StorageTableLogs</div></div>
+              <div class="det-cell"><div class="det-lbl">Threat Signals</div><div class="det-val">Mass GetBlob, AnonymousSuccess, ListKeys ops, SAS from unexpected IP</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="log-item" onclick="xlog(this)">
+          <div class="log-item-top"><div class="log-name">Azure SQL Audit Logs</div><div class="log-badges"><span class="b b-off">Not Default</span><span class="b b-free">Included with SQL</span><span class="b b-high">High</span><span class="dfir-flag">DFIR</span></div></div>
+          <div class="log-desc">T-SQL statement auditing, login/logout events, failed auth, and schema changes. Essential for data theft and SQL injection investigation.
+            <div class="det-grid">
+              <div class="det-cell"><div class="det-lbl">LA Table</div><div class="det-val mono">SQLSecurityAuditEvents</div></div>
+              <div class="det-cell"><div class="det-lbl">Enable via</div><div class="det-val mono">SQL Server → Security → Auditing → ON → Log Analytics</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cat-card" style="--accent-color:#b44fff">
+      <div class="cat-hdr"><div class="cat-icon">⚙</div><div><div class="cat-name">VM & Compute Logs</div><div class="cat-desc">Windows/Linux events, agent-based collection</div></div></div>
+      <div class="cat-body">
+        <div class="log-item" onclick="xlog(this)">
+          <div class="log-item-top"><div class="log-name">Windows Security Event Log (AMA)</div><div class="log-badges"><span class="b b-off">Requires Agent</span><span class="b b-free">AMA is free</span><span class="b b-crit">Critical</span><span class="dfir-flag">DFIR</span></div></div>
+          <div class="log-desc">Windows Security Event Log from Azure VMs via Azure Monitor Agent. Captures logon events, process creation (4688), privilege use, and account management.
+            <div class="det-grid">
+              <div class="det-cell"><div class="det-lbl">LA Tables</div><div class="det-val mono">SecurityEvent (legacy), WindowsEvent (AMA via DCR)</div></div>
+              <div class="det-cell"><div class="det-lbl">Critical Event IDs</div><div class="det-val">4624 (logon), 4625 (failed), 4648 (explicit creds), 4672 (privs), 4688 (process), 4698 (scheduled task), 4776 (NTLM)</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="log-item" onclick="xlog(this)">
+          <div class="log-item-top"><div class="log-name">Syslog (Linux VMs)</div><div class="log-badges"><span class="b b-off">Requires AMA</span><span class="b b-free">Free</span><span class="b b-high">High</span><span class="dfir-flag">DFIR</span></div></div>
+          <div class="log-desc">Linux system logs via AMA. auth/authpriv (SSH, sudo), cron, kernel, daemon logs.
+            <div class="det-grid">
+              <div class="det-cell"><div class="det-lbl">LA Table</div><div class="det-val mono">Syslog</div></div>
+              <div class="det-cell"><div class="det-lbl">Configure via</div><div class="det-val mono">Monitor → Data Collection Rules → Linux → Syslog</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="log-item" onclick="xlog(this)" data-requires="mdfc">
+          <div class="log-item-top"><div class="log-name">Defender for Cloud — Security Recommendations</div><div class="log-badges"><span class="b b-off">Requires MDFC</span><span class="b b-high">High</span></div></div>
+          <div class="log-desc">Continuous posture assessment across Azure resources. Identifies misconfigurations, missing patches, and insecure settings.
+            <div class="det-grid">
+              <div class="det-cell"><div class="det-lbl">LA Tables</div><div class="det-val mono">SecurityRecommendation, SecurityAlert, SecurityBaseline</div></div>
+              <div class="det-cell"><div class="det-lbl">Portal</div><div class="det-val mono">Microsoft Defender for Cloud → Recommendations</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     ENTRA ID
+══════════════════════════════════════════ -->
+<div class="page" id="pg-entra">
+  <div class="sec-hdr"><div class="sec-title">🔑 MICROSOFT ENTRA ID LOGS</div><span class="sec-cnt" id="cnt-entra">12 sources</span></div>
+  <div class="sec-sub">Identity is the perimeter. These logs are the foundation of cloud DFIR — covering every authentication, directory change, risk event, and privileged identity action.</div>
+  <div class="search-row"><input class="s-input" type="text" placeholder="Search Entra ID logs…" oninput="filterSection(this,'entra')"></div>
+  <div class="cat-grid" id="grid-entra">
+
+    <div class="cat-card" style="--accent-color:#4db3ff">
+      <div class="cat-hdr"><div class="cat-icon">🔐</div><div><div class="cat-name">Sign-In Logs</div><div class="cat-desc">All authentication events to Entra ID</div></div></div>
+      <div class="cat-body">
+        <div class="log-item" onclick="xlog(this)">
+          <div class="log-item-top"><div class="log-name">Interactive User Sign-In Logs</div><div class="log-badges"><span class="b b-on">Default ON</span><span class="b b-p1">P1 to export</span><span class="b b-crit">Critical</span><span class="dfir-flag">DFIR</span></div></div>
+          <div class="log-desc">All interactive user authentication events. Single most important identity log for account compromise detection.
+            <div class="det-grid">
+              <div class="det-cell"><div class="det-lbl">Retention (portal)</div><div class="det-val">7 days (Free), 30 days (P1/P2), unlimited via LA export</div></div>
+              <div class="det-cell"><div class="det-lbl">LA Table</div><div class="det-val mono">SigninLogs</div></div>
+              <div class="det-cell"><div class="det-lbl">Key DFIR Fields</div><div class="det-val">userPrincipalName, ipAddress, location, appDisplayName, conditionalAccessStatus, mfaDetail, riskLevelDuringSignIn</div></div>
+              <div class="det-cell"><div class="det-lbl">Threat Signals</div><div class="det-val">Impossible travel, legacy auth, MFA fatigue, password spray, token theft</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="log-item" onclick="xlog(this)" data-requires="entra-p1">
+          <div class="log-item-top"><div class="log-name">Non-Interactive Sign-In Logs</div><div class="log-badges"><span class="b b-on">Default ON</span><span class="b b-p1">P1 Required</span><span class="b b-crit">Critical</span><span class="dfir-flag">DFIR</span></div></div>
+          <div class="log-desc">Token refresh and service-to-service authentication. Critical for detecting persistent access via stolen refresh tokens.
+            <div class="det-grid">
+              <div class="det-cell"><div class="det-lbl">LA Table</div><div class="det-val mono">AADNonInteractiveUserSignInLogs</div></div>
+              <div class="det-cell"><div class="det-lbl">Threat Signals</div><div class="det-val">Refresh token use from new IP/country, high-volume token refreshes, FOCI abuse</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="log-item" onclick="xlog(this)" data-requires="entra-p1">
+          <div class="log-item-top"><div class="log-name">Service Principal Sign-In Logs</div><div class="log-badges"><span class="b b-on">Default ON</span><span class="b b-p1">P1 Required</span><span class="b b-crit">Critical</span><span class="dfir-flag">DFIR</span></div></div>
+          <div class="log-desc">Authentication events for service principals using client secrets or certificates.
+            <div class="det-grid">
+              <div class="det-cell"><div class="det-lbl">LA Table</div><div class="det-val mono">AADServicePrincipalSignInLogs</div></div>
+              <div class="det-cell"><div class="det-lbl">Threat Signals</div><div class="det-val">SP from unusual IP, new secret added then used, SP outside normal hours</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="log-item" onclick="xlog(this)" data-requires="entra-p1">
+          <div class="log-item-top"><div class="log-name">Managed Identity Sign-In Logs</div><div class="log-badges"><span class="b b-on">Default ON</span><span class="b b-p1">P1 Required</span><span class="b b-high">High</span><span class="dfir-flag">DFIR</span></div></div>
+          <div class="log-desc">Sign-in events for Azure managed identities. IMDS endpoint abuse detection.
+            <div class="det-grid">
+              <div class="det-cell"><div class="det-lbl">LA Table</div><div class="det-val mono">AADManagedIdentitySignInLogs</div></div>
+              <div class="det-cell"><div class="det-lbl">Threat Signals</div><div class="det-val">MI token used from off-Azure IP (token theft), unexpected resource access</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cat-card" style="--accent-color:#00c878">
+      <div class="cat-hdr"><div class="cat-icon">📝</div><div><div class="cat-name">Audit & Provisioning Logs</div><div class="cat-desc">Directory changes, role assignments, app registrations</div></div></div>
+      <div class="cat-body">
+        <div class="log-item" onclick="xlog(this)">
+          <div class="log-item-top"><div class="log-name">Entra ID Audit Logs</div><div class="log-badges"><span class="b b-on">Default ON</span><span class="b b-free">Free (7/30d)</span><span class="b b-crit">Critical</span><span class="dfir-flag">DFIR</span></div></div>
+          <div class="log-desc">Comprehensive audit trail of all directory changes: user creation, group membership, role assignments, app registrations, CA policy changes, MFA registration.
+            <div class="det-grid">
+              <div class="det-cell"><div class="det-lbl">Retention</div><div class="det-val">7 days (Free), 30 days (P1/P2), unlimited via LA</div></div>
+              <div class="det-cell"><div class="det-lbl">LA Table</div><div class="det-val mono">AuditLogs</div></div>
+              <div class="det-cell"><div class="det-lbl">Critical Operations</div><div class="det-val">Add member to role, Update CA policy, Consent to application, Reset user password, Add federated identity credential</div></div>
+              <div class="det-cell"><div class="det-lbl">Portal</div><div class="det-val mono">Entra ID → Monitoring → Audit Logs</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="log-item" onclick="xlog(this)" data-requires="entra-p1">
+          <div class="log-item-top"><div class="log-name">Provisioning Logs</div><div class="log-badges"><span class="b b-off">Not Default</span><span class="b b-p1">P1 Required</span><span class="b b-med">Medium</span></div></div>
+          <div class="log-desc">Auto-provisioning of users to SaaS apps via SCIM. Important for tracking attacker-created account propagation.
+            <div class="det-grid">
+              <div class="det-cell"><div class="det-lbl">LA Table</div><div class="det-val mono">AADProvisioningLogs</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cat-card" style="--accent-color:#ff3860">
+      <div class="cat-hdr"><div class="cat-icon">⚠</div><div><div class="cat-name">Identity Protection & Risk</div><div class="cat-desc">ML-based risk detections, risky users, CA logs</div></div></div>
+      <div class="cat-body">
+        <div class="log-item" onclick="xlog(this)" data-requires="entra-p2">
+          <div class="log-item-top"><div class="log-name">Identity Protection — Risk Detections</div><div class="log-badges"><span class="b b-off">Not Default</span><span class="b b-p2">Entra P2</span><span class="b b-crit">Critical</span><span class="dfir-flag">DFIR</span></div></div>
+          <div class="log-desc">ML-powered risk detections: leaked credentials, impossible travel, anonymous IP proxy, malware-linked IP, password spray, token anomaly (AiTM), nation-state actor patterns.
+            <div class="det-grid">
+              <div class="det-cell"><div class="det-lbl">LA Tables</div><div class="det-val mono">AADRiskyUsers, AADUserRiskEvents, AADRiskyServicePrincipals</div></div>
+              <div class="det-cell"><div class="det-lbl">License</div><div class="det-val">Entra P2 (included in M365 E5, EMS E5)</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="log-item" onclick="xlog(this)" data-requires="entra-p1">
+          <div class="log-item-top"><div class="log-name">Conditional Access Policy Evaluation</div><div class="log-badges"><span class="b b-on">Embedded in SigninLogs</span><span class="b b-p1">P1 Required</span><span class="b b-high">High</span><span class="dfir-flag">DFIR</span></div></div>
+          <div class="log-desc">Per-sign-in CA policy results: which policies matched, grant controls applied, and session controls. Critical for detecting CA bypass exploited during an attack.
+            <div class="det-grid">
+              <div class="det-cell"><div class="det-lbl">Location</div><div class="det-val mono">SigninLogs | extend CAPolicies = ConditionalAccessPolicies</div></div>
+              <div class="det-cell"><div class="det-lbl">Key Fields</div><div class="det-val">conditionalAccessStatus, appliedConditionalAccessPolicies[].displayName, .result, .grantControls</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="log-item" onclick="xlog(this)">
+          <div class="log-item-top"><div class="log-name">PIM (Privileged Identity Management) Audit Logs</div><div class="log-badges"><span class="b b-on">In AuditLogs</span><span class="b b-p2">Entra P2</span><span class="b b-crit">Critical</span><span class="dfir-flag">DFIR</span></div></div>
+          <div class="log-desc">All PIM role activation requests, approvals, denials, and assignments. Essential for privilege escalation investigations.
+            <div class="det-grid">
+              <div class="det-cell"><div class="det-lbl">LA Table</div><div class="det-val mono">AuditLogs (filter: category = "RoleManagement")</div></div>
+              <div class="det-cell"><div class="det-lbl">Key Operations</div><div class="det-val">Activate role, Approve activation, Member added outside PIM (permanent = red flag)</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     M365 / OFFICE
+══════════════════════════════════════════ -->
+<div class="page" id="pg-m365">
+  <div class="sec-hdr"><div class="sec-title">📧 MICROSOFT 365 / OFFICE LOGS</div><span class="sec-cnt" id="cnt-m365">14 sources</span></div>
+  <div class="sec-sub">Exchange Online, SharePoint, OneDrive, Teams, Power Platform, and M365 platform audit logs. Critical for BEC, data theft, insider threat, and phishing investigations.</div>
+  <div class="search-row"><input class="s-input" type="text" placeholder="Search M365 logs…" oninput="filterSection(this,'m365')"></div>
+  <div class="cat-grid" id="grid-m365">
+
+    <div class="cat-card" style="--accent-color:#0078d4">
+      <div class="cat-hdr"><div class="cat-icon">🔎</div><div><div class="cat-name">Unified Audit Log (UAL)</div><div class="cat-desc">The single most important M365 forensic source</div></div></div>
+      <div class="cat-body">
+        <div class="log-item" onclick="xlog(this)">
+          <div class="log-item-top"><div class="log-name">Unified Audit Log</div><div class="log-badges"><span class="b b-on">Default ON (E3+)</span><span class="b b-e3">E3 / E5</span><span class="b b-crit">Critical</span><span class="dfir-flag">DFIR</span></div></div>
+          <div class="log-desc">Aggregates activities from Exchange, SharePoint, OneDrive, Teams, Entra ID, Power BI, Power Apps, and more into a single searchable log.
+            <div class="det-grid">
+              <div class="det-cell"><div class="det-lbl">Retention</div><div class="det-val">90 days (E3), 180 days (E5/Advanced Audit), 1 year (Adv Audit add-on), 10 years (10-yr SKU)</div></div>
+              <div class="det-cell"><div class="det-lbl">Portal</div><div class="det-val mono">Microsoft Purview → Audit → New Search</div></div>
+              <div class="det-cell"><div class="det-lbl">PowerShell</div><div class="det-val mono">Search-UnifiedAuditLog -StartDate -EndDate -RecordType -Operations</div></div>
+              <div class="det-cell"><div class="det-lbl">Sentinel Table</div><div class="det-val mono">OfficeActivity</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cat-card" style="--accent-color:#0f62fe">
+      <div class="cat-hdr"><div class="cat-icon">✉</div><div><div class="cat-name">Exchange Online Forensics</div><div class="cat-desc">Email flow, access, rules, delegation, forwarding</div></div></div>
+      <div class="cat-body">
+        <div class="log-item" onclick="xlog(this)">
+          <div class="log-item-top"><div class="log-name">Message Trace Logs</div><div class="log-badges"><span class="b b-on">Default ON</span><span class="b b-e3">E3+</span><span class="b b-crit">Critical</span><span class="dfir-flag">DFIR</span></div></div>
+          <div class="log-desc">Tracks all email flow through Exchange Online. Essential for BEC phishing chain mapping and data exfiltration via email.
+            <div class="det-grid">
+              <div class="det-cell"><div class="det-lbl">Retention</div><div class="det-val">EAC: 10 days. Get-HistoricalSearch (PowerShell): 90 days</div></div>
+              <div class="det-cell"><div class="det-lbl">PowerShell</div><div class="det-val mono">Get-MessageTrace | Start-HistoricalSearch</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="log-item" onclick="xlog(this)" data-requires="m365-e5">
+          <div class="log-item-top"><div class="log-name">MailItemsAccessed (Advanced Audit)</div><div class="log-badges"><span class="b b-off">Not Default</span><span class="b b-e5">E5 / Adv Audit</span><span class="b b-crit">Critical</span><span class="dfir-flag">DFIR</span></div></div>
+          <div class="log-desc">Logs every access to mail items via any protocol. Enables reconstruction of exactly which emails a threat actor read — game-changing for BEC/nation-state investigations.
+            <div class="det-grid">
+              <div class="det-cell"><div class="det-lbl">License</div><div class="det-val">M365 E5, E5 Compliance, or Advanced Audit add-on</div></div>
+              <div class="det-cell"><div class="det-lbl">UAL Operation</div><div class="det-val mono">MailItemsAccessed</div></div>
+              <div class="det-cell"><div class="det-lbl">Key Fields</div><div class="det-val">ClientInfoString, SessionId, OperationCount, Folders (InternetMessageId), IsThrottled</div></div>
+              <div class="det-cell"><div class="det-lbl">Note</div><div class="det-val">IsThrottled=true = bulk read event. IMAP/POP3 = legacy client (common persistence)</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="log-item" onclick="xlog(this)" data-requires="m365-e5">
+          <div class="log-item-top"><div class="log-name">SearchQueryInitiatedExchange / SharePoint</div><div class="log-badges"><span class="b b-off">Not Default</span><span class="b b-e5">E5 / Adv Audit</span><span class="b b-high">High</span><span class="dfir-flag">DFIR</span></div></div>
+          <div class="log-desc">Logs searches performed in Outlook and SharePoint. Reveals what a threat actor was searching for — keywords indicate objectives.
+            <div class="det-grid">
+              <div class="det-cell"><div class="det-lbl">UAL Operations</div><div class="det-val mono">SearchQueryInitiatedExchange, SearchQueryInitiatedSharePoint</div></div>
+              <div class="det-cell"><div class="det-lbl">License</div><div class="det-val">Advanced Audit (E5 or add-on)</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="log-item" onclick="xlog(this)">
+          <div class="log-item-top"><div class="log-name">Inbox Rule Audit Events</div><div class="log-badges"><span class="b b-on">Default in UAL</span><span class="b b-e3">E3+</span><span class="b b-crit">Critical</span><span class="dfir-flag">DFIR</span></div></div>
+          <div class="log-desc">Creation, modification, deletion of Outlook inbox rules and Exchange transport rules. Attackers use these to hide phishing replies and forward emails externally.
+            <div class="det-grid">
+              <div class="det-cell"><div class="det-lbl">UAL Operations</div><div class="det-val mono">New-InboxRule, Set-InboxRule, UpdateInboxRules, New-TransportRule</div></div>
+              <div class="det-cell"><div class="det-lbl">Red Flags</div><div class="det-val">ForwardTo external domain, DeleteMessage=True, MarkAsRead=True, rules created outside business hours</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="log-item" onclick="xlog(this)">
+          <div class="log-item-top"><div class="log-name">Mailbox Delegation & Forwarding</div><div class="log-badges"><span class="b b-on">Default in UAL</span><span class="b b-e3">E3+</span><span class="b b-crit">Critical</span><span class="dfir-flag">DFIR</span></div></div>
+          <div class="log-desc">Tracks grant/revoke of Full Access, Send-As, and SMTP forwarding. Primary persistence and data exfiltration mechanism in BEC campaigns.
+            <div class="det-grid">
+              <div class="det-cell"><div class="det-lbl">UAL Operations</div><div class="det-val mono">Add-MailboxPermission, Set-Mailbox (ForwardingAddress), Add-RecipientPermission</div></div>
+              <div class="det-cell"><div class="det-lbl">Triage</div><div class="det-val mono">Get-Mailbox -ResultSize Unlimited | Where {$_.ForwardingAddress -ne $null}</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cat-card" style="--accent-color:#00a36c">
+      <div class="cat-hdr"><div class="cat-icon">📁</div><div><div class="cat-name">SharePoint & OneDrive</div><div class="cat-desc">File access, sharing, downloads, sync</div></div></div>
+      <div class="cat-body">
+        <div class="log-item" onclick="xlog(this)">
+          <div class="log-item-top"><div class="log-name">SharePoint / OneDrive File Activity</div><div class="log-badges"><span class="b b-on">Default in UAL</span><span class="b b-e3">E3+</span><span class="b b-high">High</span><span class="dfir-flag">DFIR</span></div></div>
+          <div class="log-desc">File access, downloads, uploads, copies, sharing events, and external links. Critical for data exfiltration investigations.
+            <div class="det-grid">
+              <div class="det-cell"><div class="det-lbl">UAL Operations</div><div class="det-val mono">FileDownloaded, FileUploaded, AnonymousLinkCreated, SharingSet, FileCopied</div></div>
+              <div class="det-cell"><div class="det-lbl">Exfil Signals</div><div class="det-val">Mass FileDownloaded, AnonymousLinkCreated on sensitive sites, sharing to external domain</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cat-card" style="--accent-color:#5b5fc7">
+      <div class="cat-hdr"><div class="cat-icon">💬</div><div><div class="cat-name">Microsoft Teams</div><div class="cat-desc">Channel activity, meetings, app installs, eDiscovery</div></div></div>
+      <div class="cat-body">
+        <div class="log-item" onclick="xlog(this)">
+          <div class="log-item-top"><div class="log-name">Teams Activity Audit (UAL)</div><div class="log-badges"><span class="b b-on">Default in UAL</span><span class="b b-e3">E3+</span><span class="b b-high">High</span><span class="dfir-flag">DFIR</span></div></div>
+          <div class="log-desc">Teams structural events: team/channel create/delete, member add/remove, app installs, meeting details. Chat content requires eDiscovery.
+            <div class="det-grid">
+              <div class="det-cell"><div class="det-lbl">UAL RecordType</div><div class="det-val mono">MicrosoftTeams (RecordType 25)</div></div>
+              <div class="det-cell"><div class="det-lbl">Missing Content</div><div class="det-val">Chat text → Purview eDiscovery Content Search (stored in hidden TeamsMessagesData mailbox folder)</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     DEFENDER XDR
+══════════════════════════════════════════ -->
+<div class="page" id="pg-defender">
+  <div class="sec-hdr"><div class="sec-title">🛡 MICROSOFT DEFENDER XDR LOGS</div><span class="sec-cnt" id="cnt-defender">20 sources</span></div>
+  <div class="sec-sub">Endpoint, identity, email, and cloud app telemetry from the Defender suite. All queryable via Advanced Hunting KQL in security.microsoft.com.</div>
+  <div class="search-row"><input class="s-input" type="text" placeholder="Search Defender logs…" oninput="filterSection(this,'defender')"></div>
+  <div style="background:rgba(255,140,0,0.05);border:1px solid rgba(255,140,0,0.2);border-radius:4px;padding:12px 16px;margin-bottom:18px;font-size:12px;color:var(--text-dim);">
+    <span style="font-family:'Orbitron',monospace;font-size:10px;color:var(--orange);letter-spacing:1.5px;">DEFENDER LICENSE MAP: </span>
+    <strong style="color:var(--text)">MDE P1</strong> = Device inventory, basic EDR, AV, firewall. No Advanced Hunting. &nbsp;|&nbsp;
+    <strong style="color:var(--text)">MDE P2</strong> = Full EDR, Advanced Hunting (30d), Live Response, Threat Analytics. &nbsp;|&nbsp;
+    <strong style="color:var(--text)">MDO P1</strong> = Safe Attachments, Safe Links, anti-phishing, real-time detections. &nbsp;|&nbsp;
+    <strong style="color:var(--text)">MDO P2</strong> = Threat Explorer, Attack Simulator, Campaign Views, full Advanced Hunting email tables. &nbsp;|&nbsp;
+    <strong style="color:var(--text)">MDI</strong> = On-prem AD sensor, identity timeline, lateral movement paths. &nbsp;|&nbsp;
+    <strong style="color:var(--text)">MDCA</strong> = CASB, cloud app discovery, OAuth governance, CloudAppEvents. &nbsp;|&nbsp;
+    <strong style="color:var(--text)">E5 Security</strong> = MDE P2 + MDO P2 + MDI + MDCA bundled.
+  </div>
+  <div class="cat-grid" id="grid-defender">
+
+    <div class="cat-card" style="--accent-color:#ff8c00">
+      <div class="cat-hdr"><div class="cat-icon">💻</div><div><div class="cat-name">MDE — Endpoint Advanced Hunting</div><div class="cat-desc">Requires Microsoft Defender for Endpoint P2</div></div></div>
+      <div class="cat-body">
+        <div class="log-item" onclick="xlog(this)" data-requires="mde-p2">
+          <div class="log-item-top"><div class="log-name">DeviceProcessEvents</div><div class="log-badges"><span class="b b-on">Default (P2)</span><span class="b b-mde">MDE P2</span><span class="b b-crit">Critical</span><span class="dfir-flag">DFIR</span></div></div>
+          <div class="log-desc">Every process creation event — name, full command line, parent process, SHA256, signer. Most powerful single endpoint DFIR table.
+            <div class="det-grid">
+              <div class="det-cell"><div class="det-lbl">KQL Table</div><div class="det-val mono">DeviceProcessEvents</div></div>
+              <div class="det-cell"><div class="det-lbl">Retention</div><div class="det-val">30 days in Advanced Hunting portal</div></div>
+              <div class="det-cell"><div class="det-lbl">Key Fields</div><div class="det-val">DeviceName, ProcessCommandLine, InitiatingProcessCommandLine, SHA256, AccountName</div></div>
+              <div class="det-cell"><div class="det-lbl">Threat Signals</div><div class="det-val">LOLBins (mshta, regsvr32, certutil), encoded PowerShell, LSASS access, renamed system binaries</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="log-item" onclick="xlog(this)" data-requires="mde-p2">
+          <div class="log-item-top"><div class="log-name">DeviceNetworkEvents</div><div class="log-badges"><span class="b b-on">Default (P2)</span><span class="b b-mde">MDE P2</span><span class="b b-crit">Critical</span><span class="dfir-flag">DFIR</span></div></div>
+          <div class="log-desc">Network connections from endpoints linked to initiating process. C2 communications, DNS resolutions, lateral movement.
+            <div class="det-grid">
+              <div class="det-cell"><div class="det-lbl">KQL Table</div><div class="det-val mono">DeviceNetworkEvents</div></div>
+              <div class="det-cell"><div class="det-lbl">Threat Signals</div><div class="det-val">Beaconing pattern, Cobalt Strike ports (443/80/8080), DNS over HTTPS, connections to paste sites</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="log-item" onclick="xlog(this)" data-requires="mde-p2">
+          <div class="log-item-top"><div class="log-name">DeviceFileEvents</div><div class="log-badges"><span class="b b-on">Default (P2)</span><span class="b b-mde">MDE P2</span><span class="b b-high">High</span><span class="dfir-flag">DFIR</span></div></div>
+          <div class="log-desc">File create/modify/delete/rename events. Detects ransomware staging, dropper creation, and data staging.
+            <div class="det-grid"><div class="det-cell"><div class="det-lbl">KQL Table</div><div class="det-val mono">DeviceFileEvents</div></div></div>
+          </div>
+        </div>
+
+        <div class="log-item" onclick="xlog(this)" data-requires="mde-p2">
+          <div class="log-item-top"><div class="log-name">DeviceRegistryEvents</div><div class="log-badges"><span class="b b-on">Default (P2)</span><span class="b b-mde">MDE P2</span><span class="b b-high">High</span><span class="dfir-flag">DFIR</span></div></div>
+          <div class="log-desc">Registry key and value changes. Critical for detecting persistence mechanisms and credential theft configuration.
+            <div class="det-grid"><div class="det-cell"><div class="det-lbl">KQL Table</div><div class="det-val mono">DeviceRegistryEvents</div></div></div>
+          </div>
+        </div>
+
+        <div class="log-item" onclick="xlog(this)" data-requires="mde-p2">
+          <div class="log-item-top"><div class="log-name">DeviceLogonEvents</div><div class="log-badges"><span class="b b-on">Default (P2)</span><span class="b b-mde">MDE P2</span><span class="b b-crit">Critical</span><span class="dfir-flag">DFIR</span></div></div>
+          <div class="log-desc">Endpoint logon/logoff events. Essential for lateral movement tracking and Pass-the-Hash detection.
+            <div class="det-grid">
+              <div class="det-cell"><div class="det-lbl">KQL Table</div><div class="det-val mono">DeviceLogonEvents</div></div>
+              <div class="det-cell"><div class="det-lbl">Threat Signals</div><div class="det-val">Network logon type 3 from many sources, NTLM on modern system, RDP from unusual source</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="log-item" onclick="xlog(this)" data-requires="mde-p2">
+          <div class="log-item-top"><div class="log-name">DeviceEvents (Miscellaneous)</div><div class="log-badges"><span class="b b-on">Default (P2)</span><span class="b b-mde">MDE P2</span><span class="b b-high">High</span><span class="dfir-flag">DFIR</span></div></div>
+          <div class="log-desc">ASR rule events, Exploit Guard triggers, PowerShell script block logging, WMI activity, AV detections, USB events.
+            <div class="det-grid"><div class="det-cell"><div class="det-lbl">KQL Table</div><div class="det-val mono">DeviceEvents</div></div></div>
+          </div>
+        </div>
+
+        <div class="log-item" onclick="xlog(this)" data-requires="mde-p2">
+          <div class="log-item-top"><div class="log-name">DeviceImageLoadEvents</div><div class="log-badges"><span class="b b-on">Default (P2)</span><span class="b b-mde">MDE P2</span><span class="b b-high">High</span><span class="dfir-flag">DFIR</span></div></div>
+          <div class="log-desc">DLL/driver load events. Detects DLL side-loading, reflective injection, and malicious driver loading.
+            <div class="det-grid"><div class="det-cell"><div class="det-lbl">KQL Table</div><div class="det-val mono">DeviceImageLoadEvents</div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cat-card" style="--accent-color:#ff5050">
+      <div class="cat-hdr"><div class="cat-icon">🏛</div><div><div class="cat-name">MDI — Identity & Active Directory</div><div class="cat-desc">On-prem + hybrid identity telemetry</div></div></div>
+      <div class="cat-body">
+        <div class="log-item" onclick="xlog(this)" data-requires="mdi">
+          <div class="log-item-top"><div class="log-name">IdentityLogonEvents</div><div class="log-badges"><span class="b b-on">Default (MDI)</span><span class="b b-mde">MDI Required</span><span class="b b-crit">Critical</span><span class="dfir-flag">DFIR</span></div></div>
+          <div class="log-desc">On-prem AD auth events: Kerberos TGT/TGS, NTLM, LDAP. Pass-the-Hash, Kerberoasting, Golden Ticket.
+            <div class="det-grid"><div class="det-cell"><div class="det-lbl">KQL Table</div><div class="det-val mono">IdentityLogonEvents</div></div></div>
+          </div>
+        </div>
+
+        <div class="log-item" onclick="xlog(this)" data-requires="mdi">
+          <div class="log-item-top"><div class="log-name">IdentityDirectoryEvents</div><div class="log-badges"><span class="b b-on">Default (MDI)</span><span class="b b-mde">MDI Required</span><span class="b b-high">High</span><span class="dfir-flag">DFIR</span></div></div>
+          <div class="log-desc">On-prem AD object changes: user/group changes, GPO modifications, trust changes.
+            <div class="det-grid"><div class="det-cell"><div class="det-lbl">KQL Table</div><div class="det-val mono">IdentityDirectoryEvents</div></div></div>
+          </div>
+        </div>
+
+        <div class="log-item" onclick="xlog(this)" data-requires="mdi">
+          <div class="log-item-top"><div class="log-name">IdentityQueryEvents</div><div class="log-badges"><span class="b b-on">Default (MDI)</span><span class="b b-mde">MDI Required</span><span class="b b-high">High</span><span class="dfir-flag">DFIR</span></div></div>
+          <div class="log-desc">LDAP and DNS queries. Reconnaissance activity: bulk LDAP, SPN enumeration, computer account discovery.
+            <div class="det-grid"><div class="det-cell"><div class="det-lbl">KQL Table</div><div class="det-val mono">IdentityQueryEvents</div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cat-card" style="--accent-color:#e83e8c">
+      <div class="cat-hdr"><div class="cat-icon">📨</div><div><div class="cat-name">MDO — Email & Collaboration Telemetry</div><div class="cat-desc">Defender for Office 365 P1 / P2</div></div></div>
+      <div class="cat-body">
+        <div class="log-item" onclick="xlog(this)" data-requires="mdo-p1">
+          <div class="log-item-top"><div class="log-name">EmailEvents</div><div class="log-badges"><span class="b b-on">Default (MDO)</span><span class="b b-mdo">MDO P1/P2</span><span class="b b-crit">Critical</span><span class="dfir-flag">DFIR</span></div></div>
+          <div class="log-desc">All email processing: delivery decisions, quarantine, ZAP events, Defender verdicts. Full phishing chain reconstruction.
+            <div class="det-grid">
+              <div class="det-cell"><div class="det-lbl">KQL Table</div><div class="det-val mono">EmailEvents</div></div>
+              <div class="det-cell"><div class="det-lbl">Key Fields</div><div class="det-val">SenderFromAddress, ThreatTypes, DetectionMethods, DeliveryAction, NetworkMessageId</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="log-item" onclick="xlog(this)" data-requires="mdo-p1">
+          <div class="log-item-top"><div class="log-name">EmailAttachmentInfo</div><div class="log-badges"><span class="b b-on">Default (MDO)</span><span class="b b-mdo">MDO P1/P2</span><span class="b b-high">High</span><span class="dfir-flag">DFIR</span></div></div>
+          <div class="log-desc">Email attachment metadata: filename, SHA256, malware family, Safe Attachments verdict.
+            <div class="det-grid"><div class="det-cell"><div class="det-lbl">KQL Table</div><div class="det-val mono">EmailAttachmentInfo</div></div></div>
+          </div>
+        </div>
+
+        <div class="log-item" onclick="xlog(this)" data-requires="mdo-p1">
+          <div class="log-item-top"><div class="log-name">UrlClickEvents</div><div class="log-badges"><span class="b b-on">Default (MDO)</span><span class="b b-mdo">MDO P1/P2</span><span class="b b-high">High</span><span class="dfir-flag">DFIR</span></div></div>
+          <div class="log-desc">Safe Links URL click events: URL clicked, verdict, allowed/blocked, user agent, redirect hops.
+            <div class="det-grid"><div class="det-cell"><div class="det-lbl">KQL Table</div><div class="det-val mono">UrlClickEvents</div></div></div>
+          </div>
+        </div>
+
+        <div class="log-item" onclick="xlog(this)" data-requires="mdo-p2">
+          <div class="log-item-top"><div class="log-name">EmailPostDeliveryEvents</div><div class="log-badges"><span class="b b-on">Default (MDO P2)</span><span class="b b-mdo">MDO P2</span><span class="b b-high">High</span><span class="dfir-flag">DFIR</span></div></div>
+          <div class="log-desc">Post-delivery actions: ZAP, admin manual remediation, AIR actions. Full email lifecycle tracking.
+            <div class="det-grid"><div class="det-cell"><div class="det-lbl">KQL Table</div><div class="det-val mono">EmailPostDeliveryEvents</div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cat-card" style="--accent-color:#8a4fff">
+      <div class="cat-hdr"><div class="cat-icon">☁</div><div><div class="cat-name">MDCA — Cloud App Security (CASB)</div><div class="cat-desc">Microsoft Defender for Cloud Apps</div></div></div>
+      <div class="cat-body">
+        <div class="log-item" onclick="xlog(this)" data-requires="mdca">
+          <div class="log-item-top"><div class="log-name">CloudAppEvents</div><div class="log-badges"><span class="b b-on">Default (MDCA)</span><span class="b b-mde">MDCA Required</span><span class="b b-crit">Critical</span><span class="dfir-flag">DFIR</span></div></div>
+          <div class="log-desc">Activity from 1000+ connected cloud apps. OAuth app governance, session controls, multi-cloud visibility (AWS, GCP, Salesforce, GitHub).
+            <div class="det-grid">
+              <div class="det-cell"><div class="det-lbl">KQL Table</div><div class="det-val mono">CloudAppEvents</div></div>
+              <div class="det-cell"><div class="det-lbl">DFIR Use</div><div class="det-val">OAuth app abuse, impossible travel across apps, shadow IT, token replay from different IP</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cat-card" style="--accent-color:#20c080">
+      <div class="cat-hdr"><div class="cat-icon">🏰</div><div><div class="cat-name">Defender for Cloud (MDFC)</div><div class="cat-desc">Azure/multicloud CSPM and workload protection</div></div></div>
+      <div class="cat-body">
+        <div class="log-item" onclick="xlog(this)" data-requires="mdfc">
+          <div class="log-item-top"><div class="log-name">Defender for Cloud Security Alerts</div><div class="log-badges"><span class="b b-on">Free tier partial</span><span class="b b-mde">MDFC Plans</span><span class="b b-high">High</span><span class="dfir-flag">DFIR</span></div></div>
+          <div class="log-desc">Threat detection from Defender for Servers, Storage, Key Vault, SQL, Containers, App Service, DNS, and ARM.
+            <div class="det-grid">
+              <div class="det-cell"><div class="det-lbl">LA Table</div><div class="det-val mono">SecurityAlert (ProductName = "Microsoft Defender for Cloud")</div></div>
+              <div class="det-cell"><div class="det-lbl">DFIR Value</div><div class="det-val">Crypto mining on VMs, malicious PowerShell, anomalous secret access, SQL injection, container escape</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     SENTINEL
+══════════════════════════════════════════ -->
+<div class="page" id="pg-sentinel">
+  <div class="sec-hdr"><div class="sec-title">🔭 MICROSOFT SENTINEL</div><span class="sec-cnt" id="cnt-sentinel">9 key source types</span></div>
+  <div class="sec-sub">Sentinel is the SIEM/SOAR layer — ingests all the above plus third-party data. Understanding its native tables is essential for advanced cloud investigations.</div>
+  <div class="cat-grid" id="grid-sentinel">
+
+    <div class="cat-card" style="--accent-color:#b44fff">
+      <div class="cat-hdr"><div class="cat-icon">⚡</div><div><div class="cat-name">Core Investigation Tables</div><div class="cat-desc">Always available once Sentinel is deployed</div></div></div>
+      <div class="cat-body">
+        <div class="log-item" onclick="xlog(this)" data-requires="sentinel">
+          <div class="log-item-top"><div class="log-name">SecurityAlert</div><div class="log-badges"><span class="b b-on">Default</span><span class="b b-sent">Sentinel</span><span class="b b-crit">Critical</span><span class="dfir-flag">DFIR</span></div></div>
+          <div class="log-desc">All alerts from all connected sources aggregated in Sentinel. Foundation of incident triage.
+            <div class="det-grid"><div class="det-cell"><div class="det-lbl">KQL Table</div><div class="det-val mono">SecurityAlert</div></div></div>
+          </div>
+        </div>
+
+        <div class="log-item" onclick="xlog(this)" data-requires="sentinel">
+          <div class="log-item-top"><div class="log-name">SecurityIncident</div><div class="log-badges"><span class="b b-on">Default</span><span class="b b-sent">Sentinel</span><span class="b b-crit">Critical</span><span class="dfir-flag">DFIR</span></div></div>
+          <div class="log-desc">Sentinel incidents — correlated alerts with enriched context. Incident lifecycle, MITRE mapping, linked entities. Core case management table.
+            <div class="det-grid"><div class="det-cell"><div class="det-lbl">KQL Table</div><div class="det-val mono">SecurityIncident</div></div></div>
+          </div>
+        </div>
+
+        <div class="log-item" onclick="xlog(this)" data-requires="sentinel">
+          <div class="log-item-top"><div class="log-name">BehaviorAnalytics / UEBA Tables</div><div class="log-badges"><span class="b b-off">Requires UEBA enable</span><span class="b b-sent">Sentinel</span><span class="b b-high">High</span><span class="dfir-flag">DFIR</span></div></div>
+          <div class="log-desc">ML-based peer group analysis and anomaly scoring. Surfaces users behaving abnormally relative to baseline.
+            <div class="det-grid">
+              <div class="det-cell"><div class="det-lbl">KQL Tables</div><div class="det-val mono">BehaviorAnalytics, UserAccessAnalytics, UserPeerAnalytics, IdentityInfo</div></div>
+              <div class="det-cell"><div class="det-lbl">Enable via</div><div class="det-val mono">Sentinel → Settings → Entity Behavior (UEBA)</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="log-item" onclick="xlog(this)" data-requires="sentinel">
+          <div class="log-item-top"><div class="log-name">ThreatIntelligenceIndicator</div><div class="log-badges"><span class="b b-off">Requires TI connector</span><span class="b b-sent">Sentinel</span><span class="b b-high">High</span></div></div>
+          <div class="log-desc">IOCs from MDTI, TAXII 2.0 feeds, STIX, or custom upload. Enables TI-matching analytics.
+            <div class="det-grid"><div class="det-cell"><div class="det-lbl">KQL Table</div><div class="det-val mono">ThreatIntelligenceIndicator</div></div></div>
+          </div>
+        </div>
+
+        <div class="log-item" onclick="xlog(this)" data-requires="sentinel">
+          <div class="log-item-top"><div class="log-name">Watchlist</div><div class="log-badges"><span class="b b-on">Built-in</span><span class="b b-sent">Sentinel</span><span class="b b-med">Medium</span></div></div>
+          <div class="log-desc">Custom reference lookup tables joinable in KQL. VIP users, sensitive assets, authorized IPs, known-bad domains.
+            <div class="det-grid"><div class="det-cell"><div class="det-lbl">KQL Usage</div><div class="det-val mono">let vips = _GetWatchlist('VIPUsers');</div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cat-card" style="--accent-color:#7c4dff">
+      <div class="cat-hdr"><div class="cat-icon">🔌</div><div><div class="cat-name">Free Ingestion Connectors</div><div class="cat-desc">No per-GB ingestion cost for these tables</div></div></div>
+      <div class="cat-body">
+        <div class="log-item" onclick="xlog(this)" data-requires="sentinel-free">
+          <div class="log-item-top"><div class="log-name">Sentinel Free Data Connectors</div><div class="log-badges"><span class="b b-free">Free Ingestion</span><span class="b b-sent">Sentinel</span><span class="b b-crit">Critical</span><span class="dfir-flag">DFIR</span></div></div>
+          <div class="log-desc">Microsoft provides free data ingestion for specific tables via Sentinel data connectors.
+            <div class="det-grid">
+              <div class="det-cell"><div class="det-lbl">Free Tables</div><div class="det-val mono">AzureActivity, AuditLogs, SigninLogs, AADNonInteractiveUserSignInLogs, OfficeActivity, SecurityAlert, SecurityIncident, BehaviorAnalytics</div></div>
+              <div class="det-cell"><div class="det-lbl">Defender XDR Free Tables</div><div class="det-val mono">DeviceProcessEvents, DeviceNetworkEvents, DeviceFileEvents, EmailEvents, CloudAppEvents, IdentityLogonEvents + all AH tables</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     PURVIEW
+══════════════════════════════════════════ -->
+<div class="page" id="pg-purview">
+  <div class="sec-hdr"><div class="sec-title">🔒 MICROSOFT PURVIEW — COMPLIANCE & GOVERNANCE LOGS</div><span class="sec-cnt" id="cnt-purview">11 sources</span></div>
+  <div class="sec-sub">Microsoft Purview provides compliance, data governance, eDiscovery, information protection, and insider risk capabilities. These logs are critical for legal hold, regulatory investigations, data classification, and insider threat programmes.</div>
+
+  <div style="background:rgba(0,200,212,0.05);border:1px solid rgba(0,200,212,0.2);border-radius:4px;padding:12px 16px;margin-bottom:18px;font-size:12px;color:var(--text-dim);">
+    <span style="font-family:'Orbitron',monospace;font-size:10px;color:var(--purview);letter-spacing:1.5px;">PURVIEW LICENSE MAP: </span>
+    <strong style="color:var(--text)">M365 E3 (Compliance std)</strong> = Compliance Portal access, Content Search, eDiscovery Standard, basic DLP, UAL (90d), sensitivity labels (manual). &nbsp;|&nbsp;
+    <strong style="color:var(--text)">E5 Compliance</strong> = eDiscovery Premium, Advanced Audit (180d UAL, MailItemsAccessed), IRM, Communication Compliance, Info Protection P2 (auto-labeling), DLP advanced. &nbsp;|&nbsp;
+    <strong style="color:var(--text)">Info Protection P1</strong> = Sensitivity labels, AIP scanner (manual classification). &nbsp;|&nbsp;
+    <strong style="color:var(--text)">Info Protection P2</strong> = Auto-classification, exact data match (EDM), trainable classifiers. &nbsp;|&nbsp;
+    <strong style="color:var(--text)">Insider Risk</strong> = IRM alerts, policy engine, user risk scores, sequence detection. &nbsp;|&nbsp;
+    <strong style="color:var(--text)">eDiscovery Premium</strong> = Custodian management, review sets, analytics, predictive coding, export with metadata.
+  </div>
+
+  <div class="search-row"><input class="s-input" type="text" placeholder="Search Purview logs…" oninput="filterSection(this,'purview')"></div>
+  <div class="cat-grid" id="grid-purview">
+
+    <!-- AUDIT & UAL -->
+    <div class="cat-card" style="--accent-color:#00c8d4">
+      <div class="cat-hdr"><div class="cat-icon">🔎</div><div><div class="cat-name">Purview Audit</div><div class="cat-desc">Unified Audit Log — the Purview entry point</div></div></div>
+      <div class="cat-body">
+        <div class="log-item" onclick="xlog(this)" data-requires="purview-std">
+          <div class="log-item-top"><div class="log-name">Unified Audit Log (Purview Audit Standard)</div><div class="log-badges"><span class="b b-on">Default ON</span><span class="b b-purview">Purview Std</span><span class="b b-crit">Critical</span><span class="dfir-flag">DFIR</span></div></div>
+          <div class="log-desc">Purview Audit Standard is the compliance portal access point for the Unified Audit Log. Includes 90-day retention, 140+ workload-specific record types, and basic search capabilities.
+            <div class="det-grid">
+              <div class="det-cell"><div class="det-lbl">License</div><div class="det-val">Included with M365 E3, E5, Business Premium, F3</div></div>
+              <div class="det-cell"><div class="det-lbl">Portal</div><div class="det-val mono">Microsoft Purview → Audit → New Search</div></div>
+              <div class="det-cell"><div class="det-lbl">PowerShell</div><div class="det-val mono">Search-UnifiedAuditLog</div></div>
+              <div class="det-cell"><div class="det-lbl">Retention</div><div class="det-val">90 days (Standard)</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="log-item" onclick="xlog(this)" data-requires="purview-adaudit">
+          <div class="log-item-top"><div class="log-name">Purview Audit Premium (Advanced Audit)</div><div class="log-badges"><span class="b b-off">Premium Required</span><span class="b b-purview">E5 Compliance / Adv Audit</span><span class="b b-crit">Critical</span><span class="dfir-flag">DFIR</span></div></div>
+          <div class="log-desc">Extends UAL with 180-day default retention, 1-year audit log retention add-on, and unlocks high-value forensic events not available in Standard: MailItemsAccessed, Send, SearchQueryInitiatedExchange/SharePoint, and more.
+            <div class="det-grid">
+              <div class="det-cell"><div class="det-lbl">License</div><div class="det-val">M365 E5, M365 E5 Compliance, or Microsoft Purview Audit (Premium) add-on per user</div></div>
+              <div class="det-cell"><div class="det-lbl">Premium Events</div><div class="det-val">MailItemsAccessed, Send, SearchQueryInitiatedExchange, SearchQueryInitiatedSharePoint, ManagedByDelegate</div></div>
+              <div class="det-cell"><div class="det-lbl">Retention</div><div class="det-val">180 days default. Add Audit Log Retention Policy for 1-year or 10-year per user</div></div>
+              <div class="det-cell"><div class="det-lbl">Bandwidth</div><div class="det-val">Higher API bandwidth for Search-UnifiedAuditLog (10k result limit per call vs 5k standard)</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- eDISCOVERY -->
+    <div class="cat-card" style="--accent-color:#00aab8">
+      <div class="cat-hdr"><div class="cat-icon">🔬</div><div><div class="cat-name">eDiscovery</div><div class="cat-desc">Content Search, eDiscovery Standard & Premium</div></div></div>
+      <div class="cat-body">
+        <div class="log-item" onclick="xlog(this)" data-requires="purview-std">
+          <div class="log-item-top"><div class="log-name">Content Search & eDiscovery Standard</div><div class="log-badges"><span class="b b-on">Included E3+</span><span class="b b-purview">Purview Std</span><span class="b b-high">High</span><span class="dfir-flag">DFIR</span></div></div>
+          <div class="log-desc">Search Exchange mailboxes, SharePoint sites, OneDrive accounts, Teams messages, and Yammer simultaneously. Export results. Place content on Hold to preserve evidence during IR. Teams chat is stored in user and group mailboxes — Content Search is the primary retrieval mechanism.
+            <div class="det-grid">
+              <div class="det-cell"><div class="det-lbl">License</div><div class="det-val">M365 E3+ (E3 gets eDiscovery Standard only)</div></div>
+              <div class="det-cell"><div class="det-lbl">Portal</div><div class="det-val mono">Microsoft Purview → eDiscovery → Standard → New case</div></div>
+              <div class="det-cell"><div class="det-lbl">Legal Hold</div><div class="det-val">In-Place Hold preserves content even if user deletes. Holds override retention policies.</div></div>
+              <div class="det-cell"><div class="det-lbl">PowerShell</div><div class="det-val mono">New-ComplianceSearch, Start-ComplianceSearch, Get-ComplianceSearchAction</div></div>
+              <div class="det-cell"><div class="det-lbl">DFIR Use</div><div class="det-val">Retrieve Teams chat content, recover deleted emails, bulk preserve affected user mailboxes, search for IOC keywords across all content</div></div>
+              <div class="det-cell"><div class="det-lbl">Scope</div><div class="det-val">Exchange Online, SharePoint, OneDrive, Teams (via mailbox), Yammer, Loop components</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="log-item" onclick="xlog(this)" data-requires="purview-edprem">
+          <div class="log-item-top"><div class="log-name">eDiscovery Premium (Advanced eDiscovery)</div><div class="log-badges"><span class="b b-off">Premium Required</span><span class="b b-purview">eDiscovery Premium</span><span class="b b-high">High</span><span class="dfir-flag">DFIR</span></div></div>
+          <div class="log-desc">Enterprise-grade eDiscovery with custodian management, review sets, conversation threading, near-duplicate detection, email threading, predictive coding (ML relevance ranking), and metadata-rich exports. Required for large-scale M&A, regulatory, litigation, or complex IR investigations.
+            <div class="det-grid">
+              <div class="det-cell"><div class="det-lbl">License</div><div class="det-val">M365 E5, M365 E5 Compliance, or eDiscovery Premium add-on</div></div>
+              <div class="det-cell"><div class="det-lbl">Key Features</div><div class="det-val">Custodian management (legal holds on people, not just locations), Review Sets (offline copy), Conversation threading, Near-dupe detection, Predictive coding, Load sets</div></div>
+              <div class="det-cell"><div class="det-lbl">Portal</div><div class="det-val mono">Microsoft Purview → eDiscovery → Premium → New case</div></div>
+              <div class="det-cell"><div class="det-lbl">Export</div><div class="det-val">PST, individual messages, original files + metadata load file (Concordance, Summation formats)</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DLP -->
+    <div class="cat-card" style="--accent-color:#0090a8">
+      <div class="cat-hdr"><div class="cat-icon">🛡</div><div><div class="cat-name">Data Loss Prevention</div><div class="cat-desc">DLP policy match events and alerts</div></div></div>
+      <div class="cat-body">
+        <div class="log-item" onclick="xlog(this)" data-requires="purview-std">
+          <div class="log-item-top"><div class="log-name">DLP Policy Match Events</div><div class="log-badges"><span class="b b-on">Default in UAL</span><span class="b b-purview">Purview Std</span><span class="b b-high">High</span><span class="dfir-flag">DFIR</span></div></div>
+          <div class="log-desc">Records when DLP policies detect sensitive information — credit cards, SSNs, health data, credentials — in Exchange, SharePoint, OneDrive, Teams, Endpoint, and Power BI. Critical for data exfiltration investigations and regulatory compliance monitoring.
+            <div class="det-grid">
+              <div class="det-cell"><div class="det-lbl">UAL RecordType</div><div class="det-val mono">DLPRuleMatch, ComplianceDLPSharePoint, ComplianceDLPExchange</div></div>
+              <div class="det-cell"><div class="det-lbl">Sentinel Table</div><div class="det-val mono">OfficeActivity (RecordType = "DLPRuleMatch")</div></div>
+              <div class="det-cell"><div class="det-lbl">Key Fields</div><div class="det-val">PolicyName, RuleName, SensitiveInfoTypeName, Count, Confidence, UserKey, ObjectId (location), Workload</div></div>
+              <div class="det-cell"><div class="det-lbl">Portal</div><div class="det-val mono">Purview → Data Loss Prevention → Alerts / Activity Explorer</div></div>
+              <div class="det-cell"><div class="det-lbl">DFIR Use</div><div class="det-val">Identify users exfiltrating sensitive files, detect credential leakage in email/Teams, correlate with SharePoint download events</div></div>
+              <div class="det-cell"><div class="det-lbl">Endpoint DLP</div><div class="det-val">Requires MDE P2 + Endpoint DLP policy. Covers USB copy, print, clipboard, browser upload, and cloud app upload of sensitive data</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- INFORMATION PROTECTION -->
+    <div class="cat-card" style="--accent-color:#007a88">
+      <div class="cat-hdr"><div class="cat-icon">🏷</div><div><div class="cat-name">Information Protection</div><div class="cat-desc">Sensitivity labels, MIP, encryption audit</div></div></div>
+      <div class="cat-body">
+        <div class="log-item" onclick="xlog(this)" data-requires="purview-ip1">
+          <div class="log-item-top"><div class="log-name">Sensitivity Label Activity</div><div class="log-badges"><span class="b b-on">In UAL</span><span class="b b-purview">Info Prot P1</span><span class="b b-high">High</span><span class="dfir-flag">DFIR</span></div></div>
+          <div class="log-desc">Tracks application, modification, and removal of sensitivity labels on emails and files. Detects downgrading of labels (a key insider threat indicator), label bypasses, and unauthorized declassification of confidential content.
+            <div class="det-grid">
+              <div class="det-cell"><div class="det-lbl">License</div><div class="det-val">M365 E3 (manual labels), Info Protection P1 (AIP client labels), Info Protection P2 (auto-labeling)</div></div>
+              <div class="det-cell"><div class="det-lbl">UAL RecordType</div><div class="det-val mono">MIPLabel (sensitivity label events)</div></div>
+              <div class="det-cell"><div class="det-lbl">Key Operations</div><div class="det-val">FileSensitivityLabelApplied, FileSensitivityLabelChanged, FileSensitivityLabelRemoved, EmailApplyLabel, LabelDowngraded</div></div>
+              <div class="det-cell"><div class="det-lbl">Threat Signals</div><div class="det-val">Label downgrade (Confidential → Public) on sensitive file before external share, bulk label removal, label applied to large data set before sync/download</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="log-item" onclick="xlog(this)" data-requires="purview-ip2">
+          <div class="log-item-top"><div class="log-name">Auto-Labeling & Trainable Classifier Activity</div><div class="log-badges"><span class="b b-off">P2 Required</span><span class="b b-purview">Info Prot P2</span><span class="b b-med">Medium</span></div></div>
+          <div class="log-desc">Audit events for auto-labeling policy recommendations, simulation results, and trainable classifier detection matches. Used to tune classification accuracy and audit coverage gaps.
+            <div class="det-grid">
+              <div class="det-cell"><div class="det-lbl">License</div><div class="det-val">Microsoft Purview Information Protection P2 or M365 E5 Compliance</div></div>
+              <div class="det-cell"><div class="det-lbl">Portal</div><div class="det-val mono">Purview → Information Protection → Auto-labeling</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- INSIDER RISK -->
+    <div class="cat-card" style="--accent-color:#006b78">
+      <div class="cat-hdr"><div class="cat-icon">🕵</div><div><div class="cat-name">Insider Risk Management</div><div class="cat-desc">IRM alerts, user risk scores, sequence detection</div></div></div>
+      <div class="cat-body">
+        <div class="log-item" onclick="xlog(this)" data-requires="purview-irm">
+          <div class="log-item-top"><div class="log-name">Insider Risk Management Alerts & Cases</div><div class="log-badges"><span class="b b-off">IRM Required</span><span class="b b-purview">Insider Risk</span><span class="b b-high">High</span><span class="dfir-flag">DFIR</span></div></div>
+          <div class="log-desc">ML-powered insider threat detection. Correlates file downloads, USB copies, browser uploads, print events, Teams messages, email to personal addresses, anomalous access, and HR data (resignation signals) into user risk scores. Policy types include: Data theft by departing user, Data leaks, Security policy violations, Risky browser usage, and Patient data misuse (healthcare).
+            <div class="det-grid">
+              <div class="det-cell"><div class="det-lbl">License</div><div class="det-val">M365 E5 Compliance, or Microsoft Purview Insider Risk Management add-on</div></div>
+              <div class="det-cell"><div class="det-lbl">Portal</div><div class="det-val mono">Microsoft Purview → Insider Risk Management → Alerts / Cases</div></div>
+              <div class="det-cell"><div class="det-lbl">Key Features</div><div class="det-val">Risk activity timelines, sequence detection (activity chain analysis), content explorer (view actual files involved), HR connector for resignation/PIP/termination signals, anonymized investigation mode</div></div>
+              <div class="det-cell"><div class="det-lbl">Integrations</div><div class="det-val">Connects to MDE Endpoint DLP, UAL, SharePoint/OneDrive activity, Teams DLP, HR connectors (SAP, Workday, custom CSV)</div></div>
+              <div class="det-cell"><div class="det-lbl">DFIR Use</div><div class="det-val">Departing employee data theft (correlate resignation date with bulk download), contractor exfiltration, security violation investigation, escalation path to eDiscovery Premium</div></div>
+              <div class="det-cell"><div class="det-lbl">Privacy Note</div><div class="det-val">IRM has privacy controls: anonymization mode (shows aliases vs names), role-based access, and analyst vs investigator roles</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- COMMUNICATION COMPLIANCE -->
+    <div class="cat-card" style="--accent-color:#005c68">
+      <div class="cat-hdr"><div class="cat-icon">📢</div><div><div class="cat-name">Communication Compliance</div><div class="cat-desc">Policy violations in Teams, Exchange, Viva Engage</div></div></div>
+      <div class="cat-body">
+        <div class="log-item" onclick="xlog(this)" data-requires="purview-e5c">
+          <div class="log-item-top"><div class="log-name">Communication Compliance Policy Matches</div><div class="log-badges"><span class="b b-off">E5 Compliance Required</span><span class="b b-purview">E5 Compliance</span><span class="b b-med">Medium</span></div></div>
+          <div class="log-desc">Captures policy violations in Teams, Exchange, Yammer, Skype for Business, and third-party messaging platforms. Policies detect: offensive language, sensitive information disclosure, regulatory violations, conflicts of interest, and custom keyword patterns. Supports capture of text, images, and video in Teams.
+            <div class="det-grid">
+              <div class="det-cell"><div class="det-lbl">License</div><div class="det-val">M365 E5 Compliance or Microsoft Purview Communication Compliance add-on</div></div>
+              <div class="det-cell"><div class="det-lbl">Portal</div><div class="det-val mono">Microsoft Purview → Communication Compliance → Policies / Alerts</div></div>
+              <div class="det-cell"><div class="det-lbl">Use Cases</div><div class="det-val">Regulatory (FINRA, SEC supervision), Harassment/Code of Conduct, IP protection, Insider threat (keywords like "resignation", "competitor", "delete evidence")</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DATA LIFECYCLE -->
+    <div class="cat-card" style="--accent-color:#004a54">
+      <div class="cat-hdr"><div class="cat-icon">📦</div><div><div class="cat-name">Data Lifecycle Management</div><div class="cat-desc">Retention policies, records management, disposition</div></div></div>
+      <div class="cat-body">
+        <div class="log-item" onclick="xlog(this)" data-requires="purview-std">
+          <div class="log-item-top"><div class="log-name">Retention Policy & Label Activity</div><div class="log-badges"><span class="b b-on">Included E3+</span><span class="b b-purview">Purview Std</span><span class="b b-med">Medium</span></div></div>
+          <div class="log-desc">Audit events for retention label application, policy matches, and disposition reviews. Critical for understanding what data is being retained vs deleted, and ensuring legal hold integrity during IR (retention policies interact with holds).
+            <div class="det-grid">
+              <div class="det-cell"><div class="det-lbl">UAL RecordType</div><div class="det-val mono">RetentionPolicyMatch, ComplianceRetentionLabel</div></div>
+              <div class="det-cell"><div class="det-lbl">Portal</div><div class="det-val mono">Purview → Data Lifecycle Management → Retention labels / Policies</div></div>
+              <div class="det-cell"><div class="det-lbl">IR Note</div><div class="det-val">Legal Hold (eDiscovery) always overrides Retention Delete policies. Verify hold is placed before policy deletes evidence.</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="log-item" onclick="xlog(this)" data-requires="purview-std">
+          <div class="log-item-top"><div class="log-name">Records Management — Disposition Reviews</div><div class="log-badges"><span class="b b-on">Included E3+</span><span class="b b-purview">Purview Std</span><span class="b b-med">Medium</span></div></div>
+          <div class="log-desc">Tracks completion of disposition reviews before content is permanently deleted. Logs reviewer approvals, rejections, and relabeling decisions. Provides evidence of controlled destruction for regulatory compliance.
+            <div class="det-grid">
+              <div class="det-cell"><div class="det-lbl">Portal</div><div class="det-val mono">Purview → Records Management → Disposition</div></div>
+              <div class="det-cell"><div class="det-lbl">Audit Location</div><div class="det-val mono">UAL: RecordType = ComplianceRetentionLabel, Operation = "Disposition reviewed"</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     RETENTION
+══════════════════════════════════════════ -->
+<div class="page" id="pg-retention">
+  <div class="sec-hdr"><div class="sec-title">📅 LOG RETENTION REFERENCE</div></div>
+  <div class="sec-sub">Default retention periods, maximum retention options, and extension methods. Critical knowledge for DFIR — understanding what may already be gone before you begin.</div>
+
+  <table class="ret-table" id="ret-main-table">
+    <thead>
+      <tr>
+        <th>Log Source</th>
+        <th>Default Retention</th>
+        <th>Maximum Retention</th>
+        <th>How to Extend</th>
+        <th>License Required</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr data-scope="free"><td><span class="mono">Azure Activity Log (AzureActivity)</span></td><td>90 days (free in portal)</td><td>7+ years</td><td>Monitor → Diagnostic Settings → Log Analytics or Storage</td><td>Free</td></tr>
+      <tr data-scope="entra-p1"><td><span class="mono">Entra Sign-In Logs (portal)</span></td><td>7 days (Free) / 30 days (P1/P2)</td><td>Unlimited (via LA)</td><td>Entra ID → Diagnostic Settings → Log Analytics. Requires P1.</td><td>Entra P1 for LA export</td></tr>
+      <tr data-scope="entra-p1"><td><span class="mono">Entra Audit Logs (portal)</span></td><td>7 days (Free) / 30 days (P1/P2)</td><td>Unlimited (via LA)</td><td>Same as sign-in logs</td><td>Entra P1 for LA export</td></tr>
+      <tr data-scope="purview-std"><td><span class="mono">Unified Audit Log — Standard</span></td><td>90 days (E3 / Business Premium)</td><td>90 days (Standard)</td><td>Upgrade to Advanced Audit or Purview E5 Compliance add-on</td><td>M365 E3 / Business Premium</td></tr>
+      <tr data-scope="purview-adaudit"><td><span class="mono">Unified Audit Log — Advanced Audit</span></td><td>180 days</td><td>10 years (10-yr SKU add-on)</td><td>Purview → Audit Retention Policies. Per-user Advanced Audit license. 10-yr: Microsoft Purview Audit (Premium) 10-Year Retention.</td><td>M365 E5 / E5 Compliance / Adv Audit add-on</td></tr>
+      <tr data-scope="free"><td><span class="mono">Exchange Message Trace</span></td><td>10 days (EAC portal)</td><td>90 days (hard cap)</td><td>PowerShell: Start-HistoricalSearch. Cannot exceed 90 days in Exchange Online.</td><td>E3+ (included)</td></tr>
+      <tr data-scope="mde-p2"><td><span class="mono">MDE Advanced Hunting Tables</span></td><td>30 days</td><td>12 years (via Sentinel archive)</td><td>Enable Defender XDR → Sentinel connector (free ingestion). Configure LA archive tier.</td><td>MDE P2 + Sentinel</td></tr>
+      <tr data-scope="mdca"><td><span class="mono">MDCA / CloudAppEvents (portal)</span></td><td>30 days</td><td>Unlimited (via Sentinel)</td><td>MDCA → Sentinel connector (free ingestion)</td><td>MDCA + Sentinel</td></tr>
+      <tr data-scope="mdi"><td><span class="mono">MDI / IdentityLogonEvents (portal)</span></td><td>30 days</td><td>Unlimited (via Sentinel)</td><td>MDI → Sentinel connector (free ingestion)</td><td>MDI + Sentinel</td></tr>
+      <tr data-scope="free"><td><span class="mono">SecurityEvent / WindowsEvent (LA)</span></td><td>30 days (LA default)</td><td>12 years (archive tier)</td><td>LA Workspace → Tables → Set interactive retention + archive period</td><td>Log Analytics</td></tr>
+      <tr data-scope="free"><td><span class="mono">NSG Flow Logs</span></td><td>None (must configure destination)</td><td>365 days (storage) / Unlimited (LA)</td><td>Network Watcher → NSG Flow Logs → Storage or LA via Traffic Analytics</td><td>Network Watcher (free) + storage/LA</td></tr>
+      <tr data-scope="free"><td><span class="mono">Azure Firewall Logs</span></td><td>None</td><td>Unlimited (LA)</td><td>Azure Firewall → Diagnostic Settings → LA</td><td>Azure Firewall + LA cost</td></tr>
+      <tr data-scope="sentinel"><td><span class="mono">Sentinel (Log Analytics Workspace)</span></td><td>90 days interactive</td><td>12 years (archive tier)</td><td>LA Workspace → Tables → Retention (up to 730d interactive). Archive tier beyond 730d.</td><td>Sentinel workspace pricing</td></tr>
+    </tbody>
+  </table>
+
+  <div style="margin-top:20px;background:rgba(255,56,96,0.05);border:1px solid rgba(255,56,96,0.18);border-radius:4px;padding:14px 18px;">
+    <div style="font-family:'Orbitron',monospace;font-size:10px;color:var(--red);letter-spacing:2px;margin-bottom:8px;">⚠ CRITICAL RETENTION GAPS FOR DFIR</div>
+    <div style="font-size:13px;color:var(--text-dim);line-height:1.8;">
+      <div>▸ <strong style="color:var(--text)">No Entra P1?</strong> Sign-in logs visible for only 7 days. After that, authentication history is gone — you cannot reconstruct it.</div>
+      <div>▸ <strong style="color:var(--text)">No Advanced Audit (E5)?</strong> MailItemsAccessed is not logged at all. Cannot determine which emails were read.</div>
+      <div>▸ <strong style="color:var(--text)">No Diagnostic Settings?</strong> Key Vault, Storage, SQL, and Firewall logs evaporate immediately. Enable proactively.</div>
+      <div>▸ <strong style="color:var(--text)">MDE 30-day hard limit:</strong> Endpoint telemetry purged after 30 days. Ingest to Sentinel for longer forensic windows.</div>
+      <div>▸ <strong style="color:var(--text)">Exchange Message Trace hard cap:</strong> Cannot be extended beyond 90 days regardless of license.</div>
+      <div>▸ <strong style="color:var(--text)">Purview IRM:</strong> Insider Risk alerts only visible if IRM license is active — retrospective alerting is not possible for the unlicensed period.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     ROLES & ACCESS
+══════════════════════════════════════════ -->
+<div class="page" id="pg-roles">
+  <div class="sec-hdr"><div class="sec-title">👤 ROLES & ACCESS PERMISSIONS</div><span class="sec-cnt" id="cnt-roles">50+ roles</span></div>
+  <div class="sec-sub">Azure RBAC, Entra ID, M365, Purview, Defender XDR, and Sentinel roles covering what each grants, where it applies, and which are critical for IR (<span class="dfir-flag" style="display:inline-flex;vertical-align:middle;margin:0 3px;">DFIR</span>).</div>
+
+  <div class="stabs">
+    <button class="stab on" onclick="fRoles('all',this)">All Roles</button>
+    <button class="stab" onclick="fRoles('azure',this)">Azure RBAC</button>
+    <button class="stab" onclick="fRoles('m365',this)">M365 / Entra</button>
+    <button class="stab" onclick="fRoles('purview',this)">Purview</button>
+    <button class="stab" onclick="fRoles('defender',this)">Defender XDR</button>
+    <button class="stab" onclick="fRoles('sentinel',this)">Sentinel</button>
+    <button class="stab" onclick="fRoles('both',this)">Cross-Platform</button>
+    <button class="stab" onclick="fRoles('dfir',this)">🔶 DFIR-Critical Only</button>
+  </div>
+
+  <div class="role-grid" id="rg">
+
+    <!-- AZURE RBAC -->
+    <div class="role-card" data-scope="azure" data-dfir="yes" style="--rc:#4db3ff">
+      <div class="role-name">Reader <span class="dfir-flag">DFIR</span></div>
+      <div class="role-scope-tag rs-azure">Azure RBAC</div>
+      <div class="role-desc">Read-only access to all Azure resources within the assigned scope. The baseline role for IR analyst environment visibility without modification risk.</div>
+      <div class="role-perms"><span class="perm-tag">View all resource configs</span><span class="perm-tag">Read resource properties</span><span class="perm-tag">No write/delete/modify</span></div>
+    </div>
+
+    <div class="role-card" data-scope="azure" data-dfir="yes" style="--rc:#4db3ff">
+      <div class="role-name">Security Reader <span class="dfir-flag">DFIR</span></div>
+      <div class="role-scope-tag rs-azure">Azure RBAC</div>
+      <div class="role-desc">Read access to Defender for Cloud recommendations, alerts, policies, and Secure Score. Ideal baseline security investigation role.</div>
+      <div class="role-perms"><span class="perm-tag">View security alerts</span><span class="perm-tag">Read Defender for Cloud</span><span class="perm-tag">View security policies</span><span class="perm-tag">View vulnerability assessments</span></div>
+    </div>
+
+    <div class="role-card" data-scope="azure" data-dfir="yes" style="--rc:#4db3ff">
+      <div class="role-name">Log Analytics Reader <span class="dfir-flag">DFIR</span></div>
+      <div class="role-scope-tag rs-azure">Azure RBAC</div>
+      <div class="role-desc">Read and query all data in a Log Analytics workspace. Essential for KQL-based investigations. Assign at workspace scope.</div>
+      <div class="role-perms"><span class="perm-tag">Run KQL queries</span><span class="perm-tag">Read all workspace tables</span><span class="perm-tag">View saved queries/dashboards</span></div>
+    </div>
+
+    <div class="role-card" data-scope="azure" data-dfir="yes" style="--rc:#4db3ff">
+      <div class="role-name">Monitoring Reader <span class="dfir-flag">DFIR</span></div>
+      <div class="role-scope-tag rs-azure">Azure RBAC</div>
+      <div class="role-desc">Read all Azure Monitor data — metrics, activity logs, alerts, diagnostic settings configs. Important for understanding current logging posture during IR.</div>
+      <div class="role-perms"><span class="perm-tag">Read metrics</span><span class="perm-tag">View activity logs</span><span class="perm-tag">Read diagnostic settings (not modify)</span></div>
+    </div>
+
+    <div class="role-card" data-scope="azure" data-dfir="yes" style="--rc:#4db3ff">
+      <div class="role-name">Virtual Machine Contributor (scoped) <span class="dfir-flag">DFIR</span></div>
+      <div class="role-scope-tag rs-azure">Azure RBAC</div>
+      <div class="role-desc">Stop/start VMs, capture disk snapshots for forensic imaging, run scripts via RunCommand. Required for live response and forensic acquisition. Always scope to specific VMs under investigation.</div>
+      <div class="role-perms"><span class="perm-tag">Stop/start/restart VMs</span><span class="perm-tag">Capture disk snapshots</span><span class="perm-tag">Run scripts (RunCommand)</span><span class="perm-tag">Attach/detach managed disks</span></div>
+    </div>
+
+    <div class="role-card" data-scope="azure" style="--rc:#4db3ff">
+      <div class="role-name">Monitoring Contributor (scoped)</div>
+      <div class="role-scope-tag rs-azure">Azure RBAC</div>
+      <div class="role-desc">Create Diagnostic Settings, alert rules, and action groups. Used during IR to quickly enable missing diagnostic settings on Azure resources.</div>
+      <div class="role-perms"><span class="perm-tag">Create/modify Diagnostic Settings</span><span class="perm-tag">Create alert rules</span><span class="perm-tag">Manage action groups</span></div>
+    </div>
+
+    <div class="role-card" data-scope="azure" style="--rc:#4db3ff">
+      <div class="role-name">Owner (Break-Glass only)</div>
+      <div class="role-scope-tag rs-azure">Azure RBAC — Highest Privilege</div>
+      <div class="role-desc">Full control including role assignment management. Break-glass only — must be PIM-protected with MFA and approval workflow.</div>
+      <div class="role-perms"><span class="perm-tag">All Azure actions</span><span class="perm-tag">Assign roles</span><span class="perm-tag perm-warn">⚠ Break-glass ONLY</span></div>
+    </div>
+
+    <!-- M365 / ENTRA -->
+    <div class="role-card" data-scope="m365" data-dfir="yes" style="--rc:#00b4ff">
+      <div class="role-name">Global Reader <span class="dfir-flag">DFIR</span></div>
+      <div class="role-scope-tag rs-m365">M365 / Entra ID</div>
+      <div class="role-desc">Read-only equivalent of Global Administrator. View all M365 admin settings, users, groups, CA policies, app registrations. The safest comprehensive read-only IR role for M365.</div>
+      <div class="role-perms"><span class="perm-tag">View all M365 admin settings</span><span class="perm-tag">Read all user/group properties</span><span class="perm-tag">View CA policies</span><span class="perm-tag">Read app registrations</span></div>
+    </div>
+
+    <div class="role-card" data-scope="m365" data-dfir="yes" style="--rc:#00b4ff">
+      <div class="role-name">Security Reader (Entra / M365) <span class="dfir-flag">DFIR</span></div>
+      <div class="role-scope-tag rs-m365">M365 / Entra ID</div>
+      <div class="role-desc">Read access to all security features in M365 Defender, Entra Identity Protection, risky users/sign-ins, Secure Score, audit/sign-in logs.</div>
+      <div class="role-perms"><span class="perm-tag">View Identity Protection</span><span class="perm-tag">Read Defender alerts</span><span class="perm-tag">View audit and sign-in logs</span><span class="perm-tag">Read CA policies (no modify)</span></div>
+    </div>
+
+    <div class="role-card" data-scope="m365" data-dfir="yes" style="--rc:#00b4ff">
+      <div class="role-name">Exchange Administrator <span class="dfir-flag">DFIR</span></div>
+      <div class="role-scope-tag rs-m365">M365 / Exchange Online</div>
+      <div class="role-desc">Full Exchange management — message traces, inbox rule auditing, transport rules, mailbox delegation. Required for email forensics in BEC investigations.</div>
+      <div class="role-perms"><span class="perm-tag">Run message traces</span><span class="perm-tag">View mailbox properties</span><span class="perm-tag">View/modify inbox rules</span><span class="perm-tag">Manage mailbox audit settings</span></div>
+    </div>
+
+    <div class="role-card" data-scope="m365" data-dfir="yes" style="--rc:#00b4ff">
+      <div class="role-name">Authentication Administrator <span class="dfir-flag">DFIR</span></div>
+      <div class="role-scope-tag rs-m365">Entra ID</div>
+      <div class="role-desc">Reset MFA, revoke all active sign-in sessions, and modify authentication methods for non-privileged users. Critical for IR account remediation.</div>
+      <div class="role-perms"><span class="perm-tag">Reset MFA (non-admin)</span><span class="perm-tag">Revoke sign-in sessions</span><span class="perm-tag">Issue Temporary Access Pass</span><span class="perm-tag">Manage FIDO2</span></div>
+    </div>
+
+    <div class="role-card" data-scope="m365" data-dfir="yes" style="--rc:#00b4ff">
+      <div class="role-name">Privileged Authentication Administrator <span class="dfir-flag">DFIR</span></div>
+      <div class="role-scope-tag rs-m365">Entra ID — Sensitive</div>
+      <div class="role-desc">Like Authentication Administrator but can also reset MFA for Global Admins. Required when remediating a compromised admin account. PIM-only, time-bound.</div>
+      <div class="role-perms"><span class="perm-tag">Reset MFA for ALL users incl. admins</span><span class="perm-tag">Revoke admin sessions</span><span class="perm-tag perm-warn">⚠ Can affect Global Admins</span></div>
+    </div>
+
+    <div class="role-card" data-scope="m365" data-dfir="yes" style="--rc:#00b4ff">
+      <div class="role-name">Security Administrator <span class="dfir-flag">DFIR</span></div>
+      <div class="role-scope-tag rs-m365">M365 / Entra ID — Elevated</div>
+      <div class="role-desc">Can modify Conditional Access policies, configure Defender XDR, manage security alerts, block user sign-ins, and manage Identity Protection policies.</div>
+      <div class="role-perms"><span class="perm-tag">Modify CA policies</span><span class="perm-tag">Configure Defender settings</span><span class="perm-tag">Block user sign-ins</span><span class="perm-tag">Manage Identity Protection</span></div>
+    </div>
+
+    <div class="role-card" data-scope="m365" style="--rc:#00b4ff">
+      <div class="role-name">User Administrator</div>
+      <div class="role-scope-tag rs-m365">Entra ID</div>
+      <div class="role-desc">Create, modify, delete non-admin users and groups. Reset non-admin passwords. Disable compromised accounts during IR.</div>
+      <div class="role-perms"><span class="perm-tag">Create/delete users</span><span class="perm-tag">Reset non-admin passwords</span><span class="perm-tag">Disable user accounts</span><span class="perm-tag">Manage user licenses</span></div>
+    </div>
+
+    <div class="role-card" data-scope="m365" style="--rc:#00b4ff">
+      <div class="role-name">Application Administrator</div>
+      <div class="role-scope-tag rs-m365">Entra ID</div>
+      <div class="role-desc">Manage app registrations. Add/remove secrets and certificates. Revoke malicious OAuth app access. Remove attacker-added credentials from app registrations.</div>
+      <div class="role-perms"><span class="perm-tag">Manage app registrations</span><span class="perm-tag">Add/remove client secrets</span><span class="perm-tag">Grant/revoke app consents</span></div>
+    </div>
+
+    <!-- PURVIEW ROLES -->
+    <div class="role-card" data-scope="purview" data-dfir="yes" style="--rc:#00c8d4">
+      <div class="role-name">Compliance Administrator <span class="dfir-flag">DFIR</span></div>
+      <div class="role-scope-tag rs-purview">Microsoft Purview</div>
+      <div class="role-desc">Full Purview compliance management — Content Search, eDiscovery (Standard and Premium), Legal Hold, Audit search, DLP, Information Governance, Records Management. Required for retrieving Teams chat content, placing Legal Holds, exporting UAL, and running eDiscovery searches during IR.</div>
+      <div class="role-perms"><span class="perm-tag">Run Content Search</span><span class="perm-tag">Manage eDiscovery cases</span><span class="perm-tag">Place Legal Holds</span><span class="perm-tag">Export content (emails/files/Teams)</span><span class="perm-tag">Search Unified Audit Log</span><span class="perm-tag">Manage DLP policies</span></div>
+    </div>
+
+    <div class="role-card" data-scope="purview" data-dfir="yes" style="--rc:#00c8d4">
+      <div class="role-name">Audit Logs Administrator / Manager <span class="dfir-flag">DFIR</span></div>
+      <div class="role-scope-tag rs-purview">Microsoft Purview</div>
+      <div class="role-desc">Scoped permission to search and export the Unified Audit Log without full Compliance Administrator access. Assign to analysts who need UAL access only.</div>
+      <div class="role-perms"><span class="perm-tag">Search-UnifiedAuditLog</span><span class="perm-tag">Purview Audit Search (portal)</span><span class="perm-tag">Export audit records</span><span class="perm-tag">Configure audit retention policies</span></div>
+    </div>
+
+    <div class="role-card" data-scope="purview" data-dfir="yes" style="--rc:#00c8d4">
+      <div class="role-name">eDiscovery Administrator <span class="dfir-flag">DFIR</span></div>
+      <div class="role-scope-tag rs-purview">Microsoft Purview</div>
+      <div class="role-desc">Access and manage ALL eDiscovery cases across the organisation (unlike eDiscovery Manager who only sees own cases). Search all mailboxes, sites, Teams. Place organisation-wide holds. Critical for comprehensive forensic collection spanning multiple users.</div>
+      <div class="role-perms"><span class="perm-tag">Access all eDiscovery cases</span><span class="perm-tag">Search all mailboxes/sites</span><span class="perm-tag">Place org-wide holds</span><span class="perm-tag">Export investigation content</span></div>
+    </div>
+
+    <div class="role-card" data-scope="purview" style="--rc:#00c8d4">
+      <div class="role-name">Insider Risk Management Analyst</div>
+      <div class="role-scope-tag rs-purview">Microsoft Purview</div>
+      <div class="role-desc">View and investigate IRM alerts and cases. Access user activity timelines, risk indicators, and policy match evidence. Cannot create or modify IRM policies.</div>
+      <div class="role-perms"><span class="perm-tag">View IRM alerts/cases</span><span class="perm-tag">View user activity timelines</span><span class="perm-tag">Access risk indicators</span><span class="perm-tag">Cannot modify IRM policies</span></div>
+    </div>
+
+    <div class="role-card" data-scope="purview" style="--rc:#00c8d4">
+      <div class="role-name">Information Protection Administrator</div>
+      <div class="role-scope-tag rs-purview">Microsoft Purview</div>
+      <div class="role-desc">Create and manage sensitivity labels, label policies, and auto-labeling policies. Configure encryption, content marking, and access controls applied by labels. Required for managing the classification framework.</div>
+      <div class="role-perms"><span class="perm-tag">Create/manage sensitivity labels</span><span class="perm-tag">Configure label policies</span><span class="perm-tag">Manage auto-labeling</span><span class="perm-tag">Configure label encryption settings</span></div>
+    </div>
+
+    <div class="role-card" data-scope="purview" style="--rc:#00c8d4">
+      <div class="role-name">DLP Compliance Management</div>
+      <div class="role-scope-tag rs-purview">Microsoft Purview</div>
+      <div class="role-desc">Create, modify, and delete DLP policies. View DLP alerts and reports. Manage DLP incidents. Required for tuning data loss prevention policies and investigating DLP-related incidents.</div>
+      <div class="role-perms"><span class="perm-tag">Create/modify DLP policies</span><span class="perm-tag">View DLP alerts</span><span class="perm-tag">Manage DLP incidents</span><span class="perm-tag">View Activity Explorer</span></div>
+    </div>
+
+    <!-- DEFENDER XDR -->
+    <div class="role-card" data-scope="defender" data-dfir="yes" style="--rc:#ff8c00">
+      <div class="role-name">Security Operator (Defender XDR) <span class="dfir-flag">DFIR</span></div>
+      <div class="role-scope-tag rs-def">Defender XDR</div>
+      <div class="role-desc">Manage alerts and incidents, run Advanced Hunting (read/write), initiate live response, isolate devices, collect investigation packages. Primary active IR role in Defender XDR.</div>
+      <div class="role-perms"><span class="perm-tag">Manage alerts/incidents</span><span class="perm-tag">Advanced Hunting (read/write)</span><span class="perm-tag">Live Response (basic)</span><span class="perm-tag">Isolate devices</span><span class="perm-tag">Collect investigation package</span></div>
+    </div>
+
+    <div class="role-card" data-scope="defender" data-dfir="yes" style="--rc:#ff8c00">
+      <div class="role-name">Security Reader (Defender XDR) <span class="dfir-flag">DFIR</span></div>
+      <div class="role-scope-tag rs-def">Defender XDR</div>
+      <div class="role-desc">Read-only in security.microsoft.com. View all alerts, incidents, Advanced Hunting results (read-only), device inventory, email threat data.</div>
+      <div class="role-perms"><span class="perm-tag">View all alerts/incidents</span><span class="perm-tag">Run Advanced Hunting (read-only)</span><span class="perm-tag">View device inventory</span><span class="perm-tag">View Threat Analytics</span></div>
+    </div>
+
+    <div class="role-card" data-scope="defender" data-dfir="yes" style="--rc:#ff8c00">
+      <div class="role-name">MDE Live Response — Advanced <span class="dfir-flag">DFIR</span></div>
+      <div class="role-scope-tag rs-def">Defender for Endpoint — Custom RBAC</div>
+      <div class="role-desc">Explicitly required (MDE custom RBAC) for advanced Live Response — running unsigned scripts, uploading/downloading files, full PowerShell sessions on compromised endpoints.</div>
+      <div class="role-perms"><span class="perm-tag">Full Live Response shell</span><span class="perm-tag">Run unsigned scripts</span><span class="perm-tag">Upload/download files</span><span class="perm-tag">Collect forensic packages</span></div>
+    </div>
+
+    <div class="role-card" data-scope="defender" data-dfir="yes" style="--rc:#ff8c00">
+      <div class="role-name">Cloud App Security Admin (MDCA) <span class="dfir-flag">DFIR</span></div>
+      <div class="role-scope-tag rs-def">Defender for Cloud Apps</div>
+      <div class="role-desc">Full MDCA portal access. Review cloud app activity, revoke OAuth consent, block users/apps, investigate anomalies. Critical for OAuth abuse and multi-cloud compromise investigations.</div>
+      <div class="role-perms"><span class="perm-tag">View all CASB activity logs</span><span class="perm-tag">Revoke OAuth app consent</span><span class="perm-tag">Block cloud app access</span><span class="perm-tag">Export activity logs</span></div>
+    </div>
+
+    <div class="role-card" data-scope="defender" data-dfir="yes" style="--rc:#ff8c00">
+      <div class="role-name">MDI Security Admin <span class="dfir-flag">DFIR</span></div>
+      <div class="role-scope-tag rs-def">Defender for Identity</div>
+      <div class="role-desc">Access MDI identity attack timelines, lateral movement paths, sensor health, suspicious activity alerts. Critical for AD attack investigation in hybrid environments.</div>
+      <div class="role-perms"><span class="perm-tag">View identity attack timeline</span><span class="perm-tag">Manage MDI sensors</span><span class="perm-tag">View lateral movement paths</span><span class="perm-tag">View AD entity profiles</span></div>
+    </div>
+
+    <!-- SENTINEL -->
+    <div class="role-card" data-scope="sentinel" data-dfir="yes" style="--rc:#b44fff">
+      <div class="role-name">Microsoft Sentinel Reader <span class="dfir-flag">DFIR</span></div>
+      <div class="role-scope-tag rs-sent">Microsoft Sentinel</div>
+      <div class="role-desc">Read-only Sentinel access. View incidents, alerts, workbooks, analytics rules, TI data, UEBA. Run KQL queries (requires Log Analytics Reader on workspace too).</div>
+      <div class="role-perms"><span class="perm-tag">View incidents/alerts</span><span class="perm-tag">Run KQL queries</span><span class="perm-tag">View analytics rules</span><span class="perm-tag">View workbooks/watchlists/UEBA</span></div>
+    </div>
+
+    <div class="role-card" data-scope="sentinel" data-dfir="yes" style="--rc:#b44fff">
+      <div class="role-name">Microsoft Sentinel Responder <span class="dfir-flag">DFIR</span></div>
+      <div class="role-scope-tag rs-sent">Microsoft Sentinel</div>
+      <div class="role-desc">Manage incidents (assign, change status, add comments), run playbooks. Standard active IR analyst role — work incidents, add investigation notes, trigger automated response.</div>
+      <div class="role-perms"><span class="perm-tag">Manage incidents</span><span class="perm-tag">Add comments/bookmarks</span><span class="perm-tag">Run Sentinel playbooks</span><span class="perm-tag">Add entity tags</span></div>
+    </div>
+
+    <div class="role-card" data-scope="sentinel" style="--rc:#b44fff">
+      <div class="role-name">Microsoft Sentinel Contributor</div>
+      <div class="role-scope-tag rs-sent">Microsoft Sentinel</div>
+      <div class="role-desc">Full Sentinel management — analytics rules, workbooks, hunting queries, watchlists, playbooks, data connectors. Senior analyst and engineer role.</div>
+      <div class="role-perms"><span class="perm-tag">Create/modify analytics rules</span><span class="perm-tag">Manage data connectors</span><span class="perm-tag">Create workbooks/watchlists</span><span class="perm-tag">Deploy/manage playbooks</span></div>
+    </div>
+
+    <!-- CROSS-PLATFORM -->
+    <div class="role-card" data-scope="both" data-dfir="yes" style="--rc:#00ff9d">
+      <div class="role-name">Global Administrator (Break-Glass Only) <span class="dfir-flag">DFIR</span></div>
+      <div class="role-scope-tag rs-both">M365 / Entra ID — Maximum Privilege</div>
+      <div class="role-desc">Full control over all M365 services and Entra ID. Break-glass emergency account only — permanently assigned Global Admin is a critical security risk. PIM + MFA + approval required.</div>
+      <div class="role-perms"><span class="perm-tag">All M365 admin actions</span><span class="perm-tag">Assign any role</span><span class="perm-tag perm-warn">⚠ Break-glass ONLY</span></div>
+    </div>
+
+    <div class="role-card" data-scope="both" data-dfir="yes" style="--rc:#00ff9d">
+      <div class="role-name">Conditional Access Administrator <span class="dfir-flag">DFIR</span></div>
+      <div class="role-scope-tag rs-both">Entra ID</div>
+      <div class="role-desc">Create and manage CA policies. During IR: block sign-ins from specific countries, require MFA for all users, block legacy authentication, or block a compromised user immediately.</div>
+      <div class="role-perms"><span class="perm-tag">Create/modify CA policies</span><span class="perm-tag">Block sign-ins by condition</span><span class="perm-tag">Enforce MFA requirements</span><span class="perm-tag">Block legacy authentication</span></div>
+    </div>
+
+  </div>
+</div>
+
+</main>
+
+<!-- ══════════════════════════════════════════
+     EXECUTIVE SUMMARY MODAL
+══════════════════════════════════════════ -->
+<div class="exec-overlay" id="exec-overlay">
+  <div class="exec-modal" id="exec-modal">
+    <div class="exec-modal-header">
+      <div class="exec-modal-title">⬡ EXECUTIVE SUMMARY — MICROSOFT DEFENSIVE CLOUD ATLAS</div>
+      <button class="exec-print-btn" onclick="window.print()">🖨 Print / Save PDF</button>
+      <button class="exec-modal-close" onclick="closeExecSummary()">✕ Close</button>
+    </div>
+    <div class="exec-modal-body" id="exec-body">
+      <!-- Populated dynamically -->
+    </div>
+  </div>
+</div>
+
+<script>
+const activeLics = new Set();
+let licPanelCollapsed = false;
+
+// ── LICENSE TOGGLE (click again to deselect) ──
+// ── LICENSE DATA: which color class each toggle belongs to ──
+const LIC_COLOR = {
+  // Microsoft 365 Enterprise
+  'm365-f1':'am365','m365-f3':'am365','m365-e3':'am365','m365-e5':'am365',
+  // Microsoft 365 Business
+  'biz-basic':'am365','biz-std':'am365','m365-bp':'am365',
+  // Office 365
+  'o365-e1':'am365','o365-e3':'am365','o365-e5':'am365',
+  // Defender XDR
+  'mde-p1':'adefender','mde-p2':'adefender','mdo-p1':'adefender','mdo-p2':'adefender',
+  'mdi':'adefender','mdca':'adefender','mde5s':'adefender','mdfc':'adefender',
+  // Sentinel
+  'sentinel':'asentinel','sentinel-free':'asentinel',
+  // Azure / Entra
+  'az-free':'aazure','entra-p1':'aazure','entra-p2':'aazure',
+  // Purview
+  'purview-std':'apurview','purview-e5c':'apurview','purview-adaudit':'apurview',
+  'purview-ip1':'apurview','purview-ip2':'apurview','purview-irm':'apurview','purview-edprem':'apurview'
+};
+// All included states use one unified amber class — clearly different from selected colours
+const INC_CLASS = 'included';
+
+// ── BUNDLE MAP: selecting X highlights these as included ──
+// Sources: Microsoft Service Descriptions, M365 Maps, official licensing docs (Mar 2026)
+const BUNDLE_MAP = {
+  // ── Microsoft 365 Frontline ──
+  // F1: basic Exchange/Teams only, Azure AD Free, no MDE, no Entra P1
+  'm365-f1':    ['az-free'],
+  // F3: F1 + Windows E3 (limited), Entra P1, EOP only (no MDO P1), Purview standard
+  'm365-f3':    ['m365-f1','az-free','entra-p1','purview-std'],
+
+  // ── Microsoft 365 Enterprise ──
+  // E3: Windows E3 + Office E3 + Entra P1 + Intune + MDE P1 + AIP P1 (=MIP P1)
+  //     Does NOT include MDO P1 (Exchange Online P2 only includes EOP)
+  'm365-e3':    ['m365-f1','az-free','entra-p1','mde-p1','purview-std','purview-ip1'],
+  // E5: E3 + Entra P2 + MDE P2 + MDO P2(incl P1) + MDI + MDCA + E5 Security bundle
+  //     + full Purview E5 (Advanced Audit, E5 Compliance, IP P2, IRM, eDiscovery Premium)
+  'm365-e5':    ['m365-f1','m365-e3','az-free','entra-p1','entra-p2',
+                 'mde-p1','mde-p2','mdo-p1','mdo-p2','mdi','mdca','mde5s',
+                 'purview-std','purview-ip1','purview-ip2','purview-adaudit',
+                 'purview-e5c','purview-irm','purview-edprem'],
+
+  // ── Microsoft 365 Business ──
+  // Basic: Exchange Online P1, SharePoint P1, Teams. Audit Standard only. No MDE, no Entra P1.
+  'biz-basic':  ['az-free','purview-std'],
+  // Standard: Basic + desktop apps. Same security posture as Basic.
+  'biz-std':    ['az-free','purview-std'],
+  // Premium: Standard + Entra P1 + MDE P1 + Intune + AIP P1 (MIP P1)
+  'm365-bp':    ['az-free','entra-p1','mde-p1','purview-std','purview-ip1'],
+
+  // ── Office 365 ──
+  // E1: Exchange Online P1, SharePoint P1, Teams. Audit Standard, Content Search. No MDE.
+  'o365-e1':    ['az-free','purview-std'],
+  // E3: Exchange Online P2, SharePoint P2, Teams. Audit Standard, eDiscovery Standard. No MDE, no MDO P1.
+  'o365-e3':    ['az-free','purview-std'],
+  // E5: E3 + MDO P2 (incl P1) + Advanced Audit + eDiscovery Premium + Phone System
+  'o365-e5':    ['az-free','purview-std','mdo-p1','mdo-p2','purview-adaudit','purview-edprem'],
+
+  // ── Defender XDR ──
+  // MDE P2 includes P1
+  'mde-p2':     ['mde-p1'],
+  // MDO P2 includes P1
+  'mdo-p2':     ['mdo-p1'],
+  // M365 E5 Security bundle: MDE P2 + MDO P2 + MDI + MDCA
+  'mde5s':      ['mde-p1','mde-p2','mdo-p1','mdo-p2','mdi','mdca'],
+
+  // ── Azure / Entra ──
+  'entra-p1':   ['az-free'],
+  'entra-p2':   ['entra-p1','az-free'],
+
+  // ── Microsoft Purview ──
+  // Advanced Audit includes Standard
+  'purview-adaudit': ['purview-std'],
+  // IP P2 includes IP P1 + Standard
+  'purview-ip2':     ['purview-ip1','purview-std'],
+  // IRM requires Standard
+  'purview-irm':     ['purview-std'],
+  // eDiscovery Premium includes Standard
+  'purview-edprem':  ['purview-std'],
+  // E5 Compliance bundle: Adv Audit + IP P1 + IP P2 + IRM + eDiscovery Premium + Comm Compliance
+  'purview-e5c':     ['purview-std','purview-adaudit','purview-ip1','purview-ip2',
+                      'purview-irm','purview-edprem'],
+
+  // ── Sentinel ──
+  // Free Connectors = Sentinel workspace already required
+  'sentinel-free': ['sentinel']
+};
+
+function toggleL(id) {
+  if (activeLics.has(id)) {
+    activeLics.delete(id);
+  } else {
+    activeLics.add(id);
+  }
+  updateAllToggleStates();
+  updateActiveLicCount();
+  applyLics();
+}
+
+// Build set of all unlocked IDs (directly selected + bundled)
+function buildUnlocked() {
+  const u = new Set(['free']);
+  activeLics.forEach(id => {
+    u.add(id);
+    (BUNDLE_MAP[id] || []).forEach(dep => u.add(dep));
+  });
+  // az-free is always available (Azure portal free tier)
+  u.add('az-free');
+  return u;
+}
+
+// Build set of IDs that are included via bundle but NOT directly selected
+function buildIncluded() {
+  const u = buildUnlocked();
+  const inc = new Set();
+  u.forEach(id => { if (!activeLics.has(id) && id !== 'free') inc.add(id); });
+  return inc;
+}
+
+// Update all toggle visual states
+function updateAllToggleStates() {
+  const included = buildIncluded();
+  Object.keys(LIC_COLOR).forEach(id => {
+    const el = document.getElementById('lt-' + id);
+    if (!el) return;
+    if (activeLics.has(id)) {
+      el.className = 'lic-toggle ' + LIC_COLOR[id];
+    } else if (included.has(id)) {
+      el.className = 'lic-toggle ' + INC_CLASS;
+    } else {
+      el.className = 'lic-toggle';
+    }
+  });
+}
+
+function updateActiveLicCount() {
+  const el = document.getElementById('lic-active-count');
+  const inc = buildIncluded().size;
+  if (el) el.textContent = activeLics.size + ' selected · ' + inc + ' included';
+}
+
+function clearAllLics() {
+  activeLics.clear();
+  document.querySelectorAll('.lic-toggle').forEach(el => { el.className = 'lic-toggle'; });
+  const cnt = document.getElementById('lic-active-count');
+  if (cnt) cnt.textContent = '0 selected · 0 included';
+  applyLics();
+}
+
+function toggleLicPanel() {
+  const grid = document.getElementById('lic-groups');
+  const btn = document.getElementById('lic-collapse-btn');
+  licPanelCollapsed = !licPanelCollapsed;
+  grid.classList.toggle('collapsed', licPanelCollapsed);
+  btn.textContent = licPanelCollapsed ? '▼ Expand' : '▲ Collapse';
+}
+
+// ── BUILD UNLOCKED SET (kept for applyLics compatibility) ──
+function applyLics() {
+  const noFilter = activeLics.size === 0;
+  const u = noFilter ? null : buildUnlocked();
+
+  document.querySelectorAll('.log-item').forEach(el => {
+    if (noFilter) { el.classList.remove('unavail'); return; }
+    const req = el.dataset.requires;
+    if (!req || u.has(req)) {
+      el.classList.remove('unavail');
+    } else {
+      el.classList.add('unavail');
+      el.classList.remove('exp');
+      const d = el.querySelector('.log-desc'); if (d) d.style.display = 'none';
+    }
+  });
+
+  updateOverview(u, noFilter);
+  updateLicenseStat();
+}
+
+function updateLicenseStat() {
+  const el = document.getElementById('stat-licenses');
+  const lbl = document.getElementById('stat-licenses-label');
+  const total = buildUnlocked().size - 1; // subtract 'free'
+  if (el) animateCount(el, total, '');
+  if (lbl) lbl.textContent = activeLics.size > 0 ? activeLics.size + ' selected + ' + buildIncluded().size + ' included' : 'Licenses Active';
+}
+
+// ── ANIMATED COUNTER ──
+function animateCount(el, targetVal, suffix) {
+  const start = parseInt(el.textContent) || 0;
+  el.classList.remove('pop');
+  void el.offsetWidth;
+  el.classList.add('pop');
+  if (start === targetVal) { el.textContent = targetVal + (suffix || ''); return; }
+  const dur = 400;
+  const startTime = performance.now();
+  function step(now) {
+    const pct = Math.min((now - startTime) / dur, 1);
+    const ease = 1 - Math.pow(1 - pct, 3);
+    el.textContent = Math.round(start + (targetVal - start) * ease) + (suffix || '');
+    if (pct < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+// ── UPDATE OVERVIEW STATS ──
+function updateOverview(u, noFilter) {
+  const sections = [
+    { grid:'grid-azure',    countId:'mn-azure',    barId:'mnb-azure',    total:14 },
+    { grid:'grid-entra',    countId:'mn-entra',    barId:'mnb-entra',    total:12 },
+    { grid:'grid-m365',     countId:'mn-m365',     barId:'mnb-m365',     total:14 },
+    { grid:'grid-defender', countId:'mn-defender', barId:'mnb-defender', total:20 },
+    { grid:'grid-sentinel', countId:'mn-sentinel', barId:'mnb-sentinel', total:9  },
+    { grid:'grid-purview',  countId:'mn-purview',  barId:'mnb-purview',  total:11 },
+  ];
+
+  let totalAvail = 0;
+
+  sections.forEach(s => {
+    const grid = document.getElementById(s.grid);
+    if (!grid) return;
+    const allItems = grid.querySelectorAll('.log-item');
+    let avail;
+    if (noFilter) {
+      avail = allItems.length;
+    } else {
+      avail = [...allItems].filter(item => {
+        const req = item.dataset.requires;
+        return !req || u.has(req);
+      }).length;
+    }
+    totalAvail += avail;
+
+    const cEl = document.getElementById(s.countId);
+    if (cEl) {
+      if (noFilter) {
+        cEl.textContent = s.total + ' sources';
+        cEl.style.color = '';
+      } else {
+        const locked = allItems.length - avail;
+        if (locked === 0) {
+          cEl.innerHTML = avail + ' <span style="font-size:10px;color:var(--green)">✓ all available</span>';
+        } else {
+          cEl.innerHTML = avail + '/' + allItems.length + ' <span style="font-size:10px;color:var(--red)">(' + locked + ' locked)</span>';
+        }
+      }
+    }
+
+    const barEl = document.getElementById(s.barId);
+    if (barEl) {
+      const pct = Math.round((avail / (allItems.length || 1)) * 100);
+      barEl.style.width = pct + '%';
+      if (noFilter) { barEl.style.background = ''; }
+      else if (pct === 100) { barEl.style.background = 'var(--green)'; }
+      else if (pct >= 50)   { barEl.style.background = 'var(--orange)'; }
+      else                  { barEl.style.background = 'var(--red)'; }
+    }
+
+    // Update section count badge
+    const cntEl = document.getElementById('cnt-' + s.grid.replace('grid-', ''));
+    if (cntEl && !noFilter) {
+      const locked = allItems.length - avail;
+      cntEl.textContent = avail + '/' + allItems.length + ' sources' + (locked ? ' (' + locked + ' locked)' : '');
+    } else if (cntEl && noFilter) {
+      cntEl.textContent = s.total + ' sources';
+    }
+  });
+
+  // Retention entries
+  const retEl = document.getElementById('mn-retention');
+  const retRows = document.querySelectorAll('.ret-table tbody tr');
+  if (retEl) retEl.textContent = retRows.length + ' entries';
+
+  // Roles
+  const allRoles = document.querySelectorAll('.role-card');
+  const rolesEl = document.getElementById('mn-roles');
+  if (rolesEl) rolesEl.textContent = allRoles.length + '+ roles';
+
+  // Stat boxes
+  const srcEl = document.getElementById('stat-sources');
+  if (srcEl) {
+    if (noFilter) animateCount(srcEl, 75, '+');
+    else animateCount(srcEl, totalAvail, '');
+  }
+
+  const catEl = document.getElementById('stat-categories');
+  if (catEl) {
+    if (noFilter) { animateCount(catEl, 9, ''); }
+    else {
+      let activeCats = 0;
+      sections.forEach(s => {
+        const grid = document.getElementById(s.grid);
+        if (!grid) return;
+        const avail = [...grid.querySelectorAll('.log-item')].filter(item => {
+          const req = item.dataset.requires; return !req || u.has(req);
+        }).length;
+        if (avail > 0) activeCats++;
+      });
+      activeCats += 2; // retention + roles always count
+      animateCount(catEl, activeCats, '');
+    }
+  }
+
+  const rolesStatEl = document.getElementById('stat-roles');
+  if (rolesStatEl) animateCount(rolesStatEl, allRoles.length, '+');
+
+  const retStatEl = document.getElementById('stat-retention');
+  if (retStatEl) animateCount(retStatEl, retRows.length, '');
+}
+
+// ── NAVIGATION ──
+function nav(id, btn) {
+  document.querySelectorAll('.page').forEach(p => { p.classList.remove('on'); p.style.display = 'none'; });
+  const pg = document.getElementById('pg-' + id);
+  if (pg) { pg.style.display = 'block'; setTimeout(() => pg.classList.add('on'), 10); }
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  else {
+    document.querySelectorAll('.nav-btn').forEach(b => {
+      if (b.getAttribute('onclick') && b.getAttribute('onclick').includes("'" + id + "'")) b.classList.add('active');
+    });
+  }
+  window.scrollTo(0, 0);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
+  const pg = document.getElementById('pg-overview');
+  pg.style.display = 'block'; pg.classList.add('on');
+  updateOverview(null, true);
+  updateActiveLicCount();
+});
+
+// ── LOG EXPAND ──
+function xlog(el) {
+  if (el.classList.contains('unavail')) return;
+  const was = el.classList.contains('exp');
+  el.parentElement.querySelectorAll('.log-item.exp').forEach(e => {
+    e.classList.remove('exp');
+    const d = e.querySelector('.log-desc'); if (d) d.style.display = 'none';
+  });
+  if (!was) {
+    el.classList.add('exp');
+    const d = el.querySelector('.log-desc'); if (d) d.style.display = 'block';
+  }
+}
+
+// ── LOG SEARCH ──
+function filterSection(input, gridId) {
+  const q = input.value.toLowerCase();
+  const grid = document.getElementById('grid-' + gridId);
+  if (!grid) return;
+  grid.querySelectorAll('.log-item').forEach(item => {
+    item.style.display = (!q || item.textContent.toLowerCase().includes(q)) ? '' : 'none';
+  });
+}
+
+// ── ROLE FILTER ──
+function fRoles(scope, btn) {
+  document.querySelectorAll('.stab').forEach(b => b.classList.remove('on'));
+  if (btn) btn.classList.add('on');
+  document.querySelectorAll('.role-card').forEach(card => {
+    if (scope === 'all') { card.style.display = ''; return; }
+    if (scope === 'dfir') { card.style.display = card.dataset.dfir === 'yes' ? '' : 'none'; return; }
+    card.style.display = card.dataset.scope === scope ? '' : 'none';
+  });
+}
+
+// ════════════════════════════════════════════════
+// EXECUTIVE SUMMARY
+// ════════════════════════════════════════════════
+
+const LIC_LABELS = {
+  'm365-f1':        { label:'M365 F1',          color:'#1565c0', group:'M365' },
+  'm365-e3':        { label:'M365 E3',           color:'#0091ea', group:'M365' },
+  'm365-e5':        { label:'M365 E5',           color:'#00b0ff', group:'M365' },
+  'm365-bp':        { label:'Business Premium',  color:'#1565c0', group:'M365' },
+  'mde-p1':         { label:'MDE P1',            color:'#ff6d00', group:'Defender' },
+  'mde-p2':         { label:'MDE P2',            color:'#ff8c00', group:'Defender' },
+  'mdo-p1':         { label:'MDO P1',            color:'#e53935', group:'Defender' },
+  'mdo-p2':         { label:'MDO P2',            color:'#ff5252', group:'Defender' },
+  'mdi':            { label:'MDI',               color:'#d50000', group:'Defender' },
+  'mdca':           { label:'MDCA',              color:'#aa00ff', group:'Defender' },
+  'mde5s':          { label:'M365 E5 Security',  color:'#ff6e40', group:'Defender' },
+  'mdfc':           { label:'Defender for Cloud',color:'#00c853', group:'Defender' },
+  'sentinel':       { label:'Sentinel',          color:'#b44fff', group:'Sentinel' },
+  'sentinel-free':  { label:'Free Connectors',   color:'#7c4dff', group:'Sentinel' },
+  'az-free':        { label:'Azure Free',        color:'#00b4ff', group:'Azure/Entra' },
+  'entra-p1':       { label:'Entra P1',          color:'#00e5ff', group:'Azure/Entra' },
+  'entra-p2':       { label:'Entra P2',          color:'#18ffff', group:'Azure/Entra' },
+  'purview-std':    { label:'Purview Compliance (E3)', color:'#00c8d4', group:'Purview' },
+  'purview-e5c':    { label:'Purview E5 Compliance',  color:'#00b8c8', group:'Purview' },
+  'purview-adaudit':{ label:'Advanced Audit',    color:'#00a8b8', group:'Purview' },
+  'purview-ip1':    { label:'Info Protection P1',color:'#0098a8', group:'Purview' },
+  'purview-ip2':    { label:'Info Protection P2',color:'#008898', group:'Purview' },
+  'purview-irm':    { label:'Insider Risk',      color:'#007888', group:'Purview' },
+  'purview-edprem': { label:'eDiscovery Premium',color:'#006878', group:'Purview' },
+};
+
+const CRITICAL_GAPS = [
+  { req:'entra-p1',      msg:'Entra sign-in logs limited to 7 days. Cannot export to Log Analytics for extended retention or full investigation.',            severity:'critical' },
+  { req:'m365-e5',       msg:'MailItemsAccessed not logged. Cannot determine which emails were read by a threat actor — BEC investigations severely limited.', severity:'critical' },
+  { req:'purview-adaudit',msg:'Advanced Audit events (MailItemsAccessed, SearchQueryInitiated) unavailable. UAL retention capped at 90 days.',               severity:'critical' },
+  { req:'mde-p2',        msg:'No Advanced Hunting capability. Endpoint telemetry (process, network, file events) is not searchable beyond basic alerts.',     severity:'high' },
+  { req:'mdi',           msg:'No on-premises AD telemetry. Cannot detect Pass-the-Hash, Kerberoasting, DCSync, or lateral movement in hybrid environments.', severity:'high' },
+  { req:'mdca',          msg:'No CASB visibility. CloudAppEvents unavailable — OAuth abuse, multi-cloud activity, and app anomalies are blind spots.',        severity:'high' },
+  { req:'entra-p2',      msg:'No Identity Protection ML detections. Risk events (impossible travel, leaked credentials, AiTM) are not surfaced.',            severity:'high' },
+  { req:'sentinel',      msg:'No centralised SIEM. Log retention limited to native per-product defaults. No cross-source correlation or UEBA.',             severity:'high' },
+  { req:'purview-irm',   msg:'No Insider Risk Management. Departing employee data theft and policy violations are not detected or alerted.',                 severity:'medium' },
+  { req:'purview-edprem',msg:'No eDiscovery Premium. Large-scale custodian management, review sets, and predictive coding unavailable for complex IR.',     severity:'medium' },
+];
+
+const DFIR_CHECKLIST = [
+  'Preserve Unified Audit Log — export to storage immediately',
+  'Collect Entra Sign-In Logs (7-day portal limit)',
+  'Verify Advanced Audit is ON (MailItemsAccessed, SearchQueryInitiated)',
+  'Export MDE Advanced Hunting — 30-day rolling window',
+  'Enable Diagnostic Settings (Key Vault, Storage, NSG, Firewall)',
+  'Check MDCA / CloudAppEvents for compromised accounts',
+  'Run Get-HistoricalSearch for Exchange Message Trace (90d max)',
+  'Export Conditional Access policy state (screenshot + export)',
+  'Preserve MDI timeline for on-prem AD lateral movement',
+  'Capture current OAuth app consents and delegated permissions',
+  'Place affected mailboxes on Legal Hold via Purview eDiscovery',
+  'Review Purview Insider Risk alerts for insider threat indicators',
+];
+
+function openExecSummary() {
+  buildExecSummary();
+  document.getElementById('exec-overlay').classList.add('open');
+}
+
+function closeExecSummary() {
+  document.getElementById('exec-overlay').classList.remove('open');
+}
+
+function buildExecSummary() {
+  const u = activeLics.size > 0 ? buildUnlocked() : null;
+  const noFilter = !u;
+
+  // Stats
+  const sections = [
+    { grid:'grid-azure',    label:'Azure Platform',   total:14 },
+    { grid:'grid-entra',    label:'Entra ID',         total:12 },
+    { grid:'grid-m365',     label:'M365 / Office',    total:14 },
+    { grid:'grid-defender', label:'Defender XDR',     total:20 },
+    { grid:'grid-sentinel', label:'Sentinel',         total:9  },
+    { grid:'grid-purview',  label:'Purview',          total:11 },
+  ];
+
+  let totalSources = 0, availSources = 0;
+  let sectionRows = '';
+  sections.forEach(s => {
+    const grid = document.getElementById(s.grid);
+    if (!grid) return;
+    const allItems = grid.querySelectorAll('.log-item');
+    const avail = noFilter ? allItems.length : [...allItems].filter(i => { const r=i.dataset.requires; return !r||u.has(r); }).length;
+    totalSources += allItems.length;
+    availSources += avail;
+    const locked = allItems.length - avail;
+    const pct = Math.round((avail/allItems.length)*100);
+    const color = pct===100?'#00ff9d':pct>=50?'#ff8c00':'#ff3860';
+    sectionRows += `<tr>
+      <td style="color:#e8f4ff">${s.label}</td>
+      <td style="color:${color};font-family:'Share Tech Mono',monospace">${avail} / ${allItems.length}</td>
+      <td style="color:${color}">${pct}%</td>
+      <td style="color:#ff6b85;font-size:10px">${locked > 0 ? locked + ' locked' : '—'}</td>
+    </tr>`;
+  });
+
+  // Gaps
+  let gapsHtml = '';
+  if (!noFilter) {
+    const gaps = CRITICAL_GAPS.filter(g => !u.has(g.req));
+    if (gaps.length === 0) {
+      gapsHtml = '<div style="color:var(--green);font-size:13px;padding:8px 0;">✓ No critical gaps detected with your current license selection.</div>';
+    } else {
+      gaps.forEach(g => {
+        const color = g.severity === 'critical' ? '#ff3860' : g.severity === 'high' ? '#ff8c00' : '#ffe600';
+        const icon = g.severity === 'critical' ? '🔴' : g.severity === 'high' ? '🟠' : '🟡';
+        gapsHtml += `<div class="exec-gap-item"><span class="exec-gap-icon">${icon}</span><div><strong style="color:${color};text-transform:uppercase;font-size:10px;letter-spacing:1px">${g.severity}</strong><br>${g.msg}</div></div>`;
+      });
+    }
+  } else {
+    gapsHtml = '<div style="color:var(--text-dim);font-size:12px;padding:8px 0;">Select licenses in the scope filter to identify gaps in your coverage.</div>';
+  }
+
+  // License tags
+  let licTagsHtml = '';
+  if (activeLics.size === 0) {
+    licTagsHtml = '<span style="color:var(--text-dim);font-size:12px;">No licenses selected — showing all sources</span>';
+  } else {
+    // Group by category
+    const groups = {};
+    activeLics.forEach(id => {
+      const info = LIC_LABELS[id];
+      if (!info) return;
+      if (!groups[info.group]) groups[info.group] = [];
+      groups[info.group].push(info);
+    });
+    Object.entries(groups).forEach(([grp, lics]) => {
+      licTagsHtml += `<span style="font-size:10px;color:var(--text-dim);margin-right:5px;letter-spacing:1px;text-transform:uppercase">${grp}:</span>`;
+      lics.forEach(l => {
+        licTagsHtml += `<span class="exec-lic-tag" style="background:${l.color}22;color:${l.color};border:1px solid ${l.color}55">${l.label}</span> `;
+      });
+    });
+  }
+
+  // Checklist
+  let checklistHtml = '<div class="exec-checklist">';
+  DFIR_CHECKLIST.forEach(item => {
+    checklistHtml += `<div class="exec-check-item"><span style="color:var(--orange)">▶</span> <span>${item}</span></div>`;
+  });
+  checklistHtml += '</div>';
+
+  // Roles summary
+  const totalRoles = document.querySelectorAll('.role-card').length;
+  const dfirRoles = document.querySelectorAll('.role-card[data-dfir="yes"]').length;
+
+  const today = new Date().toLocaleDateString('en-GB', { year:'numeric', month:'long', day:'numeric' });
+
+  document.getElementById('exec-body').innerHTML = `
+    <div style="font-size:11px;color:var(--text-dim);margin-bottom:20px;font-family:'Share Tech Mono',monospace;letter-spacing:1px;">
+      GENERATED: ${today} &nbsp;|&nbsp; Microsoft Defensive Cloud Atlas v1.0 &nbsp;|&nbsp; For internal IR use only
+    </div>
+
+    <div class="exec-section">
+      <div class="exec-section-title">Active License Scope</div>
+      <div class="exec-lic-tags">${licTagsHtml}</div>
+    </div>
+
+    <div class="exec-section">
+      <div class="exec-section-title">Coverage Summary</div>
+      <div class="exec-grid">
+        <div class="exec-stat">
+          <div class="exec-stat-n">${noFilter ? '75+' : availSources}</div>
+          <div class="exec-stat-l">Log Sources Available</div>
+        </div>
+        <div class="exec-stat">
+          <div class="exec-stat-n">${noFilter ? '70' : totalSources - availSources}</div>
+          <div class="exec-stat-l" style="color:${(totalSources-availSources)>0?'var(--red)':'var(--green)'}">${noFilter ? 'Total Sources' : 'Locked Sources'}</div>
+        </div>
+        <div class="exec-stat">
+          <div class="exec-stat-n">${activeLics.size}</div>
+          <div class="exec-stat-l">Licenses Active</div>
+        </div>
+        <div class="exec-stat">
+          <div class="exec-stat-n">${dfirRoles}</div>
+          <div class="exec-stat-l">DFIR-Critical Roles</div>
+        </div>
+        <div class="exec-stat">
+          <div class="exec-stat-n">${totalRoles}+</div>
+          <div class="exec-stat-l">Total Roles Documented</div>
+        </div>
+        <div class="exec-stat">
+          <div class="exec-stat-n">${document.querySelectorAll('.ret-table tbody tr').length}</div>
+          <div class="exec-stat-l">Retention Entries</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="exec-section">
+      <div class="exec-section-title">Log Source Coverage by Category</div>
+      <table class="exec-table">
+        <thead><tr><th>Category</th><th>Available Sources</th><th>Coverage</th><th>Status</th></tr></thead>
+        <tbody>${sectionRows}</tbody>
+      </table>
+    </div>
+
+    <div class="exec-section">
+      <div class="exec-section-title" style="color:var(--red);">⚠ Coverage Gaps & Risks</div>
+      ${gapsHtml}
+    </div>
+
+    <div class="exec-section">
+      <div class="exec-section-title">Immediate Preservation Checklist</div>
+      ${checklistHtml}
+    </div>
+
+    <div class="exec-section">
+      <div class="exec-section-title">Key Retention Reminders</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+        <div class="exec-gap-item"><span class="exec-gap-icon" style="color:var(--red)">▸</span><div><strong style="color:var(--text)">Entra Sign-In Logs:</strong> 7 days (Free), 30 days (P1/P2). Export immediately during IR.</div></div>
+        <div class="exec-gap-item"><span class="exec-gap-icon" style="color:var(--red)">▸</span><div><strong style="color:var(--text)">UAL Standard:</strong> 90 days. Advanced Audit: 180 days. 10-year add-on available.</div></div>
+        <div class="exec-gap-item"><span class="exec-gap-icon" style="color:var(--orange)">▸</span><div><strong style="color:var(--text)">MDE Advanced Hunting:</strong> 30-day hard limit. Ingest to Sentinel for extended retention.</div></div>
+        <div class="exec-gap-item"><span class="exec-gap-icon" style="color:var(--orange)">▸</span><div><strong style="color:var(--text)">Exchange Message Trace:</strong> 90-day hard cap regardless of license.</div></div>
+        <div class="exec-gap-item"><span class="exec-gap-icon" style="color:var(--yellow)">▸</span><div><strong style="color:var(--text)">Diagnostic Settings:</strong> Key Vault, Storage, SQL, Firewall logs not retained by default — must be explicitly enabled.</div></div>
+        <div class="exec-gap-item"><span class="exec-gap-icon" style="color:var(--yellow)">▸</span><div><strong style="color:var(--text)">Sentinel Archive Tier:</strong> Interactive (90d) then archive up to 12 years at ~$0.002/GB/month.</div></div>
+      </div>
+    </div>
+
+    <div style="margin-top:24px;padding-top:14px;border-top:1px solid rgba(0,180,255,0.1);font-size:10px;color:var(--text-dim);font-family:'Share Tech Mono',monospace;">
+      DISCLAIMER: This summary is generated from Microsoft Defensive Cloud Atlas v1.0 for reference purposes. License requirements and pricing may change. Verify all details against current Microsoft documentation. This tool does not constitute legal or compliance advice.
+    </div>
+  `;
+}
+
+// Close overlay on background click
+document.getElementById('exec-overlay').addEventListener('click', function(e) {
+  if (e.target === this) closeExecSummary();
+});
+</script>
+</body>
+</html>
