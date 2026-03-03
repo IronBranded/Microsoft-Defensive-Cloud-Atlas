@@ -3,9 +3,9 @@
 **An interactive reference for Azure & Microsoft 365 log sources, license requirements, retention periods, and role-based access. This was built to understand data sources, detection and response capabilities per licences**
 ---
 
-## What Is This?
+## What is this for?
 
-The Microsoft Defensive Cloud Atlas is an offline-capable HTML reference tool designed for security practitioners working across the Microsoft cloud stack. It maps every significant log source across Azure, Entra ID, Microsoft 365, Defender XDR, Microsoft Sentinel, and Microsoft Purview — and ties each one to the license required to access it.
+The Microsoft Defensive Cloud Atlas is an offline-capable HTML reference tool designed for security practitioners working across the Microsoft cloud stack. It maps every significant log source across Azure, Entra ID, Microsoft 365, Defender XDR, Microsoft Sentinel, and Microsoft Purview and ties each one to the license required to access it.
 
 The license filter panel lets you select your actual licensing posture and instantly see which log sources are available to you, which are locked, and which are automatically unlocked as part of a bundle.
 
