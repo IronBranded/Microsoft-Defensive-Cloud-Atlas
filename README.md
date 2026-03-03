@@ -6,6 +6,14 @@ This was built to understand and visualize the different data sources, detection
 ####
 ---
 
+<h3 align="center">
+  <a href="[https://ironbranded.github.io/CAD-Breach-Cost-Simulator](https://github.com/IronBranded/Microsoft-Defensive-Cloud-Atlas)/" target="_blank" rel="noopener noreferrer">
+    🟢 LAUNCH THE ATLAS 🟢
+  </a>
+</h3>
+
+---
+
 ## What is this for?
 
 The Microsoft Defensive Cloud Atlas is an offline-capable HTML reference tool designed for security practitioners working across the Microsoft cloud stack. It maps every significant log source across Azure, Entra ID, Microsoft 365, Defender XDR, Microsoft Sentinel, and Microsoft Purview and ties each one to the license required to access it.
