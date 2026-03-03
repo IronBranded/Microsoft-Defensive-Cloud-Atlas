@@ -1,7 +1,6 @@
 # Microsoft Defensive Cloud Atlas — v1.0
 
-**A single-file interactive reference for Azure & Microsoft 365 log sources, license requirements, retention periods, and role-based access — built for cloud incident response, digital forensics, and threat investigations.**
-
+**An interactive reference for Azure & Microsoft 365 log sources, license requirements, retention periods, and role-based access. This was built to understand data sources, detection and response capabilities per licences**
 ---
 
 ## What Is This?
