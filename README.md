@@ -7,8 +7,8 @@ This was built to understand and visualize the different data sources, detection
 ---
 
 <h3 align="center">
-  <a href="https://github.com/IronBranded/Microsoft-Defensive-Cloud-Atlas)/" target="_blank" rel="noopener noreferrer">
-    🟢 LAUNCH THE ATLAS 🟢
+  <a href="https://ironbranded.github.io/Microsoft-Defensive-Cloud-Atlas/" target="_blank" rel="noopener noreferrer">
+    🟢 NAVIGATE THE ATLAS 🟢
   </a>
 </h3>
 
