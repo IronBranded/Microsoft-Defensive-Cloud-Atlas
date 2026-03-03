@@ -1,6 +1,9 @@
 # Microsoft Defensive Cloud Atlas — v1.0
 
-**An interactive reference for Azure & Microsoft 365 log sources, license requirements, retention periods, and role-based access. This was built to understand data sources, detection and response capabilities per licences**
+###
+An interactive reference for Azure & Microsoft 365 log sources, license requirements, retention periods, and role-based access.
+This was built to understand and visualize the different data sources, detection and response capabilities for aspiring security learners.
+####
 ---
 
 ## What is this for?
@@ -113,10 +116,10 @@ No server required. No installation. No data leaves your machine.
 
 ## Caveats & Disclaimer
 
-- License inclusions and feature availability are based on Microsoft service descriptions and licensing documentation as of **March 2026**. Microsoft regularly updates what is included in each SKU — always verify against current Microsoft documentation before making procurement decisions.
+- License inclusions and feature availability are based on Microsoft service descriptions and licensing documentation as of **March 2026**. Microsoft regularly updates what is included in each SKU. *ALWAYS* verify against current Microsoft documentation before making procurement decisions.
 - Retention periods are defaults. Many can be extended via policy (Legal Hold, Audit Retention Policy, Sentinel archive tier). Some have hard caps that cannot be extended.
 - This tool does not constitute legal or compliance advice.
-- Sentinel is **not included** in any M365 or O365 bundle — it is always a separate billable workspace.
+- Sentinel is **not included** in any M365 or O365 bundle. It is always a separate billable workspace.
 - Defender for Cloud (MDFC) is Azure-native and separately licensed from Defender XDR.
 
 ---
