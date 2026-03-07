@@ -470,12 +470,12 @@
       </div>
       <div class="lic-toggles">
         <div class="lic-subtier">PRODUCTIVITY AI</div>
-        <div class="lic-toggle" id="lt-copilot-chat"  onclick="toggleL('copilot-chat')"><div class="dot"></div>Copilot Chat</div>
-        <div class="lic-toggle" id="lt-copilot-m365"  onclick="toggleL('copilot-m365')"><div class="dot"></div>M365 Copilot</div>
-        <div class="lic-toggle" id="lt-copilot-biz"   onclick="toggleL('copilot-biz')"><div class="dot"></div>Copilot Business</div>
+        <div class="lic-toggle" id="lt-copilot-chat"  onclick="toggleL('copilot-chat')"><div class="dot"></div><span>Copilot Chat<br><small style="opacity:.6;font-size:9px;">Auto-included with M365/O365 plans</small></span></div>
+        <div class="lic-toggle" id="lt-copilot-m365"  onclick="toggleL('copilot-m365')"><div class="dot"></div><span>M365 Copilot<br><small style="opacity:.6;font-size:9px;">Add-on · E3/E5/F1/F3/Biz required</small></span></div>
+        <div class="lic-toggle" id="lt-copilot-biz"   onclick="toggleL('copilot-biz')"><div class="dot"></div><span>Copilot Business<br><small style="opacity:.6;font-size:9px;">Add-on · Biz Basic/Std/Premium · ≤300 users</small></span></div>
         <div class="lic-subtier">SECURITY &amp; AGENTS</div>
-        <div class="lic-toggle" id="lt-security-copilot" onclick="toggleL('security-copilot')"><div class="dot"></div>Security Copilot</div>
-        <div class="lic-toggle" id="lt-copilot-studio"   onclick="toggleL('copilot-studio')"><div class="dot"></div>Copilot Studio</div>
+        <div class="lic-toggle" id="lt-security-copilot" onclick="toggleL('security-copilot')"><div class="dot"></div><span>Security Copilot<br><small style="opacity:.6;font-size:9px;">Standalone SCU · Included with M365 E5</small></span></div>
+        <div class="lic-toggle" id="lt-copilot-studio"   onclick="toggleL('copilot-studio')"><div class="dot"></div><span>Copilot Studio<br><small style="opacity:.6;font-size:9px;">Power Platform · Separate license</small></span></div>
       </div>
     </div>
 
@@ -496,7 +496,7 @@
 
   <div class="stats-row">
     <div class="stat-box"><div class="stat-n" id="stat-sources">65+</div><div class="stat-l">Log Sources</div></div>
-    <div class="stat-box"><div class="stat-n" id="stat-categories">9</div><div class="stat-l">Categories</div></div>
+    <div class="stat-box"><div class="stat-n" id="stat-categories">8</div><div class="stat-l">Categories</div></div>
     <div class="stat-box"><div class="stat-n" id="stat-roles">31+</div><div class="stat-l">Roles Documented</div></div>
     <div class="stat-box"><div class="stat-n" id="stat-licenses">0</div><div class="stat-l" id="stat-licenses-label">Licenses Active</div></div>
     <div class="stat-box"><div class="stat-n" id="stat-retention">13</div><div class="stat-l">Retention Entries</div></div>
@@ -1661,17 +1661,29 @@ const BUNDLE_MAP = {
   'purview-e5c':     ['purview-std','purview-adaudit','purview-ip1','purview-ip2',
                       'purview-irm','purview-edprem'],
   'sentinel-free':   ['sentinel'],
-  // Copilot Chat: automatically included with all eligible M365/O365 plans (E3, E5, F1, F3, Biz Basic/Std/Premium, O365 E1/E3/E5)
-  // No extra license needed — entitlement flows from base M365 subscription
+  // ── Copilot Chat ─────────────────────────────────────────────────────────
+  // Automatically included (no extra license) with: M365 F1/F3/E3/E5,
+  // Biz Basic/Std/Premium, O365 E1/E3/E5/F3, Teams plans. (MS Learn, Jan 2026)
+  // Entitlement flows from base plan — does NOT appear as separate SKU in admin center.
   'copilot-chat':    ['az-free'],
-  // M365 Copilot ($30/user add-on): requires E3/E5/F1/F3/Biz base — includes Copilot Chat
+  // ── M365 Copilot ($30/user/mo add-on) ────────────────────────────────────
+  // Requires one of: M365 E3/E5/F1/F3, Biz Basic/Std/Premium, O365 E1/E3/E5.
+  // Includes Copilot Chat entitlement. Adds org-data grounding via MS Graph.
   'copilot-m365':    ['copilot-chat','az-free'],
-  // Copilot Business ($21/user, ≤300 users): SMB add-on on Biz Basic/Std/Premium — includes Copilot Chat
+  // ── Copilot Business ($21/user/mo add-on, ≤300 users) ────────────────────
+  // SMB equivalent of M365 Copilot. Requires Biz Basic/Std/Premium base.
+  // Includes Copilot Chat. Same feature set as M365 Copilot at SMB scale.
   'copilot-biz':     ['copilot-chat','az-free'],
-  // Security Copilot: standalone SCU add-on OR bundled with M365 E5 (400 SCU/1,000 users, rolling out 2025)
-  // Standalone has no automatic includes — requires supporting Defender/Sentinel/Entra services separately
+  // ── Microsoft Security Copilot ────────────────────────────────────────────
+  // Standalone: SCU-based (Azure, pay-as-you-go).
+  // Bundled: Included with M365 E5 (phased rollout from Nov 18 2025).
+  //   400 SCU/month per 1,000 user licenses, auto-provisioned, no Azure setup needed.
+  //   E5 customers notified 30 days before activation. (MS Learn security-copilot-inclusion)
+  // NOTE: NOT included with M365 E3, O365, or any other plan.
   'security-copilot': ['az-free'],
-  // Copilot Studio: completely separate Power Platform license — NOT included with E3/E5 or M365 Copilot
+  // ── Copilot Studio ────────────────────────────────────────────────────────
+  // Power Platform product — completely separate licensing from M365/O365.
+  // NOT included with E3/E5, M365 Copilot, or any M365 base plan. (MS SvcDesc, 2025)
   'copilot-studio':   ['az-free'],
 };
 
