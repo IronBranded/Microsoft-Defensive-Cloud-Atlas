@@ -1635,19 +1635,20 @@ const LIC_COLOR = {
 const INC_CLASS = 'included';
 
 const BUNDLE_MAP = {
-  'm365-f1':    ['az-free'],
-  'm365-f3':    ['m365-f1','az-free','entra-p1','purview-std'],
-  'm365-e3':    ['m365-f1','az-free','entra-p1','mde-p1','purview-std','purview-ip1'],
+  'm365-f1':    ['az-free','copilot-chat'],
+  'm365-f3':    ['m365-f1','az-free','entra-p1','purview-std','copilot-chat'],
+  'm365-e3':    ['m365-f1','az-free','entra-p1','mde-p1','purview-std','purview-ip1','copilot-chat'],
   'm365-e5':    ['m365-f1','m365-e3','az-free','entra-p1','entra-p2',
                  'mde-p1','mde-p2','mdo-p1','mdo-p2','mdi','mdca','mde5s',
                  'purview-std','purview-ip1','purview-ip2','purview-adaudit',
-                 'purview-e5c','purview-irm','purview-edprem'],
-  'biz-basic':  ['az-free','purview-std'],
-  'biz-std':    ['az-free','purview-std'],
-  'm365-bp':    ['az-free','entra-p1','mde-p1','purview-std','purview-ip1'],
-  'o365-e1':    ['az-free','purview-std'],
-  'o365-e3':    ['az-free','purview-std'],
-  'o365-e5':    ['az-free','purview-std','mdo-p1','mdo-p2','purview-adaudit','purview-edprem'],
+                 'purview-e5c','purview-irm','purview-edprem',
+                 'copilot-chat','security-copilot'],
+  'biz-basic':  ['az-free','purview-std','copilot-chat'],
+  'biz-std':    ['az-free','purview-std','copilot-chat'],
+  'm365-bp':    ['az-free','entra-p1','mde-p1','purview-std','purview-ip1','copilot-chat'],
+  'o365-e1':    ['az-free','purview-std','copilot-chat'],
+  'o365-e3':    ['az-free','purview-std','copilot-chat'],
+  'o365-e5':    ['az-free','purview-std','mdo-p1','mdo-p2','purview-adaudit','purview-edprem','copilot-chat'],
   'mde-p2':     ['mde-p1'],
   'mdo-p2':     ['mdo-p1'],
   'mde5s':      ['mde-p1','mde-p2','mdo-p1','mdo-p2','mdi','mdca'],
@@ -1659,18 +1660,19 @@ const BUNDLE_MAP = {
   'purview-edprem':  ['purview-std'],
   'purview-e5c':     ['purview-std','purview-adaudit','purview-ip1','purview-ip2',
                       'purview-irm','purview-edprem'],
-  'sentinel-free': ['sentinel'],
-  // Copilot Chat: free with any Entra-enabled M365 work account
-  'copilot-chat':      ['az-free'],
-  // M365 Copilot ($30/user): requires E3/E5 or Biz base, includes Copilot Chat
-  'copilot-m365':      ['copilot-chat','az-free'],
-  // Copilot Business ($21/user, ≤300 users): same features as M365 Copilot but for SMB plans
-  'copilot-biz':       ['copilot-chat','az-free'],
-  // Security Copilot: standalone SCU-based add-on (also included in M365 E5 from late 2025)
-  // Requires supporting security services (Defender/Sentinel/Entra) to reason over
-  'security-copilot':  ['az-free'],
-  // Copilot Studio: Power Platform agent builder, separate licensing, requires M365 base
-  'copilot-studio':    ['copilot-chat','az-free'],
+  'sentinel-free':   ['sentinel'],
+  // Copilot Chat: automatically included with all eligible M365/O365 plans (E3, E5, F1, F3, Biz Basic/Std/Premium, O365 E1/E3/E5)
+  // No extra license needed — entitlement flows from base M365 subscription
+  'copilot-chat':    ['az-free'],
+  // M365 Copilot ($30/user add-on): requires E3/E5/F1/F3/Biz base — includes Copilot Chat
+  'copilot-m365':    ['copilot-chat','az-free'],
+  // Copilot Business ($21/user, ≤300 users): SMB add-on on Biz Basic/Std/Premium — includes Copilot Chat
+  'copilot-biz':     ['copilot-chat','az-free'],
+  // Security Copilot: standalone SCU add-on OR bundled with M365 E5 (400 SCU/1,000 users, rolling out 2025)
+  // Standalone has no automatic includes — requires supporting Defender/Sentinel/Entra services separately
+  'security-copilot': ['az-free'],
+  // Copilot Studio: completely separate Power Platform license — NOT included with E3/E5 or M365 Copilot
+  'copilot-studio':   ['az-free'],
 };
 
 function toggleL(id) {
