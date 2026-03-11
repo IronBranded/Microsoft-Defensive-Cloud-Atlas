@@ -352,8 +352,739 @@
     tr{page-break-inside:avoid;}
   }
 </style>
+
+<style id="loader-styles">
+/* ══ LOADER OVERLAY ══ */
+#atlas-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: #0d1117;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  font-family: 'Share Tech Mono', monospace;
+}
+
+/* ── dot-matrix panning background ── */
+#atlas-loader::before {
+  content: '';
+  position: absolute;
+  inset: -200px;
+  background-image:
+    radial-gradient(circle, rgba(0,120,212,0.18) 1px, transparent 1px);
+  background-size: 32px 32px;
+  animation: gridPan 18s linear infinite;
+  pointer-events: none;
+}
+@keyframes gridPan {
+  0%   { transform: translate(0,0); }
+  100% { transform: translate(32px,32px); }
+}
+
+/* ── vignette ── */
+#atlas-loader::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, transparent 35%, #0d1117 85%);
+  pointer-events: none;
+}
+
+/* ── center title ── */
+.loader-center {
+  position: relative;
+  z-index: 10;
+  text-align: center;
+  pointer-events: none;
+  user-select: none;
+}
+.loader-title-sub {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: clamp(9px, 1.1vw, 13px);
+  letter-spacing: 6px;
+  color: rgba(0,120,212,0.55);
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  opacity: 0;
+  animation: fadeUp 0.6s ease 0.3s forwards;
+}
+.loader-title-main {
+  font-family: 'Orbitron', monospace;
+  font-size: clamp(18px, 3vw, 38px);
+  font-weight: 900;
+  letter-spacing: 5px;
+  color: #e8f4ff;
+  text-transform: uppercase;
+  line-height: 1.1;
+  opacity: 0;
+  animation: fadeUp 0.7s ease 0.5s forwards;
+  text-shadow: 0 0 40px rgba(0,120,212,0.25);
+}
+.loader-title-main span {
+  color: #0078d4;
+}
+.loader-tagline {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: clamp(8px, 0.85vw, 11px);
+  letter-spacing: 3px;
+  color: rgba(200,223,240,0.3);
+  margin-top: 12px;
+  opacity: 0;
+  animation: fadeUp 0.6s ease 0.9s forwards;
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── SVG pentagon stage ── */
+#pentagon-stage {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+}
+
+/* ── vertex nodes ── */
+.v-node {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  z-index: 10;
+  pointer-events: none;
+}
+.v-node.lit { opacity: 1; }
+
+.v-icon-wrap {
+  width: clamp(44px,5vw,64px);
+  height: clamp(44px,5vw,64px);
+  border-radius: 50%;
+  border: 1.5px solid rgba(0,120,212,0.2);
+  background: rgba(13,17,23,0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 7px;
+  position: relative;
+  transition: border-color 0.4s, box-shadow 0.4s, background 0.4s;
+}
+.v-node.lit .v-icon-wrap {
+  border-color: rgba(0,120,212,0.6);
+  box-shadow: 0 0 18px rgba(0,120,212,0.35), inset 0 0 12px rgba(0,120,212,0.08);
+  background: rgba(0,30,60,0.85);
+}
+.v-node.pulse .v-icon-wrap {
+  border-color: #0078d4;
+  box-shadow: 0 0 30px rgba(0,120,212,0.7), 0 0 60px rgba(0,120,212,0.35), inset 0 0 20px rgba(0,120,212,0.15);
+  background: rgba(0,40,80,0.9);
+  animation: nodePulse 0.6s ease;
+}
+@keyframes nodePulse {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.18); }
+  100% { transform: scale(1); }
+}
+.v-icon-wrap svg {
+  width: clamp(20px, 2.2vw, 28px);
+  height: clamp(20px, 2.2vw, 28px);
+}
+.v-node .v-label {
+  font-family: 'Orbitron', monospace;
+  font-size: clamp(7px, 0.72vw, 10px);
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: rgba(200,223,240,0.7);
+  text-transform: uppercase;
+  white-space: nowrap;
+  line-height: 1.3;
+  max-width: 160px;
+}
+.v-node.lit .v-label { color: #c8dff0; }
+.v-node .v-sub {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: clamp(6px, 0.62vw, 9px);
+  letter-spacing: 1px;
+  color: rgba(0,120,212,0.5);
+  margin-top: 3px;
+  white-space: nowrap;
+}
+.v-node.lit .v-sub { color: rgba(0,120,212,0.85); }
+
+/* ── pentagon SVG lines ── */
+.penta-edge {
+  stroke: rgba(0,120,212,0.15);
+  stroke-width: 1;
+  stroke-dasharray: 400;
+  stroke-dashoffset: 400;
+  fill: none;
+  transition: stroke 0.4s;
+}
+.penta-edge.drawn {
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset 0.55s cubic-bezier(0.4,0,0.2,1), stroke 0.4s;
+  stroke: rgba(0,120,212,0.35);
+}
+.penta-edge.pulse-edge {
+  stroke: rgba(0,120,212,0.75);
+  filter: drop-shadow(0 0 4px rgba(0,120,212,0.6));
+}
+.penta-fill {
+  fill: rgba(0,120,212,0.025);
+  opacity: 0;
+  transition: opacity 0.8s ease;
+}
+.penta-fill.show { opacity: 1; }
+
+/* ── terminal ── */
+#loader-terminal {
+  position: absolute;
+  bottom: clamp(16px,3vh,36px);
+  left: clamp(16px,2.5vw,36px);
+  width: clamp(280px, 36vw, 480px);
+  background: rgba(0,0,0,0.55);
+  border: 1px solid rgba(0,120,212,0.2);
+  border-radius: 4px;
+  padding: 10px 14px;
+  z-index: 20;
+  backdrop-filter: blur(4px);
+}
+#loader-terminal .term-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(0,120,212,0.12);
+}
+.term-dot { width: 7px; height: 7px; border-radius: 50%; }
+.term-bar-label {
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: rgba(200,223,240,0.3);
+  text-transform: uppercase;
+  margin-left: 4px;
+}
+#term-lines {
+  min-height: 110px;
+  max-height: 140px;
+  overflow: hidden;
+}
+.term-line {
+  font-size: clamp(9px,0.85vw,11px);
+  line-height: 1.75;
+  color: rgba(0,180,255,0.75);
+  white-space: pre;
+  display: block;
+  min-height: 1.75em;
+}
+.term-line.ready { color: #00ff9d; font-weight: 700; }
+.term-line.cmd   { color: rgba(200,223,240,0.55); }
+/* inline cursor that travels with typed text */
+.term-cursor-inline {
+  display: inline-block;
+  width: 6px;
+  height: 1.1em;
+  background: rgba(0,180,255,0.8);
+  margin-left: 1px;
+  vertical-align: text-bottom;
+  animation: blink 0.65s step-end infinite;
+}
+.term-cursor-inline.green { background: #00ff9d; }
+@keyframes blink { 50% { opacity: 0; } }
+
+/* ── progress bar ── */
+#loader-progress-wrap {
+  position: absolute;
+  bottom: clamp(16px,3vh,36px);
+  right: clamp(16px,2.5vw,36px);
+  width: clamp(120px,14vw,180px);
+  z-index: 20;
+  text-align: right;
+}
+.prog-label {
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: rgba(0,120,212,0.5);
+  text-transform: uppercase;
+  margin-bottom: 5px;
+}
+.prog-bar-bg {
+  height: 2px;
+  background: rgba(0,120,212,0.12);
+  border-radius: 2px;
+  overflow: hidden;
+}
+#prog-bar-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #0078d4, #00e5ff);
+  border-radius: 2px;
+  transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+  box-shadow: 0 0 8px rgba(0,180,255,0.5);
+}
+#prog-pct {
+  font-size: 11px;
+  letter-spacing: 1px;
+  color: rgba(0,180,255,0.6);
+  margin-top: 5px;
+}
+
+/* ── exit animation ── */
+#atlas-loader.exit {
+  animation: loaderExit 0.85s cubic-bezier(0.4,0,0.2,1) forwards;
+}
+@keyframes loaderExit {
+  0%   { opacity: 1; transform: scale(1); }
+  55%  { opacity: 1; transform: scale(1.06); }
+  100% { opacity: 0; transform: scale(1.18); pointer-events: none; }
+}
+
+/* ── background product reveal ── */
+#loader-bg-product {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 1.1s ease;
+}
+#loader-bg-product.bp-visible { opacity: 1; }
+#bp-glow {
+  position: absolute;
+  width: min(75vw, 75vh);
+  height: min(75vw, 75vh);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0,120,212,0.09) 0%, rgba(0,70,140,0.04) 45%, transparent 72%);
+  opacity: 0;
+  transition: opacity 1s ease;
+}
+#bp-glow.show { opacity: 1; }
+#bp-icon {
+  position: absolute;
+  width: min(42vw, 42vh);
+  height: min(42vw, 42vh);
+  opacity: 0;
+  transition: opacity 1.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#bp-icon.show { opacity: 1; }
+#bp-icon svg {
+  width: 100%;
+  height: 100%;
+  stroke: rgba(0, 120, 212, 0.055);
+  stroke-width: 0.4;
+  fill: none;
+}
+#bp-name {
+  position: absolute;
+  top: 54%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Orbitron', monospace;
+  font-weight: 900;
+  font-size: clamp(11px, 3.2vw, 44px);
+  letter-spacing: clamp(4px, 1.2vw, 14px);
+  text-align: center;
+  color: rgba(0, 140, 230, 0.06);
+  text-transform: uppercase;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 1.3s ease;
+}
+#bp-name.show { opacity: 1; }
+</style>
+
 </head>
 <body>
+
+<!-- ══ LOADING SCREEN ══ -->
+<div id="atlas-loader">
+
+  <!-- Background Product Reveal (appears after each terminal line completes) -->
+  <div id="loader-bg-product">
+    <div id="bp-glow"></div>
+    <div id="bp-icon"></div>
+    <div id="bp-name"></div>
+  </div>
+
+  <!-- Pentagon SVG canvas -->
+  <svg id="pentagon-stage" viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+    <!-- fill polygon -->
+    <polygon id="penta-fill-poly" class="penta-fill" points=""/>
+    <!-- 5 edges, drawn one at a time -->
+    <line id="edge-0" class="penta-edge" x1="0" y1="0" x2="0" y2="0"/>
+    <line id="edge-1" class="penta-edge" x1="0" y1="0" x2="0" y2="0"/>
+    <line id="edge-2" class="penta-edge" x1="0" y1="0" x2="0" y2="0"/>
+    <line id="edge-3" class="penta-edge" x1="0" y1="0" x2="0" y2="0"/>
+    <line id="edge-4" class="penta-edge" x1="0" y1="0" x2="0" y2="0"/>
+  </svg>
+
+  <!-- Center title -->
+  <div class="loader-center">
+    <div class="loader-title-sub">Microsoft · Azure · M365</div>
+    <div class="loader-title-main">DEFENSIVE<br><span>CLOUD</span> ATLAS</div>
+    <div class="loader-tagline">Azure &amp; M365 Log Intelligence · v1.0</div>
+  </div>
+
+  <!-- Vertex nodes — injected by JS -->
+
+  <!-- Terminal -->
+  <div id="loader-terminal">
+    <div class="term-bar">
+      <div class="term-dot" style="background:#ff5f56"></div>
+      <div class="term-dot" style="background:#ffbd2e"></div>
+      <div class="term-dot" style="background:#27c93f"></div>
+      <span class="term-bar-label">atlas-bootstrap · /dev/xdr</span>
+    </div>
+    <div id="term-lines"></div>
+  </div>
+
+  <!-- Progress -->
+  <div id="loader-progress-wrap">
+    <div class="prog-label">Initializing</div>
+    <div class="prog-bar-bg"><div id="prog-bar-fill"></div></div>
+    <div id="prog-pct">0%</div>
+  </div>
+
+</div>
+
+<script>
+(function() {
+  // ── Pillar definitions (order = activation sequence) ──────────────────────
+  // Pentagon vertex angles: top-center = 270° (-90°), then clockwise
+  // Standard pentagon: top = 270, top-right = 342, bottom-right = 54, bottom-left = 126, top-left = 198
+  // We map: [Top=Defender for Cloud], [TR=MDE], [BR=MDI], [BL=MDCA], [TL=MDO]
+  // Activation order: MDE (TR), MDO (TL), MDI (BR), MDCA (BL), Cloud (Top)
+  const PILLARS = [
+    {
+      id: 'v-mde', angle: 342,
+      label: 'Microsoft Defender<br>for Endpoint',
+      sub: '[Device Security]',
+      bgName: 'DEFENDER FOR ENDPOINT',
+      term: '> Endpoints secured...telemetry loaded.',
+      icon: `<svg viewBox="0 0 24 24" fill="none" stroke="#0078d4" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        <polyline points="9 12 11 14 15 10"/>
+      </svg>`
+    },
+    {
+      id: 'v-mdo', angle: 198,
+      label: 'Microsoft Defender<br>for Office 365',
+      sub: '[Email &amp; Collaboration]',
+      bgName: 'DEFENDER FOR OFFICE 365',
+      term: '> Email &amp; Collaboration suite secured...telemetry loaded.',
+      icon: `<svg viewBox="0 0 24 24" fill="none" stroke="#0078d4" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        <path d="M4 6l8 5 8-5"/>
+        <rect x="3" y="8" width="18" height="13" rx="2" stroke-opacity="0.5"/>
+      </svg>`
+    },
+    {
+      id: 'v-mdi', angle: 54,
+      label: 'Microsoft Defender<br>for Identity',
+      sub: '[Hybrid Identity]',
+      bgName: 'DEFENDER FOR IDENTITY',
+      term: '> ID Directories synchronized, modern authentication secured...telemetry loaded.',
+      icon: `<svg viewBox="0 0 24 24" fill="none" stroke="#0078d4" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="8" r="4"/>
+        <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+        <path d="M17 11l1.5 1.5L21 10" stroke-width="1.8"/>
+      </svg>`
+    },
+    {
+      id: 'v-mdca', angle: 126,
+      label: 'Microsoft Defender<br>for Cloud Apps',
+      sub: '[SaaS App Security]',
+      bgName: 'DEFENDER FOR CLOUD APPS',
+      term: '> Software and applications secured...telemetry loaded.',
+      icon: `<svg viewBox="0 0 24 24" fill="none" stroke="#0078d4" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M18 10h-1.3A6 6 0 106 14h1"/>
+        <rect x="8" y="13" width="8" height="6" rx="1"/>
+        <line x1="12" y1="13" x2="12" y2="10"/>
+        <line x1="10" y1="16" x2="14" y2="16"/>
+      </svg>`
+    },
+    {
+      id: 'v-cloud', angle: 270,
+      label: 'Microsoft Defender<br>for Cloud',
+      sub: '[Cloud Infrastructure]',
+      bgName: 'DEFENDER FOR CLOUD',
+      term: '> Azure infrastructure &amp; services secured...telemetry loaded.',
+      icon: `<svg viewBox="0 0 24 24" fill="none" stroke="#0078d4" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M18 10h-1.3A6 6 0 106 14h12a3 3 0 000-4z"/>
+        <path d="M10 18l2 2 4-4" stroke-width="1.8"/>
+      </svg>`
+    }
+  ];
+
+  // Pentagon radius as fraction of min(vw,vh)
+  const R_FRAC = 0.30;
+  const CX = 500, CY = 500; // SVG viewBox centre
+  const R_SVG = 310; // radius in SVG units
+
+  function toRad(deg) { return deg * Math.PI / 180; }
+
+  function svgPt(angle) {
+    return {
+      x: CX + R_SVG * Math.cos(toRad(angle)),
+      y: CY + R_SVG * Math.sin(toRad(angle))
+    };
+  }
+
+  function screenPt(angle) {
+    const w = window.innerWidth, h = window.innerHeight;
+    const r = Math.min(w, h) * R_FRAC;
+    // clamp so nodes don't escape viewport
+    const cx = w / 2, cy = h / 2 - 20;
+    return {
+      x: cx + r * Math.cos(toRad(angle)),
+      y: cy + r * Math.sin(toRad(angle))
+    };
+  }
+
+  // Build vertex DOM nodes
+  const loader = document.getElementById('atlas-loader');
+  PILLARS.forEach(p => {
+    const el = document.createElement('div');
+    el.className = 'v-node';
+    el.id = p.id;
+    el.innerHTML = `
+      <div class="v-icon-wrap">${p.icon}</div>
+      <div class="v-label">${p.label}</div>
+      <div class="v-sub">${p.sub}</div>
+    `;
+    loader.appendChild(el);
+  });
+
+  // Position nodes
+  function positionNodes() {
+    PILLARS.forEach(p => {
+      const el = document.getElementById(p.id);
+      const pt = screenPt(p.angle);
+      el.style.left = pt.x + 'px';
+      el.style.top  = pt.y + 'px';
+    });
+  }
+  positionNodes();
+  window.addEventListener('resize', positionNodes);
+
+  // Set SVG edge coordinates (using SVG viewBox units)
+  // Order: edge i connects pillars[i] → pillars[(i+1)%5]
+  // But activation order differs from geometric order — map by SVG angle order
+  // SVG clockwise from top: Cloud(270), MDE(342), MDI(54), MDCA(126) wait — need clockwise sorted
+  // Sort by angle to get clockwise polygon vertices
+  const clockwise = [...PILLARS].sort((a,b) => a.angle - b.angle);
+  // angles sorted: 54(MDI), 126(MDCA), 198(MDO), 270(Cloud), 342(MDE)
+  const polyPts = clockwise.map(p => svgPt(p.angle));
+  const fillPoly = document.getElementById('penta-fill-poly');
+  fillPoly.setAttribute('points', polyPts.map(p => `${p.x},${p.y}`).join(' '));
+
+  for (let i = 0; i < 5; i++) {
+    const a = polyPts[i];
+    const b = polyPts[(i + 1) % 5];
+    const edge = document.getElementById('edge-' + i);
+    edge.setAttribute('x1', a.x); edge.setAttribute('y1', a.y);
+    edge.setAttribute('x2', b.x); edge.setAttribute('y2', b.y);
+    // Correct dasharray for actual length
+    const len = Math.hypot(b.x - a.x, b.y - a.y);
+    edge.style.strokeDasharray = len;
+    edge.style.strokeDashoffset = len;
+  }
+
+  // ── Terminal — typewriter engine ─────────────────────────────────────────
+  const termLines = document.getElementById('term-lines');
+
+  // Queue so multiple typewriter calls don't collide
+  let _twQueue = Promise.resolve();
+
+  /**
+   * typeWrite(text, opts) → Promise
+   * Appends a new line and types it character-by-character.
+   * opts.isReady   : use green "ready" colour
+   * opts.isCmd     : use dim "command input" colour (before the response)
+   * opts.speed     : base ms per char (default 38)
+   * opts.jitter    : max random ms added per char (default 28)
+   * opts.preDelay  : ms pause before typing starts (default 0)
+   * opts.postDelay : ms pause after typing finishes (default 120)
+   */
+  function typeWrite(text, opts = {}) {
+    const promise = _twQueue.then(() => new Promise(resolve => {
+      const {
+        isReady   = false,
+        isCmd     = false,
+        speed     = 38,
+        jitter    = 28,
+        preDelay  = 0,
+        postDelay = 140,
+      } = opts;
+
+      // Create the line element
+      const line = document.createElement('div');
+      line.className = 'term-line' +
+        (isReady ? ' ready' : '') +
+        (isCmd   ? ' cmd'   : '');
+      termLines.appendChild(line);
+
+      // Inline cursor that travels with the text
+      const cur = document.createElement('span');
+      cur.className = 'term-cursor-inline' + (isReady ? ' green' : '');
+      line.appendChild(cur);
+
+      termLines.scrollTop = termLines.scrollHeight;
+
+      let i = 0;
+      function typeChar() {
+        if (i < text.length) {
+          // Insert char before the cursor
+          line.insertBefore(document.createTextNode(text[i]), cur);
+          i++;
+          termLines.scrollTop = termLines.scrollHeight;
+          // Variable speed: punctuation & spaces get a longer pause
+          const ch = text[i - 1];
+          let delay = speed + Math.random() * jitter;
+          if (ch === '.' || ch === ',' || ch === '!' || ch === '?') delay += 120;
+          else if (ch === ' ') delay += 15;
+          else if (ch === '>' || ch === ':') delay += 40;
+          setTimeout(typeChar, delay);
+        } else {
+          // Done typing — remove inline cursor, leave a static block
+          cur.remove();
+          setTimeout(resolve, postDelay);
+        }
+      }
+
+      setTimeout(typeChar, preDelay);
+    }));
+    _twQueue = promise;
+    return promise;
+  }
+
+  // Convenience: enqueue a line and return immediately (fire-and-forget into queue)
+  function addTermLine(text, isReady) {
+    typeWrite(text, { isReady, speed: 36, jitter: 32, preDelay: 60 });
+  }
+
+  // ── Progress ──────────────────────────────────────────────────────────────
+  function setProgress(pct) {
+    document.getElementById('prog-bar-fill').style.width = pct + '%';
+    document.getElementById('prog-pct').textContent = pct + '%';
+  }
+
+  // ── Activation sequence ───────────────────────────────────────────────────
+  // Nodes light up ONLY after their terminal line finishes typing.
+  // The loader cannot exit until the full defensive stack sequence completes.
+
+  let edgesDrawn = 0;
+  function drawNextEdge() {
+    if (edgesDrawn >= 5) return;
+    document.getElementById('edge-' + edgesDrawn).classList.add('drawn');
+    edgesDrawn++;
+  }
+
+  // ── Background product reveal helpers ─────────────────────────────────────
+  const bgProduct   = document.getElementById('loader-bg-product');
+  const bgIconEl    = document.getElementById('bp-icon');
+  const bgNameEl    = document.getElementById('bp-name');
+  const bgGlowEl    = document.getElementById('bp-glow');
+
+  function showBgProduct(pillar) {
+    // Fade out existing elements first
+    bgIconEl.classList.remove('show');
+    bgNameEl.classList.remove('show');
+    bgGlowEl.classList.remove('show');
+
+    setTimeout(() => {
+      // Swap content and fade in
+      bgIconEl.innerHTML = pillar.icon;
+      // Force svg stroke reset for background size
+      const svg = bgIconEl.querySelector('svg');
+      if (svg) { svg.removeAttribute('stroke'); svg.removeAttribute('stroke-width'); }
+      bgNameEl.textContent = pillar.bgName;
+      bgProduct.classList.add('bp-visible');
+      bgGlowEl.classList.add('show');
+      // slight stagger on icon + name for depth
+      setTimeout(() => {
+        bgIconEl.classList.add('show');
+        bgNameEl.classList.add('show');
+      }, 120);
+    }, 350);
+  }
+
+  // ── Async sequence: each step awaits typewrite completion ─────────────────
+  async function runSequence() {
+    // Initial boot line
+    await new Promise(r => setTimeout(r, 900));
+    setProgress(5);
+    await typeWrite('> Initializing Microsoft Defender XDR telemetry...', {
+      speed: 36, jitter: 30, preDelay: 60, postDelay: 220
+    });
+
+    // Activate each pillar: type terminal → THEN reveal node + bg product
+    for (let i = 0; i < PILLARS.length; i++) {
+      const p = PILLARS[i];
+      await new Promise(r => setTimeout(r, 200));
+
+      // Type the terminal line for this pillar
+      const text = p.term.replace(/&amp;/g, '&');
+      await typeWrite(text, { speed: 36, jitter: 30, preDelay: 60, postDelay: 180 });
+
+      // Terminal text is fully written → now reveal the Defender suite
+      const el = document.getElementById(p.id);
+      el.classList.add('lit');
+      // brief pulse animation
+      setTimeout(() => { el.classList.add('pulse'); }, 80);
+      setTimeout(() => { el.classList.remove('pulse'); }, 750);
+
+      drawNextEdge();
+      setProgress(Math.round(10 + (i + 1) * 16));
+      showBgProduct(p);
+
+      await new Promise(r => setTimeout(r, 280));
+    }
+
+    // ── Final: pentagon complete, all nodes pulse ───────────────────────────
+    drawNextEdge(); // closing edge
+    document.getElementById('penta-fill-poly').classList.add('show');
+    PILLARS.forEach(p => document.getElementById(p.id).classList.add('pulse'));
+    for (let i = 0; i < 5; i++) {
+      document.getElementById('edge-' + i).classList.add('pulse-edge');
+    }
+    setProgress(95);
+
+    await new Promise(r => setTimeout(r, 480));
+    await typeWrite('> ATLAS INITIALIZED. READY FOR DISCOVERY.', {
+      isReady: true, speed: 38, jitter: 18, preDelay: 60, postDelay: 220
+    });
+    setProgress(100);
+    document.querySelector('#loader-progress-wrap .prog-label').textContent = 'Complete';
+
+    // Exit only after the full defensive stack has been revealed
+    await new Promise(r => setTimeout(r, 2600));
+    const loaderEl = document.getElementById('atlas-loader');
+    loaderEl.classList.add('exit');
+    setTimeout(() => {
+      loaderEl.style.display = 'none';
+      loaderEl.remove();
+      const style = document.getElementById('loader-styles');
+      if (style) style.remove();
+    }, 900);
+  }
+
+  runSequence();
+
+})();
+</script>
+
 
 <!-- ══ TOP BAR ══ -->
 <div class="topbar">
@@ -1645,7 +2376,7 @@ const BUNDLE_MAP = {
                  'copilot-chat','security-copilot'],
   'biz-basic':  ['az-free','purview-std','copilot-chat'],
   'biz-std':    ['az-free','purview-std','copilot-chat'],
-  'm365-bp':    ['az-free','entra-p1','mde-p1','purview-std','purview-ip1','copilot-chat'],
+  'm365-bp':    ['az-free','entra-p1','mde-p1','mdo-p1','purview-std','purview-ip1','copilot-chat'],
   'o365-e1':    ['az-free','purview-std','copilot-chat'],
   'o365-e3':    ['az-free','purview-std','copilot-chat'],
   'o365-e5':    ['az-free','purview-std','mdo-p1','mdo-p2','purview-adaudit','purview-edprem','copilot-chat'],
