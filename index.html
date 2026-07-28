@@ -1127,6 +1127,7 @@
         <div class="lic-toggle" id="lt-m365-f3"  onclick="toggleL('m365-f3')"><div class="dot"></div>F3</div>
         <div class="lic-toggle" id="lt-m365-e3"  onclick="toggleL('m365-e3')"><div class="dot"></div>E3</div>
         <div class="lic-toggle" id="lt-m365-e5"  onclick="toggleL('m365-e5')"><div class="dot"></div>E5</div>
+        <div class="lic-toggle" id="lt-m365-e7"  onclick="toggleL('m365-e7')"><div class="dot"></div><span>E7<br><small style="opacity:.6;font-size:9px;">"Frontier Suite" · GA May 1 2026 · $99/user/mo</small></span></div>
         <div class="lic-subtier">BUSINESS</div>
         <div class="lic-toggle" id="lt-biz-basic" onclick="toggleL('biz-basic')"><div class="dot"></div>Basic</div>
         <div class="lic-toggle" id="lt-biz-std"  onclick="toggleL('biz-std')"><div class="dot"></div>Standard</div>
@@ -1207,6 +1208,7 @@
         <div class="lic-subtier">SECURITY &amp; AGENTS</div>
         <div class="lic-toggle" id="lt-security-copilot" onclick="toggleL('security-copilot')"><div class="dot"></div><span>Security Copilot<br><small style="opacity:.6;font-size:9px;">Standalone SCU · Included with M365 E5 &amp; E5 Security</small></span></div>
         <div class="lic-toggle" id="lt-copilot-studio"   onclick="toggleL('copilot-studio')"><div class="dot"></div><span>Copilot Studio<br><small style="opacity:.6;font-size:9px;">Power Platform · Separate license</small></span></div>
+        <div class="lic-toggle" id="lt-agent-365"        onclick="toggleL('agent-365')"><div class="dot"></div><span>Agent 365<br><small style="opacity:.6;font-size:9px;">Add-on ($15/user/mo) · Included in E7 · GA May 1 2026</small></span></div>
       </div>
     </div>
 
@@ -1226,7 +1228,7 @@
   <div class="hero-sub">A comprehensive interactive reference for Azure &amp; M365 log sources, license requirements, retention periods, data locations, and role-based access. Built for cloud incident response, digital forensics, and threat investigations.</div>
 
   <div class="stats-row">
-    <div class="stat-box"><div class="stat-n" id="stat-sources">65+</div><div class="stat-l">Log Sources</div></div>
+    <div class="stat-box"><div class="stat-n" id="stat-sources">66+</div><div class="stat-l">Log Sources</div></div>
     <div class="stat-box"><div class="stat-n" id="stat-categories">8</div><div class="stat-l">Categories</div></div>
     <div class="stat-box"><div class="stat-n" id="stat-roles">31+</div><div class="stat-l">Roles Documented</div></div>
     <div class="stat-box"><div class="stat-n" id="stat-licenses">0</div><div class="stat-l" id="stat-licenses-label">Licenses Active</div></div>
@@ -1237,7 +1239,7 @@
   <div class="overview-grid">
     <div class="map-node" onclick="nav('azure',null)" style="--accent-color:#00b4ff"><div class="map-node-icon">☁</div><div class="map-node-name">Azure Platform</div><div class="map-node-count" id="mn-azure">10 sources</div><div class="map-node-bar"><div class="map-node-bar-fill" id="mnb-azure" style="width:82%"></div></div></div>
     <div class="map-node" onclick="nav('entra',null)" style="--accent-color:#4db3ff"><div class="map-node-icon">🔑</div><div class="map-node-name">Entra ID</div><div class="map-node-count" id="mn-entra">9 sources</div><div class="map-node-bar"><div class="map-node-bar-fill" id="mnb-entra" style="width:76%"></div></div></div>
-    <div class="map-node" onclick="nav('m365',null)" style="--accent-color:#0078d4"><div class="map-node-icon">📧</div><div class="map-node-name">M365 / Office</div><div class="map-node-count" id="mn-m365">13 sources</div><div class="map-node-bar"><div class="map-node-bar-fill" id="mnb-m365" style="width:90%"></div></div></div>
+    <div class="map-node" onclick="nav('m365',null)" style="--accent-color:#0078d4"><div class="map-node-icon">📧</div><div class="map-node-name">M365 / Office</div><div class="map-node-count" id="mn-m365">14 sources</div><div class="map-node-bar"><div class="map-node-bar-fill" id="mnb-m365" style="width:90%"></div></div></div>
     <div class="map-node" onclick="nav('defender',null)" style="--accent-color:#ff8c00"><div class="map-node-icon">🛡</div><div class="map-node-name">Defender XDR</div><div class="map-node-count" id="mn-defender">16 sources</div><div class="map-node-bar"><div class="map-node-bar-fill" id="mnb-defender" style="width:96%"></div></div></div>
     <div class="map-node" onclick="nav('sentinel',null)" style="--accent-color:#b44fff"><div class="map-node-icon">🔭</div><div class="map-node-name">Sentinel</div><div class="map-node-count" id="mn-sentinel">6 sources</div><div class="map-node-bar"><div class="map-node-bar-fill" id="mnb-sentinel" style="width:68%"></div></div></div>
     <div class="map-node" onclick="nav('purview',null)" style="--accent-color:#00c8d4"><div class="map-node-icon">🔒</div><div class="map-node-name">Purview</div><div class="map-node-count" id="mn-purview">11 sources</div><div class="map-node-bar"><div class="map-node-bar-fill" id="mnb-purview" style="width:72%"></div></div></div>
@@ -1248,7 +1250,7 @@
   <div class="warn-box">
     <div class="warn-title">⚠ FIRST RESPONSE — IMMEDIATE PRESERVATION CHECKLIST</div>
     <div class="warn-grid">
-      <div>▶ Preserve Unified Audit Log (UAL) — 90-day default window</div>
+      <div>▶ Preserve Unified Audit Log (UAL) — 180-day default window</div>
       <div>▶ Collect Entra Sign-In Logs — only 7–30 days in portal</div>
       <div>▶ Verify Advanced Audit is ON (MailItemsAccessed, SearchQueryInitiated)</div>
       <div>▶ Export MDE Advanced Hunting — 30-day rolling window</div>
@@ -1517,7 +1519,7 @@
 
 <!-- ══ M365 / OFFICE ══ -->
 <div class="page" id="pg-m365">
-  <div class="sec-hdr"><div class="sec-title">📧 MICROSOFT 365 / OFFICE LOGS</div><span class="sec-cnt" id="cnt-m365">13 sources</span></div>
+  <div class="sec-hdr"><div class="sec-title">📧 MICROSOFT 365 / OFFICE LOGS</div><span class="sec-cnt" id="cnt-m365">14 sources</span></div>
   <div class="sec-sub">Exchange Online, SharePoint, OneDrive, Teams, Power Platform, Microsoft Copilot AI, and M365 platform audit logs.</div>
   <div class="search-row"><input class="s-input" type="text" placeholder="Search M365 logs…" oninput="filterSection(this,'m365')"></div>
   <div class="cat-grid" id="grid-m365">
@@ -1529,7 +1531,7 @@
           <div class="log-item-top"><div class="log-name">Unified Audit Log</div><div class="log-badges"><span class="b b-on">Default ON (E3+)</span><span class="b b-e3">E3 / E5</span><span class="b b-crit">Critical</span><span class="dfir-flag">DFIR</span></div></div>
           <div class="log-desc">Aggregates activities from Exchange, SharePoint, OneDrive, Teams, Entra ID, Power BI, Power Apps, and more into a single searchable log.
             <div class="det-grid">
-              <div class="det-cell"><div class="det-lbl">Retention</div><div class="det-val">90 days (E3), 180 days (E5/Advanced Audit), 1 year (Adv Audit add-on), 10 years (10-yr SKU)</div></div>
+              <div class="det-cell"><div class="det-lbl">Retention</div><div class="det-val">180 days default (Standard, all licenses since Oct 2023); E5/Advanced Audit adds 1-year default for Exchange/SharePoint/OneDrive/Entra ID (180d for other workloads unless a custom policy is set), up to 10 years (10-yr SKU)</div></div>
               <div class="det-cell"><div class="det-lbl">Portal</div><div class="det-val mono">Microsoft Purview → Audit → New Search</div></div>
               <div class="det-cell"><div class="det-lbl">PowerShell</div><div class="det-val mono">Search-UnifiedAuditLog -StartDate -EndDate -RecordType -Operations</div></div>
               <div class="det-cell"><div class="det-lbl">Sentinel Table</div><div class="det-val mono">OfficeActivity</div></div>
@@ -1632,7 +1634,7 @@
               <div class="det-cell"><div class="det-lbl">UAL RecordType</div><div class="det-val mono">CopilotInteraction (RecordType 261)</div></div>
               <div class="det-cell"><div class="det-lbl">UAL Operations</div><div class="det-val mono">AISystemPlugin, CopilotChat</div></div>
               <div class="det-cell"><div class="det-lbl">Key Fields</div><div class="det-val">UserId, CreationTime, AppName, CopilotEventData (context resources accessed)</div></div>
-              <div class="det-cell"><div class="det-lbl">Retention</div><div class="det-val">Standard UAL: 90 days. Advanced Audit (E5): 180 days / 1-year add-on</div></div>
+              <div class="det-cell"><div class="det-lbl">Retention</div><div class="det-val">Standard UAL: 180 days. Advanced Audit (E5): 1-year default for Exchange/SharePoint/OneDrive/Entra ID, 180 days other workloads / 10-yr add-on</div></div>
               <div class="det-cell"><div class="det-lbl">IR Value</div><div class="det-val">Detect insider threat data staging via AI — employees using Copilot to summarise sensitive files before departure. Identify compromised accounts querying for credential stores or admin procedures via AI.</div></div>
               <div class="det-cell"><div class="det-lbl">Access</div><div class="det-val">Unified Audit Log → filter by RecordType 261. No extra license beyond active Entra ID / Microsoft work account.</div></div>
             </div>
@@ -1664,7 +1666,7 @@
         </div>
         <div class="log-item" onclick="xlog(this)" data-requires="security-copilot">
           <div class="log-item-top"><div class="log-name">Security Copilot Interaction &amp; Admin Logs</div><div class="log-badges"><span class="b" style="background:rgba(255,110,64,0.18);border-color:rgba(255,110,64,0.5);color:#ff6e40;">Security Copilot</span><span class="b b-high">High</span><span class="dfir-flag">DFIR</span></div></div>
-          <div class="log-desc">Audit records for Microsoft Security Copilot (formerly Copilot for Security). Captures every user prompt submission, response generation, plugin usage, promptbook execution, and admin configuration change. Standalone SCU-based add-on; also included with M365 E5 and E5 Security (400 SCUs/1,000 licenses, phased rollout from Nov 18 2025, up to 10,000 SCUs/mo).
+          <div class="log-desc">Audit records for Microsoft Security Copilot (formerly Copilot for Security). Captures every user prompt submission, response generation, plugin usage, promptbook execution, and admin configuration change. Standalone SCU-based add-on; also included with M365 E5, E5 Security, and E7 (400 SCUs/1,000 licenses, up to 10,000 SCUs/mo). Rollout came in two waves for E5: existing Security Copilot customers got it Nov 18, 2025; the broad wave for remaining E5 tenants began April 20, 2026. E7 tenants get it included from E7's May 1, 2026 GA.
             <div class="det-grid">
               <div class="det-cell"><div class="det-lbl">UAL Workload</div><div class="det-val mono">SecurityCopilot (separate workload, searchable in Purview Audit)</div></div>
               <div class="det-cell"><div class="det-lbl">UAL RecordTypes</div><div class="det-val mono">CopilotInteraction, SecurityCopilotPlugin, SecurityCopilotAgent</div></div>
@@ -1672,7 +1674,7 @@
               <div class="det-cell"><div class="det-lbl">Sentinel Integration</div><div class="det-val">Security Copilot Audit Sentinel connector → Log Analytics; includes detection rules for anomalous prompting from IOC-matched IPs and suspicious admin actions (DeleteCopilotPromptBook, DisableCopilotPlugin)</div></div>
               <div class="det-cell"><div class="det-lbl">DSPM for AI</div><div class="det-val">Purview DSPM for AI surfaces full prompt/response pairs (not just metadata) — requires opt-in during Security Copilot first-run experience</div></div>
               <div class="det-cell"><div class="det-lbl">IR Value</div><div class="det-val">Detect compromised analyst accounts abusing Security Copilot to enumerate tenant defences, extract IOC context, or run reconnaissance via AI-assisted Sentinel/Defender queries</div></div>
-              <div class="det-cell"><div class="det-lbl">License</div><div class="det-val">Standalone: Azure SCU capacity (pay-per-use). Bundled: M365 E5 or E5 Security add-on — 400 SCU/1,000 users/mo (up to 10,000 SCUs/mo), phased rollout from Nov 18 2025, 30-day advance notice before activation</div></div>
+              <div class="det-cell"><div class="det-lbl">License</div><div class="det-val">Standalone: Azure SCU capacity (pay-per-use). Bundled: M365 E5, E5 Security add-on, or E7 — 400 SCU/1,000 users/mo (up to 10,000 SCUs/mo). Wave 1 (existing SC customers on E5): Nov 18, 2025. Wave 2 (all remaining E5 tenants): began April 20, 2026, 30-day advance notice before activation. E7 tenants get it included from E7's May 1, 2026 GA.</div></div>
             </div>
           </div>
         </div>
@@ -1686,6 +1688,17 @@
               <div class="det-cell"><div class="det-lbl">Sentinel Table</div><div class="det-val mono">PowerPlatformAdminActivity (via Power Platform Sentinel connector)</div></div>
               <div class="det-cell"><div class="det-lbl">IR Value</div><div class="det-val">Detect rogue agents exfiltrating data via external connectors or webhook actions; identify insider agents scraping SharePoint/Graph data at scale; track agent modifications after a compromise.</div></div>
               <div class="det-cell"><div class="det-lbl">License</div><div class="det-val">Copilot Studio standalone or Power Platform per-user license. User interaction logging requires assigned M365 license on each user account.</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="log-item" onclick="xlog(this)" data-requires="agent-365">
+          <div class="log-item-top"><div class="log-name">Agent 365 Governance & Audit Logs</div><div class="log-badges"><span class="b" style="background:rgba(167,139,250,0.18);border-color:rgba(167,139,250,0.5);color:#a78bfa;">Agent 365</span><span class="b b-high">High</span><span class="dfir-flag">DFIR</span></div></div>
+          <div class="log-desc">Audit trail from Microsoft Agent 365 (GA May 1, 2026), the centralized control plane for discovering, governing, and securing AI agents — Microsoft-built and third-party — across the tenant. Extends existing Entra, Purview, and Defender policies to cover agent identities rather than logging agent conversations itself. Not an agent-building platform; a governance layer over agents built elsewhere (Copilot Studio, Foundry, custom).
+            <div class="det-grid">
+              <div class="det-cell"><div class="det-lbl">Coverage</div><div class="det-val">Agent registration/deregistration, agent identity assignment, policy application (CA, DLP, sensitivity labels) to agent identities, agent-to-resource access</div></div>
+              <div class="det-cell"><div class="det-lbl">Portal</div><div class="det-val">Agent 365 control plane; agent identity events also surfaced via Entra (agent identities) and Purview (DSPM for AI)</div></div>
+              <div class="det-cell"><div class="det-lbl">IR Value</div><div class="det-val">Inventory every agent with access to tenant data during a compromise; detect rogue or unauthorized agents; scope which resources a compromised agent identity could reach.</div></div>
+              <div class="det-cell"><div class="det-lbl">License</div><div class="det-val">Standalone add-on ($15/user/mo) — requires M365 E5, M365 F5 Defender + Purview, or Business Premium as prerequisite. Included at no extra cost with M365 E7.</div></div>
             </div>
           </div>
         </div>
@@ -1930,7 +1943,7 @@
   <div class="sec-sub">Microsoft Purview provides compliance, data governance, eDiscovery, information protection, and insider risk capabilities.</div>
   <div style="background:rgba(0,200,212,0.05);border:1px solid rgba(0,200,212,0.2);border-radius:4px;padding:12px 16px;margin-bottom:18px;font-size:12px;color:var(--text-dim);">
     <span style="font-family:'Orbitron',monospace;font-size:10px;color:var(--purview);letter-spacing:1.5px;">PURVIEW LICENSE MAP: </span>
-    M365 E3 = Compliance std &nbsp;|&nbsp; E5 Compliance = full suite &nbsp;|&nbsp; Advanced Audit = 180d UAL + MailItemsAccessed &nbsp;|&nbsp; Info Protection P1/P2 &nbsp;|&nbsp; Insider Risk &nbsp;|&nbsp; eDiscovery Premium
+    M365 E3 = Compliance std &nbsp;|&nbsp; E5 Compliance = full suite &nbsp;|&nbsp; Advanced Audit = 1yr UAL (core workloads) + MailItemsAccessed &nbsp;|&nbsp; Info Protection P1/P2 &nbsp;|&nbsp; Insider Risk &nbsp;|&nbsp; eDiscovery Premium
   </div>
   <div class="search-row"><input class="s-input" type="text" placeholder="Search Purview logs…" oninput="filterSection(this,'purview')"></div>
   <div class="cat-grid" id="grid-purview">
@@ -1940,22 +1953,22 @@
       <div class="cat-body">
         <div class="log-item" onclick="xlog(this)" data-requires="purview-std">
           <div class="log-item-top"><div class="log-name">Unified Audit Log (Purview Audit Standard)</div><div class="log-badges"><span class="b b-on">Default ON</span><span class="b b-purview">Purview Std</span><span class="b b-crit">Critical</span><span class="dfir-flag">DFIR</span></div></div>
-          <div class="log-desc">Purview Audit Standard — 90-day retention, 140+ workload-specific record types.
+          <div class="log-desc">Purview Audit Standard — 180-day default retention (raised from 90 days in Oct 2023), 140+ workload-specific record types.
             <div class="det-grid">
               <div class="det-cell"><div class="det-lbl">License</div><div class="det-val">Included with M365 E3, E5, Business Premium, F3</div></div>
               <div class="det-cell"><div class="det-lbl">Portal</div><div class="det-val mono">Microsoft Purview → Audit → New Search</div></div>
               <div class="det-cell"><div class="det-lbl">PowerShell</div><div class="det-val mono">Search-UnifiedAuditLog</div></div>
-              <div class="det-cell"><div class="det-lbl">Retention</div><div class="det-val">90 days (Standard)</div></div>
+              <div class="det-cell"><div class="det-lbl">Retention</div><div class="det-val">180 days (Standard, all license tiers)</div></div>
             </div>
           </div>
         </div>
         <div class="log-item" onclick="xlog(this)" data-requires="purview-adaudit">
           <div class="log-item-top"><div class="log-name">Purview Audit Premium (Advanced Audit)</div><div class="log-badges"><span class="b b-off">Premium Required</span><span class="b b-purview">E5 Compliance / Adv Audit</span><span class="b b-crit">Critical</span><span class="dfir-flag">DFIR</span></div></div>
-          <div class="log-desc">Extends UAL with 180-day retention and unlocks MailItemsAccessed, Send, SearchQueryInitiatedExchange/SharePoint.
+          <div class="log-desc">Extends UAL with 1-year default retention for Exchange/SharePoint/OneDrive/Entra ID records (other workloads stay at 180 days by default) and unlocks MailItemsAccessed, Send, SearchQueryInitiatedExchange/SharePoint.
             <div class="det-grid">
               <div class="det-cell"><div class="det-lbl">License</div><div class="det-val">M365 E5, M365 E5 Compliance, or Purview Audit (Premium) add-on per user</div></div>
               <div class="det-cell"><div class="det-lbl">Premium Events</div><div class="det-val">MailItemsAccessed, Send, SearchQueryInitiatedExchange, SearchQueryInitiatedSharePoint, ManagedByDelegate</div></div>
-              <div class="det-cell"><div class="det-lbl">Retention</div><div class="det-val">180 days default. Add Audit Log Retention Policy for 1-year or 10-year.</div></div>
+              <div class="det-cell"><div class="det-lbl">Retention</div><div class="det-val">1 year default for Exchange/SharePoint/OneDrive/Entra ID; 180 days for other workloads. Add Audit Log Retention Policy for up to 10 years.</div></div>
             </div>
           </div>
         </div>
@@ -2100,8 +2113,8 @@
       <tr data-scope="free"><td><span class="mono">Azure Activity Log (AzureActivity)</span></td><td>90 days (free in portal)</td><td>7+ years</td><td>Monitor → Diagnostic Settings → Log Analytics or Storage</td><td>Free</td></tr>
       <tr data-scope="entra-p1"><td><span class="mono">Entra Sign-In Logs (portal)</span></td><td>7 days (Free) / 30 days (P1/P2)</td><td>Unlimited (via LA)</td><td>Entra ID → Diagnostic Settings → Log Analytics. Requires P1.</td><td>Entra P1 for LA export</td></tr>
       <tr data-scope="entra-p1"><td><span class="mono">Entra Audit Logs (portal)</span></td><td>7 days (Free) / 30 days (P1/P2)</td><td>Unlimited (via LA)</td><td>Same as sign-in logs</td><td>Entra P1 for LA export</td></tr>
-      <tr data-scope="purview-std"><td><span class="mono">Unified Audit Log — Standard</span></td><td>90 days (E3 / Business Premium)</td><td>90 days (Standard)</td><td>Upgrade to Advanced Audit or Purview E5 Compliance add-on</td><td>M365 E3 / Business Premium</td></tr>
-      <tr data-scope="purview-adaudit"><td><span class="mono">Unified Audit Log — Advanced Audit</span></td><td>180 days</td><td>10 years (10-yr SKU add-on)</td><td>Purview → Audit Retention Policies. Per-user Advanced Audit license.</td><td>M365 E5 / E5 Compliance / Adv Audit add-on</td></tr>
+      <tr data-scope="purview-std"><td><span class="mono">Unified Audit Log — Standard</span></td><td>180 days (all license tiers, since Oct 17 2023)</td><td>180 days (Standard, no custom policy)</td><td>Upgrade to Advanced Audit or Purview E5 Compliance add-on for longer defaults</td><td>M365 E3+ / Business Premium</td></tr>
+      <tr data-scope="purview-adaudit"><td><span class="mono">Unified Audit Log — Advanced Audit</span></td><td>1 year (Exchange/SharePoint/OneDrive/Entra ID); 180 days (other workloads)</td><td>10 years (10-yr SKU add-on)</td><td>Purview → Audit Retention Policies. Per-user Advanced Audit license.</td><td>M365 E5 / E5 Compliance / Adv Audit add-on</td></tr>
       <tr data-scope="free"><td><span class="mono">Exchange Message Trace</span></td><td>10 days (EAC portal)</td><td>90 days (hard cap)</td><td>PowerShell: Start-HistoricalSearch. Cannot exceed 90 days.</td><td>E3+ (included)</td></tr>
       <tr data-scope="mde-p2"><td><span class="mono">MDE Advanced Hunting Tables</span></td><td>30 days</td><td>12 years (via Sentinel archive)</td><td>Enable Defender XDR → Sentinel connector (free ingestion).</td><td>MDE P2 + Sentinel</td></tr>
       <tr data-scope="mdca"><td><span class="mono">MDCA / CloudAppEvents (portal)</span></td><td>30 days</td><td>Unlimited (via Sentinel)</td><td>MDCA → Sentinel connector (free ingestion)</td><td>MDCA + Sentinel</td></tr>
@@ -2118,6 +2131,7 @@
     <div style="font-size:13px;color:var(--text-dim);line-height:1.8;">
       <div>▸ <strong style="color:var(--text)">No Entra P1?</strong> Sign-in logs visible for only 7 days. After that, authentication history is gone.</div>
       <div>▸ <strong style="color:var(--text)">No Advanced Audit (E5)?</strong> MailItemsAccessed is not logged at all. Cannot determine which emails were read.</div>
+      <div>▸ <strong style="color:var(--text)">UAL Standard caps at 180 days:</strong> Raised from 90 days in Oct 2023, but still a hard wall without Advanced Audit or a custom retention policy — investigations older than 6 months lose data.</div>
       <div>▸ <strong style="color:var(--text)">No Diagnostic Settings?</strong> Key Vault, Storage, SQL, and Firewall logs evaporate immediately.</div>
       <div>▸ <strong style="color:var(--text)">MDE 30-day hard limit:</strong> Endpoint telemetry purged after 30 days. Ingest to Sentinel for longer windows.</div>
       <div>▸ <strong style="color:var(--text)">Exchange Message Trace hard cap:</strong> Cannot be extended beyond 90 days regardless of license.</div>
@@ -2351,7 +2365,7 @@ const activeLics = new Set();
 let licPanelCollapsed = false;
 
 const LIC_COLOR = {
-  'm365-f1':'am365','m365-f3':'am365','m365-e3':'am365','m365-e5':'am365',
+  'm365-f1':'am365','m365-f3':'am365','m365-e3':'am365','m365-e5':'am365','m365-e7':'am365',
   'biz-basic':'am365','biz-std':'am365','m365-bp':'am365',
   'o365-e1':'am365','o365-e3':'am365','o365-e5':'am365',
   'mde-p1':'adefender','mde-p2':'adefender','mdo-p1':'adefender','mdo-p2':'adefender',
@@ -2361,7 +2375,7 @@ const LIC_COLOR = {
   'purview-std':'apurview','purview-e5c':'apurview','purview-adaudit':'apurview',
   'purview-ip1':'apurview','purview-ip2':'apurview','purview-irm':'apurview','purview-edprem':'apurview',
   'copilot-chat':'acopilot','copilot-m365':'acopilot','copilot-biz':'acopilot',
-  'security-copilot':'acopilot','copilot-studio':'acopilot'
+  'security-copilot':'acopilot','copilot-studio':'acopilot','agent-365':'acopilot'
 };
 const INC_CLASS = 'included';
 
@@ -2374,6 +2388,15 @@ const BUNDLE_MAP = {
                  'purview-std','purview-ip1','purview-ip2','purview-adaudit',
                  'purview-e5c','purview-irm','purview-edprem',
                  'copilot-chat','security-copilot'],
+  // ── M365 E7 "Frontier Suite" (GA May 1, 2026, $99/user/mo) ───────────────
+  // Bundles E5 + Microsoft 365 Copilot + Microsoft Entra Suite + Agent 365.
+  // Everything E5 unlocks, plus the M365 Copilot add-on and Agent 365 governance
+  // logs, at no extra license. (Microsoft Learn / Product Terms, May 2026)
+  'm365-e7':    ['m365-f1','m365-e3','m365-e5','az-free','entra-p1','entra-p2',
+                 'mde-p1','mde-p2','mdo-p1','mdo-p2','mdi','mdca','mde5s',
+                 'purview-std','purview-ip1','purview-ip2','purview-adaudit',
+                 'purview-e5c','purview-irm','purview-edprem',
+                 'copilot-chat','security-copilot','copilot-m365','agent-365'],
   'biz-basic':  ['az-free','copilot-chat'],
   'biz-std':    ['az-free','copilot-chat'],
   'm365-bp':    ['az-free','entra-p1','mde-p1','mdo-p1','purview-std','purview-ip1','copilot-chat'],
@@ -2407,15 +2430,23 @@ const BUNDLE_MAP = {
   'copilot-biz':     ['copilot-chat','az-free'],
   // ── Microsoft Security Copilot ────────────────────────────────────────────
   // Standalone: SCU-based (Azure, pay-as-you-go).
-  // Bundled: Included with M365 E5 AND E5 Security add-on (phased rollout from Nov 18 2025).
-  //   400 SCU/month per 1,000 user licenses (up to 10,000 SCUs/mo), auto-provisioned.
-  //   E5 customers notified 30 days before activation. (MS Learn security-copilot-inclusion)
-  // NOTE: NOT included with M365 E3, O365, or any other plan below E5/E5 Security.
+  // Bundled: Included with M365 E5, E5 Security add-on, and E7. Rollout waves:
+  //   Wave 1 (existing SC customers on E5) — Nov 18, 2025. Wave 2 (all remaining
+  //   E5 tenants) — began Apr 20, 2026. E7 tenants get it included from E7's
+  //   May 1, 2026 GA. 400 SCU/month per 1,000 user licenses (up to 10,000 SCUs/mo),
+  //   auto-provisioned, 30-day advance notice. (MS Learn security-copilot-inclusion)
+  // NOTE: NOT included with M365 E3, O365, or any other plan below E5/E5 Security/E7.
   'security-copilot': ['az-free'],
   // ── Copilot Studio ────────────────────────────────────────────────────────
   // Power Platform product — completely separate licensing from M365/O365.
   // NOT included with E3/E5, M365 Copilot, or any M365 base plan. (MS SvcDesc, 2025)
   'copilot-studio':   ['az-free'],
+  // ── Microsoft Agent 365 ───────────────────────────────────────────────────
+  // Standalone: $15/user/mo add-on. Requires M365 E5, M365 F5 Defender+Purview,
+  // or Business Premium as a prerequisite. Included in M365 E7 at no extra cost.
+  // GA May 1, 2026 alongside E7. Governance/control-plane for AI agents across
+  // Entra, Purview, and Defender — not an agent-building platform itself.
+  'agent-365':        ['az-free'],
 };
 
 function toggleL(id) {
@@ -2528,7 +2559,7 @@ function updateOverview(u, noFilter) {
   const sections = [
     { grid:'grid-azure',    countId:'mn-azure',    barId:'mnb-azure',    total:10 },
     { grid:'grid-entra',    countId:'mn-entra',    barId:'mnb-entra',    total:9  },
-    { grid:'grid-m365',     countId:'mn-m365',     barId:'mnb-m365',     total:13 },
+    { grid:'grid-m365',     countId:'mn-m365',     barId:'mnb-m365',     total:14 },
     { grid:'grid-defender', countId:'mn-defender', barId:'mnb-defender', total:16 },
     { grid:'grid-sentinel', countId:'mn-sentinel', barId:'mnb-sentinel', total:6  },
     { grid:'grid-purview',  countId:'mn-purview',  barId:'mnb-purview',  total:11 },
@@ -2571,7 +2602,7 @@ function updateOverview(u, noFilter) {
   const rolesEl = document.getElementById('mn-roles');
   if (rolesEl) rolesEl.textContent = allRoles.length + '+ roles';
   const srcEl = document.getElementById('stat-sources');
-  if (srcEl) { if (noFilter) animateCount(srcEl, 65, '+'); else animateCount(srcEl, totalAvail, ''); }
+  if (srcEl) { if (noFilter) animateCount(srcEl, 66, '+'); else animateCount(srcEl, totalAvail, ''); }
   const catEl = document.getElementById('stat-categories');
   if (catEl) {
     if (noFilter) { animateCount(catEl, 8, ''); }
@@ -2732,7 +2763,7 @@ const REQ_COLOR = {
 const CRITICAL_GAPS = [
   { req:'entra-p1',      msg:'Entra sign-in logs limited to 7 days. Cannot export to Log Analytics for extended retention or full investigation.',            severity:'critical' },
   { req:'m365-e5',       msg:'MailItemsAccessed not logged. Cannot determine which emails were read by a threat actor — BEC investigations severely limited.', severity:'critical' },
-  { req:'purview-adaudit',msg:'Advanced Audit events (MailItemsAccessed, SearchQueryInitiated) unavailable. UAL retention capped at 90 days.',               severity:'critical' },
+  { req:'purview-adaudit',msg:'Advanced Audit events (MailItemsAccessed, SearchQueryInitiated) unavailable. UAL retention capped at 180 days (Standard) instead of the 1-year Advanced Audit default for core workloads.', severity:'critical' },
   { req:'mde-p2',        msg:'No Advanced Hunting capability. Endpoint telemetry (process, network, file events) is not searchable beyond basic alerts.',     severity:'high' },
   { req:'mdi',           msg:'No on-premises AD telemetry. Cannot detect Pass-the-Hash, Kerberoasting, DCSync, or lateral movement in hybrid environments.', severity:'high' },
   { req:'mdca',          msg:'No CASB visibility. CloudAppEvents unavailable — OAuth abuse, multi-cloud activity, and app anomalies are blind spots.',        severity:'high' },
@@ -2959,7 +2990,7 @@ function buildExecSummary() {
       <div class="exec-section-title">Coverage Summary</div>
       <div class="exec-grid">
         <div class="exec-stat">
-          <div class="exec-stat-n">${noFilter ? '65+' : availSources}</div>
+          <div class="exec-stat-n">${noFilter ? '66+' : availSources}</div>
           <div class="exec-stat-l">Log Sources Available</div>
         </div>
         <div class="exec-stat">
@@ -3009,7 +3040,7 @@ function buildExecSummary() {
       <div class="exec-section-title">Key Retention Reminders</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
         <div class="exec-gap-item"><span class="exec-gap-icon" style="color:var(--red)">▸</span><div><strong style="color:var(--text)">Entra Sign-In Logs:</strong> 7 days (Free), 30 days (P1/P2). Export immediately during IR.</div></div>
-        <div class="exec-gap-item"><span class="exec-gap-icon" style="color:var(--red)">▸</span><div><strong style="color:var(--text)">UAL Standard:</strong> 90 days. Advanced Audit: 180 days. 10-year add-on available.</div></div>
+        <div class="exec-gap-item"><span class="exec-gap-icon" style="color:var(--red)">▸</span><div><strong style="color:var(--text)">UAL Standard:</strong> 180 days. Advanced Audit: 1-year default for Exchange/SharePoint/OneDrive/Entra ID. 10-year add-on available.</div></div>
         <div class="exec-gap-item"><span class="exec-gap-icon" style="color:var(--orange)">▸</span><div><strong style="color:var(--text)">MDE Advanced Hunting:</strong> 30-day hard limit. Ingest to Sentinel for extended retention.</div></div>
         <div class="exec-gap-item"><span class="exec-gap-icon" style="color:var(--orange)">▸</span><div><strong style="color:var(--text)">Exchange Message Trace:</strong> 90-day hard cap regardless of license.</div></div>
         <div class="exec-gap-item"><span class="exec-gap-icon" style="color:var(--yellow)">▸</span><div><strong style="color:var(--text)">Diagnostic Settings:</strong> Key Vault, Storage, SQL, Firewall logs not retained by default.</div></div>
