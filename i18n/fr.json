@@ -1,0 +1,139 @@
+{
+  "meta": {
+    "docTitle": "Sommaire exécutif : écarts de licences Microsoft 365",
+    "docSubtitle": "Feuille de route de remédiation priorisée par technique MITRE ATT&CK",
+    "preparedForLabel": "Préparé pour",
+    "preparedForValue": "Haute direction (CISO, VP de la sécurité de l'information) et équipe d'architecture de sécurité",
+    "dateLabel": "Date du rapport",
+    "sourceLabel": "Source des données",
+    "sourceValue": "Microsoft Defensive Cloud Atlas — résumé exécutif exporté ({scopeNames})",
+    "classificationLabel": "Classification",
+    "classificationValue": "Confidentiel — usage interne (IR)",
+    "methodNoteLabel": "Note méthodologique :",
+    "methodNote": "ce rapport traduit les données brutes de l'Atlas en une analyse de risque priorisée et un plan d'action. Les noms de licences, les capacités de journalisation, les modèles de tarification et les catalogues de détection évoluent fréquemment; validez chaque recommandation auprès de votre représentant Microsoft ou de la documentation Microsoft Learn en vigueur avant toute décision d'achat. Ce document ne constitue pas un avis juridique, financier ou de conformité.",
+    "unknownLicenseNoteLabel": "Note :",
+    "unknownLicenseNote": "{count} identifiant(s) de licence sélectionné(s) ne figurent pas encore dans le catalogue interne de cet outil : {ids}. Ils ont tout de même été comptés dans la couverture partout où une source de journaux les exige explicitement, mais leurs noms d'affichage et les inclusions d'offre groupée qu'ils pourraient accorder n'ont pas pu être résolus. Mettez à jour data/licenses.json pour les reconnaître pleinement."
+  },
+
+  "toolbar": {
+    "print": "Imprimer / Enregistrer en PDF",
+    "language": "Langue",
+    "close": "Fermer"
+  },
+
+  "summary": {
+    "title": "Sommaire",
+    "s1": "1. Aperçu exécutif",
+    "s2": "2. Matrice des lacunes de visibilité et de télémétrie",
+    "s3": "3. Analyse de la couverture des menaces MITRE ATT&CK",
+    "s4": "4. Impact sur l'intervention en cas d'incident",
+    "s5": "5. Plan de remédiation et feuille de route",
+    "s6": "Sources et références"
+  },
+
+  "section1": {
+    "title": "1. Aperçu exécutif",
+    "postureTitle": "1.1 Sommaire de la posture de sécurité actuelle",
+    "postureIntro": "Le périmètre de licence actuel donne accès à {activeCount} des {totalCount} sources de journalisation cartographiées ({activePct} % de couverture globale). Cette moyenne masque un déséquilibre marqué entre les couches de l'environnement :",
+    "categoryHeaders": { "category": "Catégorie", "coverage": "Couverture", "reading": "Lecture" },
+    "productsWord": "produits",
+    "top3Title": "1.2 Top 3 des risques stratégiques",
+    "ransomwareTitle": "1.3 Portrait de l'exposition au rançongiciel",
+    "ransomwareIntro": "Un rançongiciel n'est presque jamais une seule lacune — c'est une chaîne de six étapes, et une détection à n'importe quel maillon peut l'arrêter. Chaque étape ci-dessous est vérifiée selon le périmètre de licence actuel, indépendamment des Top 3 risques ci-dessus, parce qu'une menace de ce niveau mérite sa propre réponse, pas une mention accessoire dans une liste priorisée.",
+    "ransomwareBlindHeadline": "{blindCount} des {totalStages} étapes de la chaîne d'attaque sont sans aucune visibilité",
+    "ransomwareStatus": { "covered": "Visible", "partial": "Partielle", "blind": "Aveugle", "unmapped": "Aveugle" },
+    "stageWord": "Étape",
+    "roiTitle": "1.4 Rendement sur investissement (ROI) et trajectoire de licences",
+    "roiIntro": "La priorisation ci-dessous vise le meilleur rapport atténuation des risques / coût, du moins coûteux au plus stratégique (détail complet et justification technique à la section 5) :",
+    "coverageReading": {
+      "high": "Couverture de base solide",
+      "mid": "Couverture partielle — des lacunes importantes subsistent",
+      "low": "Angle mort quasi total"
+    }
+  },
+
+  "section2": {
+    "title": "2. Matrice des lacunes de visibilité et de télémétrie",
+    "intro": "Le tableau ci-dessous distingue trois états réels de la télémétrie dans l'environnement — une nuance absente d'une lecture superficielle des données brutes : les sources {active}, les sources {available} (correction gratuite, aucune licence requise) et les sources {locked}. Cette distinction détermine directement la priorisation du Volet 1 par rapport au Volet 2 à la section 5.",
+    "activeWord": "actives",
+    "availableWord": "disponibles mais non configurées",
+    "lockedWord": "verrouillées par licence",
+    "table": {
+      "source": "Source de journaux / Domaine",
+      "license": "État de la licence et de la configuration",
+      "status": "Statut",
+      "retention": "Rétention",
+      "impact": "Impact sur l'analyse judiciaire et le piquet d'intervention"
+    },
+    "status": {
+      "active": "Actif",
+      "locked": "Verrouillé",
+      "configGap": "Désactivé (lacune de config.)"
+    }
+  },
+
+  "section3": {
+    "title": "3. Analyse de la couverture des menaces MITRE ATT&CK",
+    "intro": "Les techniques ci-dessous sont mappées selon la tactique MITRE ATT&CK qui leur est officiellement attribuée (version courante du référentiel Enterprise), et non selon un regroupement approximatif — plusieurs constituent en réalité la chaîne d'attaque complète d'un même scénario : le vol d'informations d'identification en A/C ouvre la voie au déplacement latéral en C, qui permet la collecte puis l'exfiltration en D. Les renvois entre sections reflètent cette continuité.",
+    "techniquesTitle": "Techniques non couvertes (angles morts)",
+    "missingTitle": "Capacités d'alerte manquantes"
+  },
+
+  "section4": {
+    "title": "4. Impact sur l'intervention en cas d'incident (IR)",
+    "mttdTitle": "4.1 Délai moyen de détection (MTTD)",
+    "mttdBody": "Selon le rapport 2025 d'IBM sur le coût des atteintes à la protection des données (Ponemon Institute), le cycle de vie moyen d'une atteinte à l'échelle mondiale — de la compromission initiale à son confinement complet — s'élève à 241 jours, le chiffre le plus bas en neuf ans, mais qui demeure largement supérieur à la fenêtre de rétention Standard du journal d'audit unifié de cet environnement (180 jours). Concrètement, une portion significative des atteintes détectées selon les délais moyens de l'industrie aura déjà commencé à voir ses journaux les plus anciens expirer avant même le début de l'enquête.",
+    "mttdBody2": "Avec une couverture Sentinel de 0 %, rien ne corrèle les signaux faibles répartis entre produits (une connexion à risque Entra ID, une activité anormale sur un poste, un accès Key Vault inhabituel) en un seul incident priorisé — ce qui repousse la détection vers une notification externe plutôt qu'une détection interne, le scénario qu'IBM associe aux coûts et aux délais les plus élevés.",
+    "mttrTitle": "4.2 Délai moyen de résolution (MTTR) et rapidité d'enquête",
+    "mttrIntro": "Les fenêtres de rétention courtes amplifient le délai de détection ci-dessus en un délai de résolution :",
+    "mttrBullets": [
+      "Les journaux de connexion Entra sont plafonnés à 30 jours (portail, avec P1) — au-delà, sans exportation continue vers Sentinel/Log Analytics, l'historique d'authentification est définitivement perdu.",
+      "La chasse avancée de Defender for Endpoint (une fois sous licence) est plafonnée à 30 jours de rétention native — une ingestion Sentinel est nécessaire pour toute durée plus longue.",
+      "Le suivi des messages Exchange est plafonné à 90 jours, peu importe la licence.",
+      "Le journal d'audit unifié Standard a une rétention de 180 jours — et l'audit n'est PAS activé par défaut sur les licences PME (Business Basic/Standard/Premium); confirmer qu'il est bel et bien activé devrait être la toute première action de l'équipe IR, avant même toute discussion de rétention."
+    ],
+    "mttrClosing": "Ces fenêtres courtes forcent fréquemment les enquêteurs à conclure des dossiers « non concluants » une fois la période de rétention dépassée, ou à faire appel à des firmes externes de DFIR pour tenter une reconstruction à partir de copies de sécurité, de journaux d'évènements Windows locaux ou de télémétrie tierce — une option coûteuse et rarement complète.",
+    "firstResponderTitle": "4.3 Actions immédiates de premier répondant compromises",
+    "firstResponderIntro": "Plusieurs actions de la liste de préservation immédiate de l'Atlas sont, dans cet environnement, soit irréalisables, soit dégradées :"
+  },
+
+  "section5": {
+    "title": "5. Plan de remédiation et feuille de route",
+    "track1Title": "Volet 1 — Changements de configuration sans frais (immédiat)",
+    "track1Intro": "Aucune de ces actions ne requiert de nouvelle licence de sécurité. Des frais d'ingestion Log Analytics à l'usage peuvent s'appliquer selon le volume — mais aucun SKU de sécurité additionnel n'est nécessaire.",
+    "track2Title": "Volet 2 — Acquisitions de licences stratégiques (CAPEX/OPEX)",
+    "track2Intro": "Priorisées selon la valeur d'atténuation des menaces établie à la section 3, et non selon l'ordre de présentation des données brutes :",
+    "roadmapTable": {
+      "priority": "#",
+      "license": "Licence / complément",
+      "unlocks": "Sources débloquées",
+      "mitre": "Techniques MITRE atténuées",
+      "justification": "Justification"
+    }
+  },
+
+  "references": {
+    "title": "Sources et références",
+    "sourceDataTitle": "Données sources",
+    "msDocsTitle": "Documentation Microsoft",
+    "mitreTitle": "Référentiel des menaces",
+    "industryTitle": "Indicateurs de l'industrie",
+    "finalDisclaimerLabel": "Avertissement final :",
+    "finalDisclaimer": "ce rapport constitue une synthèse d'aide à la décision et ne remplace pas une évaluation de sécurité formelle. Les seuils de rétention, les capacités de détection et les prix cités reflètent l'état de la documentation Microsoft au moment de la rédaction et doivent être reconfirmés avant toute décision budgétaire."
+  },
+
+  "severity": {
+    "critical": "Critique",
+    "high": "Élevé",
+    "medium": "Moyen",
+    "info": "Informatif"
+  },
+
+  "stats": {
+    "logSourcesAvailable": "Sources de journaux actives",
+    "logSourcesLocked": "Sources verrouillées",
+    "licensesActive": "Licences actives",
+    "dfirCriticalRoles": "Sources critiques DFIR",
+    "overallCoverage": "Couverture globale"
+  }
+}

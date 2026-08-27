@@ -1,0 +1,59 @@
+{
+  "_comment": "Each candidate is scored at render time by how many of its 'triggerSourceIds' are currently gapped (locked or config-gap) and how severe those gaps are. The top-scoring 3 are surfaced as '1.2 Top 3 Strategic Risks'. Add a candidate any time a new class of gap deserves an executive callout — the scoring and selection logic never changes.",
+  "candidates": [
+    {
+      "id": "identity-blind-spot",
+      "triggerSourceIds": ["risk-detections", "identity-logon-events", "identity-directory-events", "identity-query-events"],
+      "title": { "en": "Identity & Authentication Blind Spot", "fr": "Aveuglement sur la gestion des identités et l'authentification" },
+      "body": {
+        "en": "The Identity Protection machine-learning risk engine (impossible travel, anomalous token, leaked credentials) is locked behind Entra ID P2 — without it, tenants only receive a generic \"additional risk detected\" event with no actionable detail. Combined with no Defender for Identity (zero on-premises AD telemetry), the organization cannot detect or correlate an identity compromise that moves between cloud and hybrid environments.",
+        "fr": "Le module d'apprentissage automatique d'Identity Protection (voyage impossible, jeton anormal, informations d'identification exposées) est verrouillé derrière Entra ID P2. Sans ce complément, les clients ne reçoivent qu'un évènement générique « risque additionnel détecté », sans détail exploitable. Combiné à l'absence de Defender for Identity (aucune télémétrie AD locale), l'organisation ne peut ni détecter ni corréler une compromission d'identité qui se déplace entre le nuage et l'environnement hybride."
+      }
+    },
+    {
+      "id": "bec-exfil-blind-spot",
+      "triggerSourceIds": ["mail-items-accessed", "cloud-app-events", "security-alert", "security-incident"],
+      "title": { "en": "Business Email Compromise & Exfiltration Undetectable", "fr": "Compromission de courriel d'affaires (BEC) et exfiltration non détectables" },
+      "body": {
+        "en": "Without Purview Advanced Audit, mailbox item access is never logged: it is impossible to determine exactly which emails a threat actor read after a mailbox compromise — the most frequently cited gap in the source data. Combined with no Defender for Cloud Apps and 0% Sentinel coverage, no automated correlation can link anomalous mail access to a mass download or a malicious inbox rule.",
+        "fr": "L'absence de Purview Advanced Audit signifie que l'accès aux éléments de boîte aux lettres n'est jamais journalisé : impossible de déterminer quels courriels précis ont été lus par un acteur menaçant après compromission d'une boîte — la lacune la plus citée dans les données sources. Combinée à l'absence de Defender for Cloud Apps et à une couverture Sentinel de 0 %, aucune corrélation automatisée ne peut relier un accès courriel anormal à un téléchargement massif ou à une règle de boîte de réception malveillante."
+      }
+    },
+    {
+      "id": "post-exploitation-blind-spot",
+      "triggerSourceIds": ["device-process-events", "device-network-events", "device-logon-events", "security-alert"],
+      "title": { "en": "No Post-Exploitation Telemetry", "fr": "Absence de télémétrie post-exploitation" },
+      "body": {
+        "en": "The seven Defender for Endpoint P2 advanced-hunting tables are locked. Once an attacker gains a foothold, no threat hunting is possible beyond basic alerts — and without Sentinel, there is no mechanism to link that foothold to suspicious identity or network activity elsewhere in the environment.",
+        "fr": "Les sept tables de chasse avancée de Defender for Endpoint P2 sont verrouillées. Une fois qu'un acteur menaçant obtient un point d'ancrage, aucune chasse aux menaces n'est possible au-delà des alertes de base — et sans Sentinel, il n'existe aucun mécanisme pour relier ce point d'ancrage à une activité d'identité ou de réseau suspecte ailleurs dans l'environnement."
+      }
+    },
+    {
+      "id": "no-siem-correlation",
+      "triggerSourceIds": ["security-alert", "security-incident", "behavior-analytics", "sentinel-free-connectors"],
+      "title": { "en": "No Centralized Correlation (SIEM/UEBA)", "fr": "Aucune corrélation centralisée (SIEM/UEBA)" },
+      "body": {
+        "en": "With 0% Sentinel coverage, every product remains an isolated signal source. No mechanism correlates weak signals across products (a risky Entra ID sign-in, an anomalous endpoint action, an unusual Key Vault access) into one prioritized incident — pushing detection toward external notification rather than internal detection.",
+        "fr": "Avec une couverture Sentinel de 0 %, chaque produit reste une source de signal isolée. Aucun mécanisme ne corrèle les signaux faibles répartis entre produits (une connexion Entra ID à risque, une activité anormale sur un poste, un accès Key Vault inhabituel) en un seul incident priorisé — ce qui repousse la détection vers une notification externe plutôt qu'une détection interne."
+      }
+    },
+    {
+      "id": "hybrid-ad-blind-spot",
+      "triggerSourceIds": ["identity-logon-events", "identity-directory-events", "identity-query-events"],
+      "title": { "en": "Hybrid Active Directory Lateral Movement Undetectable", "fr": "Déplacement latéral dans l'AD hybride non détectable" },
+      "body": {
+        "en": "Without Defender for Identity, DCSync, Kerberoasting, and Pass-the-Hash against the on-premises domain controller generate no alert of any kind.",
+        "fr": "Sans Defender for Identity, DCSync, Kerberoasting et Pass-the-Hash contre le contrôleur de domaine local ne génèrent aucune alerte."
+      }
+    },
+    {
+      "id": "ai-governance-gap",
+      "triggerSourceIds": ["copilot-interaction-logs", "security-copilot-logs", "copilot-studio-logs", "agent365-governance-logs"],
+      "title": { "en": "Emerging AI Agent Governance Gap", "fr": "Lacune émergente de gouvernance de l'IA agentique" },
+      "body": {
+        "en": "Copilot, Security Copilot, Copilot Studio, and Agent 365 interaction/governance logs are all locked. As agentic AI adoption grows, this is currently a HIGH (not CRITICAL) severity gap — but it compounds quickly once agents are handling sensitive data or actions.",
+        "fr": "Les journaux d'interaction et de gouvernance de Copilot, Security Copilot, Copilot Studio et Agent 365 sont tous verrouillés. À mesure que l'adoption de l'IA agentique progresse, il s'agit actuellement d'une lacune de sévérité ÉLEVÉE (non CRITIQUE) — mais qui s'aggrave rapidement dès que des agents traitent des données ou des actions sensibles."
+      }
+    }
+  ]
+}

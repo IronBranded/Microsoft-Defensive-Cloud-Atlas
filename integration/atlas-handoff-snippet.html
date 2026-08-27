@@ -1,0 +1,55 @@
+<!--
+  ATLAS → EXECUTIVE BRIEF — INLINE, NO SECOND FILE
+  ==================================================
+  REFERENCE PATTERN, not a drop-in file — adapt the button's placement to
+  your real markup (this tool couldn't retrieve enough of the actual
+  index.html — 3062 lines; GitHub's raw endpoint blocks automated fetches
+  past ~line 1000 — to know its exact DOM structure).
+
+  THE ACTUAL INTEGRATION STEP:
+    1. node build/build-atlas-bundle.js  →  dist/atlas-inline-bundle.js
+    2. Paste that file's entire contents into index.html's existing
+       <script> block (anywhere — order doesn't matter, it just needs to
+       run before the button can be clicked).
+    3. Add the button below, wired to the ONE function the bundle defines:
+       openExecutiveBrief(selectedLicenseIds, lang).
+
+  No second .html file is involved at any point. The bundle contains the
+  full engine + data + both rendering layers; when clicked, the button
+  computes a model from the CURRENT selection, builds a complete HTML
+  document in memory, and opens it via a Blob URL. The generated document
+  still has its own distinct visual identity (theme/report-light.css,
+  inlined) — "not like the Atlas SPA" is preserved; it's just synthesized
+  at click-time instead of being a separate file that has to exist on disk.
+  This matches the Atlas's own "single self-contained file" premise instead
+  of quietly working around it with a second one.
+-->
+
+<div class="license-scope-summary">
+  <!-- ... existing "ACTIVE LICENSE SCOPE" display / license badges ... -->
+
+  <button class="exec-print-btn" id="elr-open-btn"
+          onclick="openExecutiveBrief(getSelectedLicenseIds(), currentUiLang || 'en')">
+    → EXECUTIVE BRIEF
+  </button>
+</div>
+
+<script>
+  // getSelectedLicenseIds() is a stand-in for whatever the license panel
+  // already exposes (state.selected, or however the toggle grid's "on"
+  // licenses are tracked) — just the IDs THE USER CLICKED, not the resolved
+  // "included" set; the bundle's AtlasReportEngine expands bundle inclusion
+  // itself. License id strings must match data/licenses.json.
+  //
+  // currentUiLang is a stand-in for however the Atlas already tracks (or
+  // could track) the reader's language preference, if it does — pass "en"
+  // or "fr" directly if there's no such concept yet; the generated brief's
+  // own EN/FR toggle lets the reader change it afterward regardless.
+  //
+  // Recommended: disable the button (or add a tooltip) when nothing is
+  // selected, the same way Print presumably already does — whatever
+  // function already re-renders the UI on selection change is the right
+  // place to also toggle this:
+  //
+  //   document.getElementById('elr-open-btn').disabled = getSelectedLicenseIds().length === 0;
+</script>
