@@ -1,0 +1,118 @@
+/* ============================================================
+   Executive Licensing Report — standalone theme.
+   Deliberately NOT the Atlas SPA theme: light background, restrained
+   serif/sans pairing, print-first document look rather than a web-app
+   screen. Loads no external fonts — works fully offline.
+   ============================================================ */
+:root{
+  --ink:#1a2440; --ink-soft:#3d4a68; --muted:#6b7690; --line:#dfe3ec; --line-soft:#eef0f5;
+  --paper:#ffffff; --paper-alt:#f7f8fb; --band:#0f1830;
+  --accent:#2054a6; --accent-soft:#e8eefb;
+  --crit:#a3132e; --crit-bg:#fbe9ec; --high:#a15c00; --high-bg:#fdf1de; --med:#5c6420; --med-bg:#f3f4e2;
+  --serif: Georgia, 'Times New Roman', serif;
+  --sans: -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --mono: 'Consolas', 'SF Mono', Menlo, monospace;
+}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--paper-alt);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.6;}
+
+/* ── Control bar (screen only) ── */
+.control-bar{position:sticky;top:0;z-index:50;background:var(--band);color:#fff;padding:10px 24px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;}
+.control-bar .cb-title{font-family:var(--serif);font-size:15px;letter-spacing:.3px;margin-right:auto;}
+.lang-toggle{display:flex;gap:4px;}
+.lang-toggle button{background:#1c2847;border:1px solid #3a4870;color:#cfd6e8;font-size:12px;font-weight:600;padding:6px 12px;border-radius:3px;cursor:pointer;letter-spacing:.5px;}
+.lang-toggle button.on{background:var(--accent);border-color:var(--accent);color:#fff;}
+.print-btn{background:#fff;color:var(--band);border:none;font-weight:700;font-size:13px;padding:7px 16px;border-radius:3px;cursor:pointer;letter-spacing:.3px;}
+.print-btn:hover{background:#e8eefb;}
+
+/* ── Page / cover ── */
+.sheet{max-width:880px;margin:28px auto;background:var(--paper);box-shadow:0 1px 3px rgba(20,25,45,0.12), 0 12px 32px rgba(20,25,45,0.06);padding:56px 64px 60px;}
+.cover-kicker{font-family:var(--sans);font-size:11px;letter-spacing:2.5px;text-transform:uppercase;color:var(--muted);margin-bottom:10px;}
+h1.cover-title{font-family:var(--serif);font-size:32px;line-height:1.25;color:var(--ink);margin:0 0 10px;font-weight:400;}
+.cover-sub{font-family:var(--serif);font-style:italic;font-size:16px;color:var(--ink-soft);margin-bottom:26px;}
+.meta-table{width:100%;border-collapse:collapse;margin-bottom:22px;font-size:13.5px;}
+.meta-table td{padding:8px 0;border-top:1px solid var(--line-soft);vertical-align:top;}
+.meta-table td:first-child{width:180px;color:var(--muted);font-weight:600;letter-spacing:.2px;}
+.method-note{font-size:12.5px;color:var(--muted);font-style:italic;border-top:1px solid var(--line);padding-top:16px;margin-bottom:8px;}
+.method-note b{color:var(--ink-soft);font-style:normal;}
+
+.contents{background:var(--paper-alt);border:1px solid var(--line);border-radius:4px;padding:18px 22px;margin:26px 0 4px;}
+.contents-title{font-family:var(--serif);font-size:14px;color:var(--ink);margin-bottom:10px;}
+.contents a{display:block;font-size:13.5px;color:var(--accent);text-decoration:none;padding:3px 0;}
+.contents a:hover{text-decoration:underline;}
+
+/* ── Section chrome ── */
+h2.sec{font-family:var(--serif);font-size:21px;color:var(--ink);border-bottom:2px solid var(--ink);padding-bottom:8px;margin:40px 0 16px;}
+h3.sub{font-family:var(--sans);font-size:13px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--accent);margin:22px 0 8px;}
+h4.subtle{font-family:var(--sans);font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin:14px 0 6px;}
+p{margin:0 0 12px;}
+
+/* ── Stat strip ── */
+.stat-strip{display:grid;grid-template-columns:repeat(6,1fr);gap:1px;background:var(--line);border:1px solid var(--line);margin:18px 0 6px;}
+.stat-box{background:var(--paper);padding:14px 10px;text-align:center;}
+.stat-n{font-family:var(--serif);font-size:26px;color:var(--ink);}
+.stat-l{font-size:10px;letter-spacing:.5px;text-transform:uppercase;color:var(--muted);margin-top:3px;}
+
+/* ── Tables ── */
+table.rep{width:100%;border-collapse:collapse;font-size:13px;margin:10px 0 6px;}
+table.rep th{background:var(--ink);color:#fff;text-align:left;font-weight:600;font-size:11px;letter-spacing:.4px;text-transform:uppercase;padding:8px 10px;}
+table.rep td{border-bottom:1px solid var(--line-soft);padding:7px 10px;vertical-align:top;}
+table.rep tr:nth-child(even) td{background:var(--paper-alt);}
+.mono{font-family:var(--mono);font-size:12px;color:var(--ink-soft);}
+.fam-row td{border-top:1px solid var(--ink);}
+.fam-hint{font-weight:400;font-size:11px;color:var(--muted);text-transform:none;letter-spacing:0;}
+.prod-row td{background:var(--paper-alt);}
+.prod-row .prod-label{padding-left:28px;color:var(--ink-soft);font-size:12.5px;position:relative;}
+.prod-row .prod-label::before{content:"–";position:absolute;left:14px;color:var(--muted);}
+
+/* ── Risk callouts ── */
+.risk{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--line-soft);}
+.risk .n{font-family:var(--serif);font-size:20px;color:var(--accent);min-width:26px;}
+.risk .t{font-weight:700;color:var(--ink);margin-bottom:3px;}
+.risk .b{color:var(--ink-soft);font-size:13.5px;}
+
+/* ── Severity chips ── */
+.chip{display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:.3px;padding:1px 7px;border-radius:2px;text-transform:uppercase;}
+.chip.critical{color:var(--crit);background:var(--crit-bg);}
+.chip.high{color:var(--high);background:var(--high-bg);}
+.chip.medium{color:var(--med);background:var(--med-bg);}
+
+/* ── MITRE blocks ── */
+.mitre-group{margin-bottom:8px;}
+.mitre-group ul{margin:4px 0 14px 20px;padding:0;font-size:13px;color:var(--ink-soft);}
+.mitre-group li{margin-bottom:6px;line-height:1.55;}
+
+/* ── Lists ── */
+ul.plain{margin:6px 0 14px 20px;padding:0;font-size:13.5px;}
+ul.plain li{margin-bottom:6px;}
+
+.disclaimer{font-size:12px;color:var(--muted);font-style:italic;border-top:1px solid var(--line);margin-top:34px;padding-top:14px;}
+.refs a{color:var(--accent);font-size:13px;}
+
+/* ── Ransomware kill chain ── */
+.rc-headline{display:flex;align-items:baseline;gap:10px;margin:14px 0 18px;padding:14px 18px;background:var(--crit-bg);border-left:4px solid var(--crit);border-radius:2px;}
+.rc-headline .n{font-family:var(--serif);font-size:24px;color:var(--crit);}
+.rc-headline .t{font-size:13.5px;color:var(--ink-soft);}
+.rc-chain{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px;}
+.rc-stage{flex:1 1 150px;min-width:150px;border:1px solid var(--line);border-radius:4px;padding:11px 13px;position:relative;}
+.rc-stage.covered{border-color:#bcd9c4;background:#f2f9f4;}
+.rc-stage.partial{border-color:#f0dba9;background:var(--high-bg);}
+.rc-stage.blind{border-color:#f0bcc4;background:var(--crit-bg);}
+.rc-stage .rc-n{font-size:10px;color:var(--muted);letter-spacing:.5px;}
+.rc-stage .rc-title{font-weight:700;font-size:12.5px;color:var(--ink);margin:2px 0 4px;}
+.rc-stage .rc-blurb{font-size:11px;color:var(--ink-soft);line-height:1.4;margin-bottom:6px;}
+.rc-stage .rc-badge{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;padding:1px 8px;border-radius:2px;}
+.rc-stage.covered .rc-badge{color:#1e6b3a;background:#dcf0e1;}
+.rc-stage.partial .rc-badge{color:var(--high);background:#fbe6c2;}
+.rc-stage.blind .rc-badge{color:var(--crit);background:#f7d3d9;}
+.rc-arrow{align-self:center;color:var(--muted);font-size:16px;padding:0 2px;}
+
+/* ── Print ── */
+@media print{
+  body{background:#fff;}
+  .control-bar{display:none !important;}
+  .sheet{box-shadow:none;margin:0;padding:0 6mm;max-width:100%;}
+  h2.sec{break-after:avoid;}
+  .exec-section, .mitre-group, tr{break-inside:avoid;}
+  @page{margin:16mm 14mm;}
+}

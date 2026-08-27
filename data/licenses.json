@@ -1,0 +1,442 @@
+{
+  "_comment": "License catalog + bundle 'includes' graph. `kind` is the core of dynamic, add-on-aware modeling: 'base' = pick-at-most-one per-seat suite, 'addon' = toggle any number independently on top of a base, 'consumption' = usage/resource billed, not a seat SKU at all. The engine (report-engine.js#resolveHeldLicenses) doesn't actually require this distinction to compute correctly — any combination of ids works regardless of kind — but it's what lets a picker UI, a validator, or a future maintainer reason about 'is this a sane selection' without re-deriving the rules from the includes graph.",
+  "groups": {
+    "m365": {
+      "name": {
+        "en": "Microsoft 365",
+        "fr": "Microsoft 365"
+      }
+    },
+    "defender": {
+      "name": {
+        "en": "Defender XDR",
+        "fr": "Defender XDR"
+      }
+    },
+    "sentinel": {
+      "name": {
+        "en": "Microsoft Sentinel",
+        "fr": "Microsoft Sentinel"
+      }
+    },
+    "azure-platform": {
+      "name": {
+        "en": "Azure Platform",
+        "fr": "Azure Platform"
+      }
+    },
+    "entra-id": {
+      "name": {
+        "en": "Entra ID",
+        "fr": "Entra ID"
+      }
+    },
+    "purview": {
+      "name": {
+        "en": "Microsoft Purview",
+        "fr": "Microsoft Purview"
+      }
+    },
+    "copilot": {
+      "name": {
+        "en": "AI Governance",
+        "fr": "Gouvernance de l'IA"
+      }
+    }
+  },
+  "licenses": [
+    {
+      "id": "m365-f1",
+      "kind": "base",
+      "group": "m365",
+      "name": {
+        "en": "M365 F1",
+        "fr": "M365 F1"
+      },
+      "includes": []
+    },
+    {
+      "id": "m365-f3",
+      "kind": "base",
+      "group": "m365",
+      "name": {
+        "en": "M365 F3",
+        "fr": "M365 F3"
+      },
+      "includes": [
+        "m365-f1",
+        "entra-p1",
+        "purview-std"
+      ]
+    },
+    {
+      "id": "m365-e3",
+      "kind": "base",
+      "group": "m365",
+      "name": {
+        "en": "M365 E3",
+        "fr": "M365 E3"
+      },
+      "includes": [
+        "m365-f1",
+        "entra-p1",
+        "mde-p1",
+        "purview-std",
+        "mip-p1"
+      ]
+    },
+    {
+      "id": "m365-e5",
+      "kind": "base",
+      "group": "m365",
+      "name": {
+        "en": "M365 E5",
+        "fr": "M365 E5"
+      },
+      "includes": [
+        "m365-e3",
+        "entra-p2",
+        "mde-p2",
+        "mdo-p1",
+        "mdo-p2",
+        "mdi",
+        "mdca",
+        "e5-security",
+        "purview-e5-compliance"
+      ]
+    },
+    {
+      "id": "biz-basic",
+      "kind": "base",
+      "group": "m365",
+      "name": {
+        "en": "M365 Business Basic",
+        "fr": "M365 Business Basic"
+      },
+      "includes": []
+    },
+    {
+      "id": "biz-standard",
+      "kind": "base",
+      "group": "m365",
+      "name": {
+        "en": "M365 Business Standard",
+        "fr": "M365 Business Standard"
+      },
+      "includes": []
+    },
+    {
+      "id": "biz-premium",
+      "kind": "base",
+      "group": "m365",
+      "name": {
+        "en": "M365 Business Premium",
+        "fr": "M365 Business Premium"
+      },
+      "includes": [
+        "entra-p1",
+        "mde-p1",
+        "mdo-p1",
+        "purview-std",
+        "mip-p1"
+      ]
+    },
+    {
+      "id": "o365-e1",
+      "kind": "base",
+      "group": "m365",
+      "name": {
+        "en": "Office 365 E1",
+        "fr": "Office 365 E1"
+      },
+      "includes": []
+    },
+    {
+      "id": "o365-e3",
+      "kind": "base",
+      "group": "m365",
+      "name": {
+        "en": "Office 365 E3",
+        "fr": "Office 365 E3"
+      },
+      "includes": []
+    },
+    {
+      "id": "o365-e5",
+      "kind": "base",
+      "group": "m365",
+      "name": {
+        "en": "Office 365 E5",
+        "fr": "Office 365 E5"
+      },
+      "includes": [
+        "mdo-p1",
+        "mdo-p2",
+        "purview-adv-audit",
+        "edisc-premium"
+      ]
+    },
+    {
+      "id": "mde-p1",
+      "kind": "addon",
+      "group": "defender",
+      "name": {
+        "en": "Defender for Endpoint P1",
+        "fr": "Defender for Endpoint P1"
+      },
+      "includes": []
+    },
+    {
+      "id": "mde-p2",
+      "kind": "addon",
+      "group": "defender",
+      "name": {
+        "en": "Defender for Endpoint P2",
+        "fr": "Defender for Endpoint P2"
+      },
+      "includes": [
+        "mde-p1"
+      ]
+    },
+    {
+      "id": "mdo-p1",
+      "kind": "addon",
+      "group": "defender",
+      "name": {
+        "en": "Defender for Office 365 P1",
+        "fr": "Defender for Office 365 P1"
+      },
+      "includes": []
+    },
+    {
+      "id": "mdo-p2",
+      "kind": "addon",
+      "group": "defender",
+      "name": {
+        "en": "Defender for Office 365 P2",
+        "fr": "Defender for Office 365 P2"
+      },
+      "includes": [
+        "mdo-p1"
+      ]
+    },
+    {
+      "id": "mdi",
+      "kind": "addon",
+      "group": "defender",
+      "name": {
+        "en": "Defender for Identity",
+        "fr": "Defender for Identity"
+      },
+      "includes": []
+    },
+    {
+      "id": "mdca",
+      "kind": "addon",
+      "group": "defender",
+      "name": {
+        "en": "Defender for Cloud Apps",
+        "fr": "Defender for Cloud Apps"
+      },
+      "includes": []
+    },
+    {
+      "id": "e5-security",
+      "kind": "addon",
+      "group": "defender",
+      "name": {
+        "en": "M365 E5 Security",
+        "fr": "M365 E5 Security"
+      },
+      "includes": [
+        "mde-p1",
+        "mde-p2",
+        "mdo-p1",
+        "mdo-p2",
+        "mdi",
+        "mdca"
+      ]
+    },
+    {
+      "id": "mdfc",
+      "kind": "consumption",
+      "group": "defender",
+      "name": {
+        "en": "Defender for Cloud",
+        "fr": "Defender for Cloud"
+      },
+      "includes": []
+    },
+    {
+      "id": "sentinel",
+      "kind": "consumption",
+      "group": "sentinel",
+      "name": {
+        "en": "Microsoft Sentinel",
+        "fr": "Microsoft Sentinel"
+      },
+      "includes": []
+    },
+    {
+      "id": "sentinel-free",
+      "kind": "consumption",
+      "group": "sentinel",
+      "name": {
+        "en": "Sentinel Free Connectors",
+        "fr": "Connecteurs gratuits Sentinel"
+      },
+      "includes": []
+    },
+    {
+      "id": "azure-free",
+      "kind": "consumption",
+      "group": "azure-platform",
+      "name": {
+        "en": "Azure (Free tier)",
+        "fr": "Azure (niveau gratuit)"
+      },
+      "includes": []
+    },
+    {
+      "id": "entra-p1",
+      "kind": "addon",
+      "group": "entra-id",
+      "name": {
+        "en": "Entra ID P1",
+        "fr": "Entra ID P1"
+      },
+      "includes": []
+    },
+    {
+      "id": "entra-p2",
+      "kind": "addon",
+      "group": "entra-id",
+      "name": {
+        "en": "Entra ID P2",
+        "fr": "Entra ID P2"
+      },
+      "includes": [
+        "entra-p1",
+        "azure-free"
+      ]
+    },
+    {
+      "id": "purview-std",
+      "kind": "addon",
+      "group": "purview",
+      "name": {
+        "en": "Purview Compliance (E3)",
+        "fr": "Purview Compliance (E3)"
+      },
+      "includes": []
+    },
+    {
+      "id": "purview-e5-compliance",
+      "kind": "addon",
+      "group": "purview",
+      "name": {
+        "en": "Purview E5 Compliance",
+        "fr": "Purview E5 Compliance"
+      },
+      "includes": [
+        "purview-adv-audit",
+        "mip-p1",
+        "mip-p2",
+        "irm",
+        "edisc-premium"
+      ]
+    },
+    {
+      "id": "purview-adv-audit",
+      "kind": "addon",
+      "group": "purview",
+      "name": {
+        "en": "Purview Advanced Audit",
+        "fr": "Purview Advanced Audit"
+      },
+      "includes": []
+    },
+    {
+      "id": "mip-p1",
+      "kind": "addon",
+      "group": "purview",
+      "name": {
+        "en": "Information Protection P1",
+        "fr": "Protection de l'information P1"
+      },
+      "includes": []
+    },
+    {
+      "id": "mip-p2",
+      "kind": "addon",
+      "group": "purview",
+      "name": {
+        "en": "Information Protection P2",
+        "fr": "Protection de l'information P2"
+      },
+      "includes": [
+        "mip-p1"
+      ]
+    },
+    {
+      "id": "irm",
+      "kind": "addon",
+      "group": "purview",
+      "name": {
+        "en": "Insider Risk Management",
+        "fr": "Insider Risk Management"
+      },
+      "includes": []
+    },
+    {
+      "id": "edisc-premium",
+      "kind": "addon",
+      "group": "purview",
+      "name": {
+        "en": "eDiscovery Premium",
+        "fr": "eDiscovery Premium"
+      },
+      "includes": []
+    },
+    {
+      "id": "m365-copilot",
+      "kind": "addon",
+      "group": "copilot",
+      "name": {
+        "en": "Microsoft 365 Copilot",
+        "fr": "Microsoft 365 Copilot"
+      },
+      "includes": []
+    },
+    {
+      "id": "security-copilot",
+      "kind": "consumption",
+      "group": "copilot",
+      "name": {
+        "en": "Microsoft Security Copilot",
+        "fr": "Microsoft Security Copilot"
+      },
+      "includes": []
+    },
+    {
+      "id": "copilot-studio",
+      "kind": "consumption",
+      "group": "copilot",
+      "name": {
+        "en": "Microsoft Copilot Studio",
+        "fr": "Microsoft Copilot Studio"
+      },
+      "includes": []
+    },
+    {
+      "id": "agent-365",
+      "kind": "addon",
+      "group": "copilot",
+      "name": {
+        "en": "Microsoft Agent 365",
+        "fr": "Microsoft Agent 365"
+      },
+      "includes": []
+    }
+  ]
+}

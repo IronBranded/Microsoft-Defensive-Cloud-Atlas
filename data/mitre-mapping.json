@@ -1,0 +1,181 @@
+{
+  "_comment": "MITRE ATT&CK Enterprise reference data used by the Executive Brief. Technique-to-tactic assignments were verified individually against attack.mitre.org (not copied from placeholder examples) — see README.md > 'MITRE mapping integrity'. Each technique lists the OFFICIAL tactic(s) it belongs to; the report engine groups techniques into narrative sections via tacticGroups.json, not the other way around, so re-tagging a technique never requires touching prose. NOTE ON ATT&CK v19 (April 2026): Defense Evasion (TA0005) was split into Stealth (keeps the TA0005 id) and the new Defense Impairment (TA0112); the old T1562 'Impair Defenses' technique was retired and merged into T1685 'Disable or Modify Tools' under TA0112. This dataset uses T1685/TA0112, not the deprecated T1562 — verified directly against the current attack.mitre.org/techniques/T1685/ page, not carried over from training data, which predates the split.",
+
+  "tactics": {
+    "TA0001": { "name": { "en": "Initial Access", "fr": "Accès initial" } },
+    "TA0003": { "name": { "en": "Persistence", "fr": "Maintien de l'accès" } },
+    "TA0004": { "name": { "en": "Privilege Escalation", "fr": "Élévation de privilèges" } },
+    "TA0005": { "name": { "en": "Defense Evasion", "fr": "Évasion de défenses" } },
+    "TA0006": { "name": { "en": "Credential Access", "fr": "Accès aux informations d'identification" } },
+    "TA0008": { "name": { "en": "Lateral Movement", "fr": "Déplacement latéral" } },
+    "TA0009": { "name": { "en": "Collection", "fr": "Collecte" } },
+    "TA0010": { "name": { "en": "Exfiltration", "fr": "Exfiltration" } },
+    "TA0040": { "name": { "en": "Impact", "fr": "Impact" } },
+    "TA0112": { "name": { "en": "Defense Impairment", "fr": "Atteinte aux défenses" } }
+  },
+
+  "techniques": {
+    "T1078": {
+      "name": { "en": "Valid Accounts", "fr": "Comptes valides" },
+      "tactics": ["TA0001", "TA0006"],
+      "note": {
+        "en": "An attacker using compromised-but-legitimate credentials blends into normal traffic.",
+        "fr": "Un acteur menaçant utilisant des identifiants compromis mais légitimes se fond dans le trafic normal."
+      }
+    },
+    "T1110": {
+      "name": { "en": "Brute Force", "fr": "Attaque par force brute" },
+      "tactics": ["TA0006"],
+      "note": {
+        "en": "Includes password spraying against cloud identity endpoints.",
+        "fr": "Inclut la pulvérisation de mots de passe contre les points de terminaison d'identité infonuagique."
+      }
+    },
+    "T1566": {
+      "name": { "en": "Phishing", "fr": "Hameçonnage" },
+      "tactics": ["TA0001"],
+      "note": {
+        "en": "The most common initial-access vector leading into a malicious OAuth consent grant.",
+        "fr": "Vecteur d'accès initial le plus commun menant à un octroi de consentement OAuth malveillant."
+      }
+    },
+    "T1003.006": {
+      "name": { "en": "OS Credential Dumping: DCSync", "fr": "Extraction d'identifiants du SE : DCSync" },
+      "tactics": ["TA0006"],
+      "note": {
+        "en": "Requires on-premises AD directory-service telemetry to detect.",
+        "fr": "Nécessite une télémétrie de service d'annuaire AD local pour être détectée."
+      }
+    },
+    "T1558.003": {
+      "name": { "en": "Steal or Forge Kerberos Tickets: Kerberoasting", "fr": "Vol ou falsification de tickets Kerberos : Kerberoasting" },
+      "tactics": ["TA0006"],
+      "note": {
+        "en": "Named explicitly as an undetectable technique in hybrid AD environments without MDI.",
+        "fr": "Nommément identifiée comme technique indétectable en environnement AD hybride sans MDI."
+      }
+    },
+    "T1098.001": {
+      "name": { "en": "Account Manipulation: Additional Cloud Credentials", "fr": "Manipulation de compte : informations d'identification infonuagiques additionnelles" },
+      "tactics": ["TA0003", "TA0004"],
+      "note": {
+        "en": "Adding an API key or certificate to a service principal for persistent access.",
+        "fr": "Ajout d'une clé API ou d'un certificat à un principal de service pour un accès persistant."
+      }
+    },
+    "T1098.003": {
+      "name": { "en": "Account Manipulation: Additional Cloud Roles", "fr": "Manipulation de compte : rôles infonuagiques additionnels" },
+      "tactics": ["TA0003", "TA0004"],
+      "note": {
+        "en": "Granting Global Administrator, or widening delegated scopes via an illicit OAuth consent grant.",
+        "fr": "Octroi du rôle Administrateur général, ou élargissement des portées déléguées via un consentement OAuth illicite."
+      }
+    },
+    "T1136.003": {
+      "name": { "en": "Create Account: Cloud Account", "fr": "Création de compte : compte infonuagique" },
+      "tactics": ["TA0003"],
+      "note": { "en": "", "fr": "" }
+    },
+    "T1528": {
+      "name": { "en": "Steal Application Access Token", "fr": "Vol de jeton d'accès applicatif" },
+      "tactics": ["TA0006"],
+      "note": {
+        "en": "The token resulting from a malicious OAuth consent, often reused for lateral movement (see T1550.001).",
+        "fr": "Le jeton résultant d'un consentement OAuth malveillant, souvent réutilisé en déplacement latéral (voir T1550.001)."
+      }
+    },
+    "T1550.001": {
+      "name": { "en": "Use Alternate Authentication Material: Application Access Token", "fr": "Utilisation de matériel d'authentification alternatif : jeton d'accès applicatif" },
+      "tactics": ["TA0008"],
+      "note": {
+        "en": "Reuse of a stolen OAuth token across Teams, SharePoint, Exchange, and Graph.",
+        "fr": "Réutilisation d'un jeton OAuth volé à travers Teams, SharePoint, Exchange et Graph."
+      }
+    },
+    "T1550.002": {
+      "name": { "en": "Use Alternate Authentication Material: Pass the Hash", "fr": "Utilisation de matériel d'authentification alternatif : Pass-the-Hash" },
+      "tactics": ["TA0008"],
+      "note": {
+        "en": "Replay of an NTLM hash obtained via DCSync/Kerberoasting against additional hosts.",
+        "fr": "Rejeu d'un hachage NTLM obtenu via DCSync/Kerberoasting contre des hôtes additionnels."
+      }
+    },
+    "T1555.006": {
+      "name": { "en": "Credentials from Password Stores: Cloud Secrets Management Stores", "fr": "Informations d'identification de magasins de mots de passe : magasins de gestion de secrets infonuagiques" },
+      "tactics": ["TA0006"],
+      "note": {
+        "en": "Technically a credential-access technique (Azure Key Vault), but it directly opens the door to lateral movement when recovered secrets are reused elsewhere.",
+        "fr": "Techniquement une technique d'accès aux informations d'identification (Azure Key Vault), mais qui ouvre directement la voie au déplacement latéral lorsque les secrets récupérés sont réutilisés ailleurs."
+      }
+    },
+    "T1530": {
+      "name": { "en": "Data from Cloud Storage", "fr": "Données provenant du stockage infonuagique" },
+      "tactics": ["TA0009"],
+      "note": {
+        "en": "Collection — the direct precursor to exfiltration, via SharePoint, OneDrive, or Blob storage.",
+        "fr": "Collecte — le précurseur direct de l'exfiltration, via SharePoint, OneDrive ou le stockage Blob."
+      }
+    },
+    "T1567.002": {
+      "name": { "en": "Exfiltration Over Web Service: Exfiltration to Cloud Storage", "fr": "Exfiltration par service Web : exfiltration vers le stockage infonuagique" },
+      "tactics": ["TA0010"],
+      "note": { "en": "", "fr": "" }
+    },
+    "T1114": {
+      "name": { "en": "Email Collection", "fr": "Collecte de courriels" },
+      "tactics": ["TA0009"],
+      "note": {
+        "en": "Central to Business Email Compromise (BEC) investigations.",
+        "fr": "Au cœur des enquêtes de compromission de courriel d'affaires (BEC)."
+      }
+    },
+    "T1486": {
+      "name": { "en": "Data Encrypted for Impact", "fr": "Données chiffrées pour impact (rançongiciel)" },
+      "tactics": ["TA0040"],
+      "note": {
+        "en": "Without centralized correlation, distinguishing plain exfiltration from ransomware staging is difficult before encryption begins.",
+        "fr": "Sans corrélation centralisée, distinguer une simple exfiltration d'une mise en scène de rançongiciel devient difficile avant le chiffrement."
+      }
+    },
+    "T1133": {
+      "name": { "en": "External Remote Services", "fr": "Services distants externes" },
+      "tactics": ["TA0001"],
+      "note": {
+        "en": "Exposed RDP/VPN endpoints are the single most common initial access vector for human-operated ransomware.",
+        "fr": "Les points de terminaison RDP/VPN exposés sont le vecteur d'accès initial le plus commun pour les rançongiciels opérés par des humains."
+      }
+    },
+    "T1021.001": {
+      "name": { "en": "Remote Services: Remote Desktop Protocol", "fr": "Services distants : protocole de bureau à distance (RDP)" },
+      "tactics": ["TA0008"],
+      "note": {
+        "en": "Once inside, ransomware operators overwhelmingly pivot host-to-host via RDP using harvested credentials.",
+        "fr": "Une fois à l'intérieur, les opérateurs de rançongiciels pivotent très majoritairement d'un hôte à l'autre via RDP à l'aide d'identifiants récoltés."
+      }
+    },
+    "T1685": {
+      "name": { "en": "Disable or Modify Tools", "fr": "Désactivation ou modification d'outils" },
+      "tactics": ["TA0112"],
+      "note": {
+        "en": "MITRE ATT&CK v19 (Apr. 2026): supersedes the retired T1562 'Impair Defenses'. Killing or tampering with EDR/AV immediately before deploying the encryptor is a near-universal step in modern ransomware playbooks.",
+        "fr": "MITRE ATT&CK v19 (avr. 2026) : remplace la technique retirée T1562 « Impair Defenses ». Désactiver ou altérer l'EDR/antivirus juste avant le déploiement du chiffreur est une étape quasi universelle des rançongiciels modernes."
+      }
+    },
+    "T1489": {
+      "name": { "en": "Service Stop", "fr": "Arrêt de service" },
+      "tactics": ["TA0040"],
+      "note": {
+        "en": "Stopping database, mail, and backup agent services releases file locks and clears the path for encryption.",
+        "fr": "L'arrêt des services de base de données, de messagerie et d'agents de sauvegarde libère les verrous de fichiers et dégage la voie pour le chiffrement."
+      }
+    },
+    "T1490": {
+      "name": { "en": "Inhibit System Recovery", "fr": "Inhibition de la récupération système" },
+      "tactics": ["TA0040"],
+      "note": {
+        "en": "Deleting shadow copies and backup catalogs before encrypting is what turns a recoverable incident into a total loss.",
+        "fr": "Supprimer les copies fantômes et les catalogues de sauvegarde avant le chiffrement transforme un incident récupérable en perte totale."
+      }
+    }
+  }
+}

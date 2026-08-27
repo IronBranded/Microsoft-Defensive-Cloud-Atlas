@@ -1,0 +1,34 @@
+{
+  "_comment": "Every source's `product` field points here. `family` groups products back to the same 6 top-level categories the real Atlas reports (azure-platform, entra-id, m365, defender, sentinel, purview) — so nothing about the existing category-level totals changes, this just adds a finer grain UNDERNEATH families that contain more than one distinct product. A family with only one product renders as a single row, same as before; a family with several (defender, purview) renders as a parent aggregate + one row per product. Add a product here and tag sources with it, and the posture table picks it up automatically — no rendering code change needed (report-engine.js#computePostureRows).",
+
+  "products": {
+    "mde": { "family": "defender", "name": { "en": "Defender for Endpoint (MDE)", "fr": "Defender for Endpoint (MDE)" } },
+    "mdi": { "family": "defender", "name": { "en": "Defender for Identity (MDI)", "fr": "Defender for Identity (MDI)" } },
+    "mdca": { "family": "defender", "name": { "en": "Defender for Cloud Apps (MDCA)", "fr": "Defender for Cloud Apps (MDCA)" } },
+    "mdo": { "family": "defender", "name": { "en": "Defender for Office 365 (MDO)", "fr": "Defender for Office 365 (MDO)" } },
+    "mdfc": { "family": "defender", "name": { "en": "Defender for Cloud (MDC)", "fr": "Defender for Cloud (MDC)" } },
+
+    "purview-audit": { "family": "purview", "name": { "en": "Purview Audit", "fr": "Purview Audit" } },
+    "purview-dlp": { "family": "purview", "name": { "en": "Purview Data Loss Prevention", "fr": "Purview Prévention de la perte de données" } },
+    "purview-ediscovery": { "family": "purview", "name": { "en": "Purview eDiscovery", "fr": "Purview eDiscovery" } },
+    "purview-irm": { "family": "purview", "name": { "en": "Purview Insider Risk Management", "fr": "Purview Insider Risk Management" } },
+    "purview-ip": { "family": "purview", "name": { "en": "Purview Information Protection", "fr": "Purview Protection de l'information" } },
+    "purview-retention": { "family": "purview", "name": { "en": "Purview Retention / Records Management", "fr": "Purview Gestion de la rétention et des dossiers" } },
+    "purview-compliance-mgr": { "family": "purview", "name": { "en": "Purview Compliance Manager", "fr": "Purview Compliance Manager" } },
+    "purview-comm-compliance": { "family": "purview", "name": { "en": "Purview Communication Compliance", "fr": "Purview Communication Compliance" } },
+
+    "azure-platform": { "family": "azure-platform", "name": { "en": "Azure Platform", "fr": "Azure Platform" } },
+    "entra-id": { "family": "entra-id", "name": { "en": "Entra ID", "fr": "Entra ID" } },
+    "m365": { "family": "m365", "name": { "en": "M365 / Office", "fr": "M365 / Office" } },
+    "sentinel": { "family": "sentinel", "name": { "en": "Microsoft Sentinel", "fr": "Microsoft Sentinel" } }
+  },
+
+  "families": {
+    "azure-platform": { "name": { "en": "Azure Platform", "fr": "Azure Platform" } },
+    "entra-id": { "name": { "en": "Entra ID", "fr": "Entra ID" } },
+    "m365": { "name": { "en": "M365 / Office", "fr": "M365 / Office" } },
+    "defender": { "name": { "en": "Defender XDR", "fr": "Defender XDR" } },
+    "sentinel": { "name": { "en": "Microsoft Sentinel", "fr": "Microsoft Sentinel" } },
+    "purview": { "name": { "en": "Purview", "fr": "Purview" } }
+  }
+}

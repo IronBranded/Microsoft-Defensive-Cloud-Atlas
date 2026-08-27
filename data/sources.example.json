@@ -1,0 +1,1698 @@
+{
+  "_comment": "SEED / EXAMPLE DATASET. The 33 entries with gateType:'license' below were transcribed and verified from an actual Atlas Executive Summary export (Business Premium scope, generated 2026-08-22) — names, categories, severities and license buckets are accurate to that export. The handful of gateType:'none'/'config' baseline entries are representative, not an exhaustive transcription of your full ~66-source dataset (that enumeration lives only in your index.html source, which this tool could not fully retrieve). Swap this file for a real export from your license-scope engine and everything downstream (engine, renderers, docx) works unchanged — see README.md > Integration. UPDATED: expanded from 39 to 66 sources across a second research pass — see README.md > 'Dataset completeness' for exactly which additions are Microsoft-Learn-verified vs. reasonable extrapolation, and the one place research overturned an earlier assumption (Defender XDR active count).",
+  "sources": [
+    {
+      "id": "signin-logs",
+      "table": "SigninLogs",
+      "name": {
+        "en": "Entra Sign-in Logs",
+        "fr": "Journaux de connexion Entra"
+      },
+      "category": "entra-id",
+      "categoryLabel": {
+        "en": "Entra ID",
+        "fr": "Entra ID"
+      },
+      "gateType": "license",
+      "requiresLicense": "entra-p1",
+      "severity": "info",
+      "dfirCritical": true,
+      "retentionNative": {
+        "en": "7 days (Free), 30 days (P1/P2) — export immediately during IR",
+        "fr": "7 jours (gratuit), 30 jours (P1/P2) — exporter immédiatement durant une IR"
+      },
+      "mitreTechniques": [
+        "T1078",
+        "T1110"
+      ],
+      "product": "entra-id"
+    },
+    {
+      "id": "audit-logs",
+      "table": "AuditLogs",
+      "name": {
+        "en": "Entra Audit Logs",
+        "fr": "Journaux d'audit Entra"
+      },
+      "category": "entra-id",
+      "categoryLabel": {
+        "en": "Entra ID",
+        "fr": "Entra ID"
+      },
+      "gateType": "license",
+      "requiresLicense": "entra-p1",
+      "severity": "info",
+      "dfirCritical": true,
+      "retentionNative": {
+        "en": "30 days (portal)",
+        "fr": "30 jours (portail)"
+      },
+      "mitreTechniques": [
+        "T1098.001",
+        "T1098.003",
+        "T1136.003"
+      ],
+      "product": "entra-id"
+    },
+    {
+      "id": "azure-activity",
+      "table": "AzureActivity",
+      "name": {
+        "en": "Azure Activity Log",
+        "fr": "Journal d'activité Azure"
+      },
+      "category": "azure-platform",
+      "categoryLabel": {
+        "en": "Azure Platform",
+        "fr": "Azure Platform"
+      },
+      "gateType": "license",
+      "requiresLicense": null,
+      "severity": "info",
+      "dfirCritical": false,
+      "retentionNative": {
+        "en": "Per Log Analytics workspace config",
+        "fr": "Selon la configuration de l'espace Log Analytics"
+      },
+      "mitreTechniques": [],
+      "product": "azure-platform"
+    },
+    {
+      "id": "ual-standard",
+      "table": "OfficeActivity / UAL",
+      "name": {
+        "en": "Unified Audit Log (core)",
+        "fr": "Journal d'audit unifié (cœur)"
+      },
+      "category": "m365",
+      "categoryLabel": {
+        "en": "M365 / Office",
+        "fr": "M365 / Office"
+      },
+      "gateType": "license",
+      "requiresLicense": "purview-std",
+      "severity": "info",
+      "dfirCritical": true,
+      "retentionNative": {
+        "en": "180 days (Standard, since Oct 2023) — NOT on by default on SMB tiers (Business Basic/Standard/Premium); verify activation first",
+        "fr": "180 jours (Standard, depuis oct. 2023) — PAS activé par défaut sur les licences PME (Business Basic/Standard/Premium); vérifier l'activation en premier"
+      },
+      "mitreTechniques": [],
+      "product": "m365"
+    },
+    {
+      "id": "kv-diagnostic",
+      "table": "AzureDiagnostics (Key Vault / AuditEvent)",
+      "name": {
+        "en": "Key Vault Diagnostic Logs",
+        "fr": "Journaux de diagnostic Key Vault"
+      },
+      "category": "azure-platform",
+      "categoryLabel": {
+        "en": "Azure Platform",
+        "fr": "Azure Platform"
+      },
+      "gateType": "config",
+      "requiresLicense": null,
+      "severity": "high",
+      "dfirCritical": true,
+      "retentionNative": {
+        "en": "0 days — diagnostic setting not enabled",
+        "fr": "0 jour — réglage de diagnostic non activé"
+      },
+      "mitreTechniques": [
+        "T1555.006"
+      ],
+      "product": "azure-platform"
+    },
+    {
+      "id": "storage-blob-logs",
+      "table": "StorageBlobLogs",
+      "name": {
+        "en": "Storage Diagnostic Logs",
+        "fr": "Journaux de diagnostic du stockage"
+      },
+      "category": "azure-platform",
+      "categoryLabel": {
+        "en": "Azure Platform",
+        "fr": "Azure Platform"
+      },
+      "gateType": "config",
+      "requiresLicense": null,
+      "severity": "high",
+      "dfirCritical": true,
+      "retentionNative": {
+        "en": "0 days — diagnostic setting not enabled",
+        "fr": "0 jour — réglage de diagnostic non activé"
+      },
+      "mitreTechniques": [
+        "T1530",
+        "T1567.002"
+      ],
+      "product": "azure-platform"
+    },
+    {
+      "id": "device-process-events",
+      "table": "DeviceProcessEvents",
+      "name": {
+        "en": "Device Process Events",
+        "fr": "Événements de processus des points terminaux"
+      },
+      "category": "defender",
+      "categoryLabel": {
+        "en": "Defender XDR",
+        "fr": "Defender XDR"
+      },
+      "gateType": "license",
+      "requiresLicense": "mde-p2",
+      "severity": "critical",
+      "dfirCritical": true,
+      "retentionNative": {
+        "en": "30-day hard cap once licensed; ingest to Sentinel to extend",
+        "fr": "Plafond fixe de 30 jours une fois sous licence; ingérer vers Sentinel pour prolonger"
+      },
+      "mitreTechniques": [
+        "T1489",
+        "T1685"
+      ],
+      "product": "mde"
+    },
+    {
+      "id": "device-network-events",
+      "table": "DeviceNetworkEvents",
+      "name": {
+        "en": "Device Network Events",
+        "fr": "Événements réseau des points terminaux"
+      },
+      "category": "defender",
+      "categoryLabel": {
+        "en": "Defender XDR",
+        "fr": "Defender XDR"
+      },
+      "gateType": "license",
+      "requiresLicense": "mde-p2",
+      "severity": "critical",
+      "dfirCritical": true,
+      "retentionNative": {
+        "en": "30-day hard cap once licensed",
+        "fr": "Plafond fixe de 30 jours une fois sous licence"
+      },
+      "mitreTechniques": [
+        "T1567.002"
+      ],
+      "product": "mde"
+    },
+    {
+      "id": "device-logon-events",
+      "table": "DeviceLogonEvents",
+      "name": {
+        "en": "Device Logon Events",
+        "fr": "Événements de connexion des points terminaux"
+      },
+      "category": "defender",
+      "categoryLabel": {
+        "en": "Defender XDR",
+        "fr": "Defender XDR"
+      },
+      "gateType": "license",
+      "requiresLicense": "mde-p2",
+      "severity": "critical",
+      "dfirCritical": true,
+      "retentionNative": {
+        "en": "30-day hard cap once licensed",
+        "fr": "Plafond fixe de 30 jours une fois sous licence"
+      },
+      "mitreTechniques": [
+        "T1550.002",
+        "T1021.001"
+      ],
+      "product": "mde"
+    },
+    {
+      "id": "device-file-events",
+      "table": "DeviceFileEvents",
+      "name": {
+        "en": "Device File Events",
+        "fr": "Événements de fichiers des points terminaux"
+      },
+      "category": "defender",
+      "categoryLabel": {
+        "en": "Defender XDR",
+        "fr": "Defender XDR"
+      },
+      "gateType": "license",
+      "requiresLicense": "mde-p2",
+      "severity": "high",
+      "dfirCritical": true,
+      "retentionNative": {
+        "en": "30-day hard cap once licensed",
+        "fr": "Plafond fixe de 30 jours une fois sous licence"
+      },
+      "mitreTechniques": [
+        "T1486"
+      ],
+      "product": "mde"
+    },
+    {
+      "id": "device-registry-events",
+      "table": "DeviceRegistryEvents",
+      "name": {
+        "en": "Device Registry Events",
+        "fr": "Événements de registre des points terminaux"
+      },
+      "category": "defender",
+      "categoryLabel": {
+        "en": "Defender XDR",
+        "fr": "Defender XDR"
+      },
+      "gateType": "license",
+      "requiresLicense": "mde-p2",
+      "severity": "high",
+      "dfirCritical": true,
+      "retentionNative": {
+        "en": "30-day hard cap once licensed",
+        "fr": "Plafond fixe de 30 jours une fois sous licence"
+      },
+      "mitreTechniques": [
+        "T1490",
+        "T1685"
+      ],
+      "product": "mde"
+    },
+    {
+      "id": "device-events-misc",
+      "table": "DeviceEvents (Miscellaneous)",
+      "name": {
+        "en": "Device Events (Miscellaneous)",
+        "fr": "Événements des points terminaux (divers)"
+      },
+      "category": "defender",
+      "categoryLabel": {
+        "en": "Defender XDR",
+        "fr": "Defender XDR"
+      },
+      "gateType": "license",
+      "requiresLicense": "mde-p2",
+      "severity": "high",
+      "dfirCritical": true,
+      "retentionNative": {
+        "en": "30-day hard cap once licensed",
+        "fr": "Plafond fixe de 30 jours une fois sous licence"
+      },
+      "mitreTechniques": [],
+      "product": "mde"
+    },
+    {
+      "id": "device-image-load-events",
+      "table": "DeviceImageLoadEvents",
+      "name": {
+        "en": "Device Image Load Events",
+        "fr": "Événements de chargement d'image des points terminaux"
+      },
+      "category": "defender",
+      "categoryLabel": {
+        "en": "Defender XDR",
+        "fr": "Defender XDR"
+      },
+      "gateType": "license",
+      "requiresLicense": "mde-p2",
+      "severity": "high",
+      "dfirCritical": true,
+      "retentionNative": {
+        "en": "30-day hard cap once licensed",
+        "fr": "Plafond fixe de 30 jours une fois sous licence"
+      },
+      "mitreTechniques": [],
+      "product": "mde"
+    },
+    {
+      "id": "security-alert",
+      "table": "SecurityAlert",
+      "name": {
+        "en": "Security Alert (Sentinel)",
+        "fr": "Security Alert (Sentinel)"
+      },
+      "category": "sentinel",
+      "categoryLabel": {
+        "en": "Microsoft Sentinel",
+        "fr": "Microsoft Sentinel"
+      },
+      "gateType": "license",
+      "requiresLicense": "sentinel",
+      "severity": "critical",
+      "dfirCritical": true,
+      "retentionNative": {
+        "en": "n/a — 0% Sentinel coverage",
+        "fr": "s/o — 0 % de couverture Sentinel"
+      },
+      "mitreTechniques": [],
+      "product": "sentinel"
+    },
+    {
+      "id": "security-incident",
+      "table": "SecurityIncident",
+      "name": {
+        "en": "Security Incident (Sentinel)",
+        "fr": "Security Incident (Sentinel)"
+      },
+      "category": "sentinel",
+      "categoryLabel": {
+        "en": "Microsoft Sentinel",
+        "fr": "Microsoft Sentinel"
+      },
+      "gateType": "license",
+      "requiresLicense": "sentinel",
+      "severity": "critical",
+      "dfirCritical": true,
+      "retentionNative": {
+        "en": "n/a — 0% Sentinel coverage",
+        "fr": "s/o — 0 % de couverture Sentinel"
+      },
+      "mitreTechniques": [],
+      "product": "sentinel"
+    },
+    {
+      "id": "behavior-analytics",
+      "table": "BehaviorAnalytics / UEBA",
+      "name": {
+        "en": "Behavior Analytics / UEBA Tables",
+        "fr": "Analyse comportementale / tables UEBA"
+      },
+      "category": "sentinel",
+      "categoryLabel": {
+        "en": "Microsoft Sentinel",
+        "fr": "Microsoft Sentinel"
+      },
+      "gateType": "license",
+      "requiresLicense": "sentinel",
+      "severity": "high",
+      "dfirCritical": true,
+      "retentionNative": {
+        "en": "n/a",
+        "fr": "s/o"
+      },
+      "mitreTechniques": [],
+      "product": "sentinel"
+    },
+    {
+      "id": "threat-intel-indicator",
+      "table": "ThreatIntelligenceIndicator",
+      "name": {
+        "en": "Threat Intelligence Indicator",
+        "fr": "Threat Intelligence Indicator"
+      },
+      "category": "sentinel",
+      "categoryLabel": {
+        "en": "Microsoft Sentinel",
+        "fr": "Microsoft Sentinel"
+      },
+      "gateType": "license",
+      "requiresLicense": "sentinel",
+      "severity": "high",
+      "dfirCritical": false,
+      "retentionNative": {
+        "en": "n/a",
+        "fr": "s/o"
+      },
+      "mitreTechniques": [],
+      "product": "sentinel"
+    },
+    {
+      "id": "watchlist",
+      "table": "Watchlist",
+      "name": {
+        "en": "Watchlist",
+        "fr": "Watchlist"
+      },
+      "category": "sentinel",
+      "categoryLabel": {
+        "en": "Microsoft Sentinel",
+        "fr": "Microsoft Sentinel"
+      },
+      "gateType": "license",
+      "requiresLicense": "sentinel",
+      "severity": "medium",
+      "dfirCritical": false,
+      "retentionNative": {
+        "en": "n/a",
+        "fr": "s/o"
+      },
+      "mitreTechniques": [],
+      "product": "sentinel"
+    },
+    {
+      "id": "sentinel-free-connectors",
+      "table": "Sentinel Free Data Connectors",
+      "name": {
+        "en": "Sentinel Free Data Connectors",
+        "fr": "Connecteurs gratuits Sentinel"
+      },
+      "category": "sentinel",
+      "categoryLabel": {
+        "en": "Microsoft Sentinel",
+        "fr": "Microsoft Sentinel"
+      },
+      "gateType": "license",
+      "requiresLicense": "sentinel-free",
+      "severity": "critical",
+      "dfirCritical": true,
+      "retentionNative": {
+        "en": "n/a",
+        "fr": "s/o"
+      },
+      "mitreTechniques": [],
+      "product": "sentinel"
+    },
+    {
+      "id": "identity-logon-events",
+      "table": "IdentityLogonEvents",
+      "name": {
+        "en": "Identity Logon Events (MDI)",
+        "fr": "Identity Logon Events (MDI)"
+      },
+      "category": "defender",
+      "categoryLabel": {
+        "en": "Defender XDR",
+        "fr": "Defender XDR"
+      },
+      "gateType": "license",
+      "requiresLicense": "mdi",
+      "severity": "critical",
+      "dfirCritical": true,
+      "retentionNative": {
+        "en": "0 days",
+        "fr": "0 jour"
+      },
+      "mitreTechniques": [
+        "T1003.006",
+        "T1558.003",
+        "T1550.002",
+        "T1021.001"
+      ],
+      "product": "mdi"
+    },
+    {
+      "id": "identity-directory-events",
+      "table": "IdentityDirectoryEvents",
+      "name": {
+        "en": "Identity Directory Events (MDI)",
+        "fr": "Identity Directory Events (MDI)"
+      },
+      "category": "defender",
+      "categoryLabel": {
+        "en": "Defender XDR",
+        "fr": "Defender XDR"
+      },
+      "gateType": "license",
+      "requiresLicense": "mdi",
+      "severity": "high",
+      "dfirCritical": true,
+      "retentionNative": {
+        "en": "0 days",
+        "fr": "0 jour"
+      },
+      "mitreTechniques": [
+        "T1136.003"
+      ],
+      "product": "mdi"
+    },
+    {
+      "id": "identity-query-events",
+      "table": "IdentityQueryEvents",
+      "name": {
+        "en": "Identity Query Events (MDI)",
+        "fr": "Identity Query Events (MDI)"
+      },
+      "category": "defender",
+      "categoryLabel": {
+        "en": "Defender XDR",
+        "fr": "Defender XDR"
+      },
+      "gateType": "license",
+      "requiresLicense": "mdi",
+      "severity": "high",
+      "dfirCritical": true,
+      "retentionNative": {
+        "en": "0 days",
+        "fr": "0 jour"
+      },
+      "mitreTechniques": [],
+      "product": "mdi"
+    },
+    {
+      "id": "mail-items-accessed",
+      "table": "MailItemsAccessed",
+      "name": {
+        "en": "Mailbox Item Access (Advanced Audit)",
+        "fr": "Accès aux éléments de boîte aux lettres (Advanced Audit)"
+      },
+      "category": "m365",
+      "categoryLabel": {
+        "en": "M365 / Office",
+        "fr": "M365 / Office"
+      },
+      "gateType": "license",
+      "requiresAnyOf": [
+        "m365-e5",
+        "purview-adv-audit"
+      ],
+      "severity": "critical",
+      "dfirCritical": true,
+      "retentionNative": {
+        "en": "0 days",
+        "fr": "0 jour"
+      },
+      "mitreTechniques": [
+        "T1114",
+        "T1567.002"
+      ],
+      "product": "m365"
+    },
+    {
+      "id": "search-query-initiated",
+      "table": "SearchQueryInitiatedExchange / SharePoint",
+      "name": {
+        "en": "Search Query Initiated (Exchange/SharePoint)",
+        "fr": "Recherche initiée (Exchange/SharePoint)"
+      },
+      "category": "m365",
+      "categoryLabel": {
+        "en": "M365 / Office",
+        "fr": "M365 / Office"
+      },
+      "gateType": "license",
+      "requiresAnyOf": [
+        "m365-e5",
+        "purview-adv-audit"
+      ],
+      "severity": "high",
+      "dfirCritical": true,
+      "retentionNative": {
+        "en": "0 days",
+        "fr": "0 jour"
+      },
+      "mitreTechniques": [
+        "T1114"
+      ],
+      "product": "m365"
+    },
+    {
+      "id": "risk-detections",
+      "table": "Identity Protection — Risk Detections",
+      "name": {
+        "en": "Identity Protection Risk Detections",
+        "fr": "Détections de risque Identity Protection"
+      },
+      "category": "entra-id",
+      "categoryLabel": {
+        "en": "Entra ID",
+        "fr": "Entra ID"
+      },
+      "gateType": "license",
+      "requiresLicense": "entra-p2",
+      "severity": "critical",
+      "dfirCritical": true,
+      "retentionNative": {
+        "en": "90 days (report window) — but only a generic 'Additional risk detected' event without Entra ID P2",
+        "fr": "90 jours (fenêtre de rapport) — mais seul un évènement générique « risque additionnel détecté » sans Entra ID P2"
+      },
+      "mitreTechniques": [
+        "T1078"
+      ],
+      "product": "entra-id"
+    },
+    {
+      "id": "cloud-app-events",
+      "table": "CloudAppEvents",
+      "name": {
+        "en": "Cloud App Events (MDCA)",
+        "fr": "Cloud App Events (MDCA)"
+      },
+      "category": "defender",
+      "categoryLabel": {
+        "en": "Defender XDR",
+        "fr": "Defender XDR"
+      },
+      "gateType": "license",
+      "requiresLicense": "mdca",
+      "severity": "critical",
+      "dfirCritical": true,
+      "retentionNative": {
+        "en": "0 days",
+        "fr": "0 jour"
+      },
+      "mitreTechniques": [
+        "T1550.001",
+        "T1528",
+        "T1486"
+      ],
+      "product": "mdca"
+    },
+    {
+      "id": "purview-audit-premium",
+      "table": "Purview Audit Premium (Advanced Audit)",
+      "name": {
+        "en": "Purview Audit Premium (Advanced Audit)",
+        "fr": "Purview Audit Premium (Advanced Audit)"
+      },
+      "category": "purview",
+      "categoryLabel": {
+        "en": "Purview",
+        "fr": "Purview"
+      },
+      "gateType": "license",
+      "requiresLicense": "purview-adv-audit",
+      "severity": "critical",
+      "dfirCritical": true,
+      "retentionNative": {
+        "en": "1-year default, 10-year add-on available",
+        "fr": "Défaut d'un an, complément de 10 ans disponible"
+      },
+      "mitreTechniques": [
+        "T1114"
+      ],
+      "product": "purview-audit"
+    },
+    {
+      "id": "mdfc-recommendations",
+      "table": "Defender for Cloud — Security Recommendations",
+      "name": {
+        "en": "Defender for Cloud Security Recommendations",
+        "fr": "Recommandations de sécurité Defender for Cloud"
+      },
+      "category": "azure-platform",
+      "categoryLabel": {
+        "en": "Azure Platform",
+        "fr": "Azure Platform"
+      },
+      "gateType": "license",
+      "requiresLicense": "mdfc",
+      "severity": "high",
+      "dfirCritical": false,
+      "retentionNative": {
+        "en": "n/a",
+        "fr": "s/o"
+      },
+      "mitreTechniques": [
+        "T1133"
+      ],
+      "product": "mdfc"
+    },
+    {
+      "id": "mdfc-alerts",
+      "table": "Defender for Cloud Security Alerts",
+      "name": {
+        "en": "Defender for Cloud Security Alerts",
+        "fr": "Alertes de sécurité Defender for Cloud"
+      },
+      "category": "defender",
+      "categoryLabel": {
+        "en": "Defender XDR",
+        "fr": "Defender XDR"
+      },
+      "gateType": "license",
+      "requiresLicense": "mdfc",
+      "severity": "high",
+      "dfirCritical": true,
+      "retentionNative": {
+        "en": "n/a",
+        "fr": "s/o"
+      },
+      "mitreTechniques": [
+        "T1555.006"
+      ],
+      "product": "mdfc"
+    },
+    {
+      "id": "copilot-interaction-logs",
+      "table": "Microsoft 365 Copilot Interaction Logs (Full)",
+      "name": {
+        "en": "M365 Copilot Interaction Logs (Full)",
+        "fr": "Journaux d'interaction M365 Copilot (complet)"
+      },
+      "category": "m365",
+      "categoryLabel": {
+        "en": "M365 / Office",
+        "fr": "M365 / Office"
+      },
+      "gateType": "license",
+      "requiresLicense": "m365-copilot",
+      "severity": "high",
+      "dfirCritical": true,
+      "retentionNative": {
+        "en": "n/a",
+        "fr": "s/o"
+      },
+      "mitreTechniques": [],
+      "product": "m365"
+    },
+    {
+      "id": "copilot-plugin-activity",
+      "table": "Copilot Plugin & Agent Activity",
+      "name": {
+        "en": "Copilot Plugin & Agent Activity",
+        "fr": "Activité des plugiciels et agents Copilot"
+      },
+      "category": "m365",
+      "categoryLabel": {
+        "en": "M365 / Office",
+        "fr": "M365 / Office"
+      },
+      "gateType": "license",
+      "requiresLicense": "m365-copilot",
+      "severity": "high",
+      "dfirCritical": false,
+      "retentionNative": {
+        "en": "n/a",
+        "fr": "s/o"
+      },
+      "mitreTechniques": [],
+      "product": "m365"
+    },
+    {
+      "id": "security-copilot-logs",
+      "table": "Security Copilot Interaction & Admin Logs",
+      "name": {
+        "en": "Security Copilot Interaction & Admin Logs",
+        "fr": "Journaux d'interaction et d'administration Security Copilot"
+      },
+      "category": "m365",
+      "categoryLabel": {
+        "en": "M365 / Office",
+        "fr": "M365 / Office"
+      },
+      "gateType": "license",
+      "requiresLicense": "security-copilot",
+      "severity": "high",
+      "dfirCritical": true,
+      "retentionNative": {
+        "en": "n/a",
+        "fr": "s/o"
+      },
+      "mitreTechniques": [],
+      "product": "m365"
+    },
+    {
+      "id": "copilot-studio-logs",
+      "table": "Copilot Studio Agent Interaction Logs",
+      "name": {
+        "en": "Copilot Studio Agent Interaction Logs",
+        "fr": "Journaux d'interaction des agents Copilot Studio"
+      },
+      "category": "m365",
+      "categoryLabel": {
+        "en": "M365 / Office",
+        "fr": "M365 / Office"
+      },
+      "gateType": "license",
+      "requiresLicense": "copilot-studio",
+      "severity": "high",
+      "dfirCritical": true,
+      "retentionNative": {
+        "en": "n/a",
+        "fr": "s/o"
+      },
+      "mitreTechniques": [],
+      "product": "m365"
+    },
+    {
+      "id": "agent365-governance-logs",
+      "table": "Agent 365 Governance & Audit Logs",
+      "name": {
+        "en": "Agent 365 Governance & Audit Logs",
+        "fr": "Journaux de gouvernance et d'audit Agent 365"
+      },
+      "category": "m365",
+      "categoryLabel": {
+        "en": "M365 / Office",
+        "fr": "M365 / Office"
+      },
+      "gateType": "license",
+      "requiresLicense": "agent-365",
+      "severity": "high",
+      "dfirCritical": true,
+      "retentionNative": {
+        "en": "n/a",
+        "fr": "s/o"
+      },
+      "mitreTechniques": [],
+      "product": "m365"
+    },
+    {
+      "id": "email-post-delivery-events",
+      "table": "EmailPostDeliveryEvents",
+      "name": {
+        "en": "Email Post-Delivery Events",
+        "fr": "Événements post-livraison de courriel"
+      },
+      "category": "defender",
+      "categoryLabel": {
+        "en": "Defender XDR",
+        "fr": "Defender XDR"
+      },
+      "gateType": "license",
+      "requiresLicense": "mdo-p2",
+      "severity": "high",
+      "dfirCritical": true,
+      "retentionNative": {
+        "en": "n/a",
+        "fr": "s/o"
+      },
+      "mitreTechniques": [
+        "T1566"
+      ],
+      "product": "mdo"
+    },
+    {
+      "id": "edisc-premium-advanced",
+      "table": "eDiscovery Premium (Advanced eDiscovery)",
+      "name": {
+        "en": "eDiscovery Premium (Advanced eDiscovery)",
+        "fr": "eDiscovery Premium (Advanced eDiscovery)"
+      },
+      "category": "purview",
+      "categoryLabel": {
+        "en": "Purview",
+        "fr": "Purview"
+      },
+      "gateType": "license",
+      "requiresLicense": "edisc-premium",
+      "severity": "high",
+      "dfirCritical": true,
+      "retentionNative": {
+        "en": "n/a",
+        "fr": "s/o"
+      },
+      "mitreTechniques": [],
+      "product": "purview-ediscovery"
+    },
+    {
+      "id": "irm-alerts-cases",
+      "table": "Insider Risk Management Alerts & Cases",
+      "name": {
+        "en": "Insider Risk Management Alerts & Cases",
+        "fr": "Alertes et dossiers Insider Risk Management"
+      },
+      "category": "purview",
+      "categoryLabel": {
+        "en": "Purview",
+        "fr": "Purview"
+      },
+      "gateType": "license",
+      "requiresLicense": "irm",
+      "severity": "high",
+      "dfirCritical": true,
+      "retentionNative": {
+        "en": "n/a",
+        "fr": "s/o"
+      },
+      "mitreTechniques": [],
+      "product": "purview-irm"
+    },
+    {
+      "id": "autolabel-classifier-activity",
+      "table": "Auto-Labeling & Trainable Classifier Activity",
+      "name": {
+        "en": "Auto-Labeling & Trainable Classifier Activity",
+        "fr": "Activité d'étiquetage automatique et de classificateurs entraînables"
+      },
+      "category": "purview",
+      "categoryLabel": {
+        "en": "Purview",
+        "fr": "Purview"
+      },
+      "gateType": "license",
+      "requiresLicense": "mip-p2",
+      "severity": "medium",
+      "dfirCritical": false,
+      "retentionNative": {
+        "en": "n/a",
+        "fr": "s/o"
+      },
+      "mitreTechniques": [],
+      "product": "purview-ip"
+    },
+    {
+      "id": "comm-compliance-matches",
+      "table": "Communication Compliance Policy Matches",
+      "name": {
+        "en": "Communication Compliance Policy Matches",
+        "fr": "Correspondances de politique Communication Compliance"
+      },
+      "category": "purview",
+      "categoryLabel": {
+        "en": "Purview",
+        "fr": "Purview"
+      },
+      "gateType": "license",
+      "requiresLicense": "purview-e5-compliance",
+      "severity": "medium",
+      "dfirCritical": false,
+      "retentionNative": {
+        "en": "n/a",
+        "fr": "s/o"
+      },
+      "mitreTechniques": [],
+      "product": "purview-comm-compliance"
+    },
+    {
+      "id": "nsg-flow-logs",
+      "table": "NSGFlowLogs",
+      "name": {
+        "en": "NSG Flow Logs",
+        "fr": "Journaux de flux NSG"
+      },
+      "category": "azure-platform",
+      "categoryLabel": {
+        "en": "Azure Platform",
+        "fr": "Azure Platform"
+      },
+      "gateType": "config",
+      "requiresLicense": null,
+      "severity": "medium",
+      "dfirCritical": true,
+      "retentionNative": {
+        "en": "0 days — flow logging not enabled by default",
+        "fr": "0 jour — journalisation de flux non activée par défaut"
+      },
+      "mitreTechniques": [
+        "T1133"
+      ],
+      "product": "azure-platform"
+    },
+    {
+      "id": "firewall-logs",
+      "table": "AZFWNetworkRule / AZFWApplicationRule",
+      "name": {
+        "en": "Azure Firewall Structured Logs",
+        "fr": "Journaux structurés Azure Firewall"
+      },
+      "category": "azure-platform",
+      "categoryLabel": {
+        "en": "Azure Platform",
+        "fr": "Azure Platform"
+      },
+      "gateType": "config",
+      "requiresLicense": null,
+      "severity": "medium",
+      "dfirCritical": true,
+      "retentionNative": {
+        "en": "0 days — diagnostic setting not enabled",
+        "fr": "0 jour — réglage de diagnostic non activé"
+      },
+      "mitreTechniques": [],
+      "product": "azure-platform"
+    },
+    {
+      "id": "sql-audit-logs",
+      "table": "SQLSecurityAuditEvents",
+      "name": {
+        "en": "Azure SQL Audit Logs",
+        "fr": "Journaux d'audit Azure SQL"
+      },
+      "category": "azure-platform",
+      "categoryLabel": {
+        "en": "Azure Platform",
+        "fr": "Azure Platform"
+      },
+      "gateType": "config",
+      "requiresLicense": null,
+      "severity": "high",
+      "dfirCritical": true,
+      "retentionNative": {
+        "en": "0 days — auditing not enabled by default",
+        "fr": "0 jour — audit non activé par défaut"
+      },
+      "mitreTechniques": [
+        "T1530"
+      ],
+      "product": "azure-platform"
+    },
+    {
+      "id": "appgw-access-logs",
+      "table": "AzureDiagnostics (App Gateway / WAF)",
+      "name": {
+        "en": "Application Gateway / WAF Logs",
+        "fr": "Journaux Application Gateway / WAF"
+      },
+      "category": "azure-platform",
+      "categoryLabel": {
+        "en": "Azure Platform",
+        "fr": "Azure Platform"
+      },
+      "gateType": "config",
+      "requiresLicense": null,
+      "severity": "medium",
+      "dfirCritical": false,
+      "retentionNative": {
+        "en": "0 days — diagnostic setting not enabled",
+        "fr": "0 jour — réglage de diagnostic non activé"
+      },
+      "mitreTechniques": [],
+      "product": "azure-platform"
+    },
+    {
+      "id": "vm-insights-logs",
+      "table": "Event / Syslog (Azure Monitor Agent)",
+      "name": {
+        "en": "VM Guest OS Event/Syslog",
+        "fr": "Journaux d'évènements / Syslog des VM"
+      },
+      "category": "azure-platform",
+      "categoryLabel": {
+        "en": "Azure Platform",
+        "fr": "Azure Platform"
+      },
+      "gateType": "config",
+      "requiresLicense": null,
+      "severity": "high",
+      "dfirCritical": true,
+      "retentionNative": {
+        "en": "0 days — Azure Monitor Agent not deployed by default",
+        "fr": "0 jour — agent Azure Monitor non déployé par défaut"
+      },
+      "mitreTechniques": [],
+      "product": "azure-platform"
+    },
+    {
+      "id": "activity-log-alerts",
+      "table": "AzureActivity (Alerts / Policy compliance)",
+      "name": {
+        "en": "Activity Log Alerts & Policy Compliance",
+        "fr": "Alertes du journal d'activité et conformité aux stratégies"
+      },
+      "category": "azure-platform",
+      "categoryLabel": {
+        "en": "Azure Platform",
+        "fr": "Azure Platform"
+      },
+      "gateType": "license",
+      "requiresLicense": null,
+      "severity": "info",
+      "dfirCritical": false,
+      "retentionNative": {
+        "en": "Per Log Analytics workspace config",
+        "fr": "Selon la configuration de l'espace Log Analytics"
+      },
+      "mitreTechniques": [],
+      "product": "azure-platform"
+    },
+    {
+      "id": "noninteractive-signin-logs",
+      "table": "NonInteractiveUserSignInLogs",
+      "name": {
+        "en": "Non-Interactive Sign-in Logs",
+        "fr": "Journaux de connexion non interactive"
+      },
+      "category": "entra-id",
+      "categoryLabel": {
+        "en": "Entra ID",
+        "fr": "Entra ID"
+      },
+      "gateType": "license",
+      "requiresLicense": "entra-p1",
+      "severity": "info",
+      "dfirCritical": true,
+      "retentionNative": {
+        "en": "30 days (portal, P1/P2)",
+        "fr": "30 jours (portail, P1/P2)"
+      },
+      "mitreTechniques": [
+        "T1078"
+      ],
+      "product": "entra-id"
+    },
+    {
+      "id": "serviceprincipal-signin-logs",
+      "table": "ServicePrincipalSignInLogs",
+      "name": {
+        "en": "Service Principal Sign-in Logs",
+        "fr": "Journaux de connexion des principaux de service"
+      },
+      "category": "entra-id",
+      "categoryLabel": {
+        "en": "Entra ID",
+        "fr": "Entra ID"
+      },
+      "gateType": "license",
+      "requiresLicense": "entra-p1",
+      "severity": "high",
+      "dfirCritical": true,
+      "retentionNative": {
+        "en": "30 days (portal, P1/P2)",
+        "fr": "30 jours (portail, P1/P2)"
+      },
+      "mitreTechniques": [
+        "T1528"
+      ],
+      "product": "entra-id"
+    },
+    {
+      "id": "managedidentity-signin-logs",
+      "table": "ManagedIdentitySignInLogs",
+      "name": {
+        "en": "Managed Identity Sign-in Logs",
+        "fr": "Journaux de connexion des identités gérées"
+      },
+      "category": "entra-id",
+      "categoryLabel": {
+        "en": "Entra ID",
+        "fr": "Entra ID"
+      },
+      "gateType": "license",
+      "requiresLicense": "entra-p1",
+      "severity": "info",
+      "dfirCritical": false,
+      "retentionNative": {
+        "en": "30 days (portal, P1/P2)",
+        "fr": "30 jours (portail, P1/P2)"
+      },
+      "mitreTechniques": [],
+      "product": "entra-id"
+    },
+    {
+      "id": "provisioning-logs",
+      "table": "ProvisioningLogs",
+      "name": {
+        "en": "Provisioning Logs",
+        "fr": "Journaux d'approvisionnement"
+      },
+      "category": "entra-id",
+      "categoryLabel": {
+        "en": "Entra ID",
+        "fr": "Entra ID"
+      },
+      "gateType": "license",
+      "requiresLicense": "entra-p1",
+      "severity": "info",
+      "dfirCritical": false,
+      "retentionNative": {
+        "en": "30 days (portal, P1/P2)",
+        "fr": "30 jours (portail, P1/P2)"
+      },
+      "mitreTechniques": [
+        "T1136.003"
+      ],
+      "product": "entra-id"
+    },
+    {
+      "id": "graph-activity-logs",
+      "table": "MicrosoftGraphActivityLogs",
+      "name": {
+        "en": "Microsoft Graph Activity Logs",
+        "fr": "Journaux d'activité Microsoft Graph"
+      },
+      "category": "entra-id",
+      "categoryLabel": {
+        "en": "Entra ID",
+        "fr": "Entra ID"
+      },
+      "gateType": "license",
+      "requiresLicense": "entra-p1",
+      "severity": "high",
+      "dfirCritical": true,
+      "retentionNative": {
+        "en": "30 days (portal, P1/P2)",
+        "fr": "30 jours (portail, P1/P2)"
+      },
+      "mitreTechniques": [
+        "T1528"
+      ],
+      "product": "entra-id"
+    },
+    {
+      "id": "adfs-signin-logs",
+      "table": "ADFSSignInLogs",
+      "name": {
+        "en": "AD FS Sign-in Logs (hybrid)",
+        "fr": "Journaux de connexion AD FS (hybride)"
+      },
+      "category": "entra-id",
+      "categoryLabel": {
+        "en": "Entra ID",
+        "fr": "Entra ID"
+      },
+      "gateType": "license",
+      "requiresLicense": "entra-p1",
+      "severity": "info",
+      "dfirCritical": false,
+      "retentionNative": {
+        "en": "30 days (portal, P1/P2)",
+        "fr": "30 jours (portail, P1/P2)"
+      },
+      "mitreTechniques": [],
+      "product": "entra-id"
+    },
+    {
+      "id": "sharepoint-file-ops",
+      "table": "SharePointFileOperation",
+      "name": {
+        "en": "SharePoint File Operations",
+        "fr": "Opérations sur les fichiers SharePoint"
+      },
+      "category": "m365",
+      "categoryLabel": {
+        "en": "M365 / Office",
+        "fr": "M365 / Office"
+      },
+      "gateType": "license",
+      "requiresLicense": "purview-std",
+      "severity": "info",
+      "dfirCritical": true,
+      "retentionNative": {
+        "en": "180 days (Standard UAL)",
+        "fr": "180 jours (UAL Standard)"
+      },
+      "mitreTechniques": [
+        "T1530"
+      ],
+      "product": "m365"
+    },
+    {
+      "id": "onedrive-file-ops",
+      "table": "OneDriveFileOperation",
+      "name": {
+        "en": "OneDrive File Operations",
+        "fr": "Opérations sur les fichiers OneDrive"
+      },
+      "category": "m365",
+      "categoryLabel": {
+        "en": "M365 / Office",
+        "fr": "M365 / Office"
+      },
+      "gateType": "license",
+      "requiresLicense": "purview-std",
+      "severity": "info",
+      "dfirCritical": true,
+      "retentionNative": {
+        "en": "180 days (Standard UAL)",
+        "fr": "180 jours (UAL Standard)"
+      },
+      "mitreTechniques": [
+        "T1530"
+      ],
+      "product": "m365"
+    },
+    {
+      "id": "teams-activity",
+      "table": "TeamsActivity",
+      "name": {
+        "en": "Teams Activity",
+        "fr": "Activité Teams"
+      },
+      "category": "m365",
+      "categoryLabel": {
+        "en": "M365 / Office",
+        "fr": "M365 / Office"
+      },
+      "gateType": "license",
+      "requiresLicense": "purview-std",
+      "severity": "info",
+      "dfirCritical": false,
+      "retentionNative": {
+        "en": "180 days (Standard UAL)",
+        "fr": "180 jours (UAL Standard)"
+      },
+      "mitreTechniques": [],
+      "product": "m365"
+    },
+    {
+      "id": "exchange-mailbox-activity",
+      "table": "ExchangeMailboxAuditLog (basic)",
+      "name": {
+        "en": "Exchange Mailbox Audit (basic)",
+        "fr": "Audit de boîte aux lettres Exchange (de base)"
+      },
+      "category": "m365",
+      "categoryLabel": {
+        "en": "M365 / Office",
+        "fr": "M365 / Office"
+      },
+      "gateType": "license",
+      "requiresLicense": "purview-std",
+      "severity": "medium",
+      "dfirCritical": true,
+      "retentionNative": {
+        "en": "180 days (Standard UAL)",
+        "fr": "180 jours (UAL Standard)"
+      },
+      "mitreTechniques": [
+        "T1114"
+      ],
+      "product": "m365"
+    },
+    {
+      "id": "forms-activity",
+      "table": "MicrosoftFormsActivity",
+      "name": {
+        "en": "Microsoft Forms Activity",
+        "fr": "Activité Microsoft Forms"
+      },
+      "category": "m365",
+      "categoryLabel": {
+        "en": "M365 / Office",
+        "fr": "M365 / Office"
+      },
+      "gateType": "license",
+      "requiresLicense": "purview-std",
+      "severity": "info",
+      "dfirCritical": false,
+      "retentionNative": {
+        "en": "180 days (Standard UAL)",
+        "fr": "180 jours (UAL Standard)"
+      },
+      "mitreTechniques": [],
+      "product": "m365"
+    },
+    {
+      "id": "powerapps-activity",
+      "table": "PowerAppsActivity",
+      "name": {
+        "en": "Power Apps Activity",
+        "fr": "Activité Power Apps"
+      },
+      "category": "m365",
+      "categoryLabel": {
+        "en": "M365 / Office",
+        "fr": "M365 / Office"
+      },
+      "gateType": "license",
+      "requiresLicense": "purview-std",
+      "severity": "info",
+      "dfirCritical": false,
+      "retentionNative": {
+        "en": "180 days (Standard UAL)",
+        "fr": "180 jours (UAL Standard)"
+      },
+      "mitreTechniques": [],
+      "product": "m365"
+    },
+    {
+      "id": "device-network-info",
+      "table": "DeviceNetworkInfo",
+      "name": {
+        "en": "Device Network Info",
+        "fr": "Informations réseau des points terminaux"
+      },
+      "category": "defender",
+      "categoryLabel": {
+        "en": "Defender XDR",
+        "fr": "Defender XDR"
+      },
+      "gateType": "license",
+      "requiresLicense": "mde-p2",
+      "severity": "medium",
+      "dfirCritical": false,
+      "retentionNative": {
+        "en": "30-day hard cap once licensed",
+        "fr": "Plafond fixe de 30 jours une fois sous licence"
+      },
+      "mitreTechniques": [],
+      "product": "mde"
+    },
+    {
+      "id": "device-info",
+      "table": "DeviceInfo",
+      "name": {
+        "en": "Device Info",
+        "fr": "Informations sur les points terminaux"
+      },
+      "category": "defender",
+      "categoryLabel": {
+        "en": "Defender XDR",
+        "fr": "Defender XDR"
+      },
+      "gateType": "license",
+      "requiresLicense": "mde-p2",
+      "severity": "medium",
+      "dfirCritical": false,
+      "retentionNative": {
+        "en": "30-day hard cap once licensed",
+        "fr": "Plafond fixe de 30 jours une fois sous licence"
+      },
+      "mitreTechniques": [],
+      "product": "mde"
+    },
+    {
+      "id": "device-tvm-vulnerabilities",
+      "table": "DeviceTvmSoftwareVulnerabilities",
+      "name": {
+        "en": "Device Vulnerability Inventory (Advanced Hunting)",
+        "fr": "Inventaire des vulnérabilités (chasse avancée)"
+      },
+      "category": "defender",
+      "categoryLabel": {
+        "en": "Defender XDR",
+        "fr": "Defender XDR"
+      },
+      "gateType": "license",
+      "requiresLicense": "mde-p2",
+      "severity": "medium",
+      "dfirCritical": false,
+      "retentionNative": {
+        "en": "30-day hard cap once licensed",
+        "fr": "Plafond fixe de 30 jours une fois sous licence"
+      },
+      "mitreTechniques": [],
+      "product": "mde"
+    },
+    {
+      "id": "sensitivity-label-activity",
+      "table": "Sensitivity Label Activity (manual)",
+      "name": {
+        "en": "Sensitivity Label Activity (manual)",
+        "fr": "Activité d'étiquettes de sensibilité (manuel)"
+      },
+      "category": "purview",
+      "categoryLabel": {
+        "en": "Purview",
+        "fr": "Purview"
+      },
+      "gateType": "license",
+      "requiresLicense": "mip-p1",
+      "severity": "info",
+      "dfirCritical": false,
+      "retentionNative": {
+        "en": "180 days (Standard UAL)",
+        "fr": "180 jours (UAL Standard)"
+      },
+      "mitreTechniques": [],
+      "product": "purview-ip"
+    },
+    {
+      "id": "dlp-policy-matches-basic",
+      "table": "DLP Policy Matches (Exchange/SharePoint/OneDrive/Teams)",
+      "name": {
+        "en": "DLP Policy Matches (basic)",
+        "fr": "Correspondances de politique DLP (de base)"
+      },
+      "category": "purview",
+      "categoryLabel": {
+        "en": "Purview",
+        "fr": "Purview"
+      },
+      "gateType": "license",
+      "requiresLicense": "purview-std",
+      "severity": "medium",
+      "dfirCritical": true,
+      "retentionNative": {
+        "en": "180 days (Standard UAL)",
+        "fr": "180 jours (UAL Standard)"
+      },
+      "mitreTechniques": [
+        "T1530"
+      ],
+      "product": "purview-dlp"
+    },
+    {
+      "id": "retention-label-activity",
+      "table": "Retention Label & Policy Activity (basic)",
+      "name": {
+        "en": "Retention Label & Policy Activity (basic)",
+        "fr": "Activité d'étiquettes et politiques de rétention (de base)"
+      },
+      "category": "purview",
+      "categoryLabel": {
+        "en": "Purview",
+        "fr": "Purview"
+      },
+      "gateType": "license",
+      "requiresLicense": "purview-std",
+      "severity": "info",
+      "dfirCritical": false,
+      "retentionNative": {
+        "en": "180 days (Standard UAL)",
+        "fr": "180 jours (UAL Standard)"
+      },
+      "mitreTechniques": [],
+      "product": "purview-retention"
+    },
+    {
+      "id": "ediscovery-standard-activity",
+      "table": "eDiscovery Standard (Content Search) Activity",
+      "name": {
+        "en": "eDiscovery Standard Activity",
+        "fr": "Activité eDiscovery Standard"
+      },
+      "category": "purview",
+      "categoryLabel": {
+        "en": "Purview",
+        "fr": "Purview"
+      },
+      "gateType": "license",
+      "requiresLicense": "purview-std",
+      "severity": "medium",
+      "dfirCritical": true,
+      "retentionNative": {
+        "en": "180 days (Standard UAL)",
+        "fr": "180 jours (UAL Standard)"
+      },
+      "mitreTechniques": [],
+      "product": "purview-ediscovery"
+    },
+    {
+      "id": "compliance-manager-activity",
+      "table": "Compliance Manager Assessment Activity",
+      "name": {
+        "en": "Compliance Manager Assessment Activity",
+        "fr": "Activité d'évaluation Compliance Manager"
+      },
+      "category": "purview",
+      "categoryLabel": {
+        "en": "Purview",
+        "fr": "Purview"
+      },
+      "gateType": "license",
+      "requiresLicense": "purview-std",
+      "severity": "info",
+      "dfirCritical": false,
+      "retentionNative": {
+        "en": "180 days (Standard UAL)",
+        "fr": "180 jours (UAL Standard)"
+      },
+      "mitreTechniques": [],
+      "product": "purview-compliance-mgr"
+    },
+    {
+      "id": "sensitive-info-types-activity",
+      "table": "Built-in Sensitive Info Type Matches",
+      "name": {
+        "en": "Built-in Sensitive Info Type Matches",
+        "fr": "Correspondances de types d'informations sensibles intégrés"
+      },
+      "category": "purview",
+      "categoryLabel": {
+        "en": "Purview",
+        "fr": "Purview"
+      },
+      "gateType": "license",
+      "requiresLicense": "purview-std",
+      "severity": "info",
+      "dfirCritical": false,
+      "retentionNative": {
+        "en": "180 days (Standard UAL)",
+        "fr": "180 jours (UAL Standard)"
+      },
+      "mitreTechniques": [],
+      "product": "purview-ip"
+    },
+    {
+      "id": "safelinks-policy-activity",
+      "table": "Safe Links Policy Activity",
+      "name": {
+        "en": "Safe Links Policy Activity (MDO P1)",
+        "fr": "Activité de politique Safe Links (MDO P1)"
+      },
+      "category": "defender",
+      "categoryLabel": {
+        "en": "Defender XDR",
+        "fr": "Defender XDR"
+      },
+      "product": "mdo",
+      "gateType": "license",
+      "requiresLicense": "mdo-p1",
+      "severity": "medium",
+      "dfirCritical": true,
+      "retentionNative": {
+        "en": "Portal reporting only — no raw event export without Sentinel",
+        "fr": "Rapport du portail seulement — aucune exportation d'évènements bruts sans Sentinel"
+      },
+      "mitreTechniques": [
+        "T1566"
+      ]
+    },
+    {
+      "id": "safeattachments-scan-results",
+      "table": "Safe Attachments Scan Results",
+      "name": {
+        "en": "Safe Attachments Scan Results (MDO P1)",
+        "fr": "Résultats d'analyse Safe Attachments (MDO P1)"
+      },
+      "category": "defender",
+      "categoryLabel": {
+        "en": "Defender XDR",
+        "fr": "Defender XDR"
+      },
+      "product": "mdo",
+      "gateType": "license",
+      "requiresLicense": "mdo-p1",
+      "severity": "medium",
+      "dfirCritical": false,
+      "retentionNative": {
+        "en": "Portal reporting only — no raw event export without Sentinel",
+        "fr": "Rapport du portail seulement — aucune exportation d'évènements bruts sans Sentinel"
+      },
+      "mitreTechniques": []
+    },
+    {
+      "id": "backup-recovery-activity",
+      "table": "Recovery Services Vault Activity",
+      "name": {
+        "en": "Azure Backup / Recovery Services Activity",
+        "fr": "Activité Azure Backup / Recovery Services"
+      },
+      "category": "azure-platform",
+      "categoryLabel": {
+        "en": "Azure Platform",
+        "fr": "Azure Platform"
+      },
+      "product": "azure-platform",
+      "gateType": "config",
+      "requiresLicense": null,
+      "severity": "critical",
+      "dfirCritical": true,
+      "retentionNative": {
+        "en": "0 days — diagnostic setting not enabled by default",
+        "fr": "0 jour — réglage de diagnostic non activé par défaut"
+      },
+      "mitreTechniques": [
+        "T1490"
+      ]
+    },
+    {
+      "id": "tamper-protection-events",
+      "table": "Security Tool Tamper Protection Events",
+      "name": {
+        "en": "Security Tool Tamper Protection Events",
+        "fr": "Événements de protection contre l'altération des outils de sécurité"
+      },
+      "category": "defender",
+      "categoryLabel": {
+        "en": "Defender XDR",
+        "fr": "Defender XDR"
+      },
+      "product": "mde",
+      "gateType": "license",
+      "requiresLicense": "mde-p2",
+      "severity": "critical",
+      "dfirCritical": true,
+      "retentionNative": {
+        "en": "30-day hard cap once licensed; basic tamper-protection prevention exists at P1, but queryable tamper-event telemetry requires P2 Advanced Hunting",
+        "fr": "Plafond fixe de 30 jours une fois sous licence; la prévention de base contre l'altération existe en P1, mais la télémétrie interrogeable des évènements d'altération requiert la chasse avancée P2"
+      },
+      "mitreTechniques": [
+        "T1685"
+      ]
+    }
+  ]
+}

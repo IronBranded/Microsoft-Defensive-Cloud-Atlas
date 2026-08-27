@@ -1,0 +1,139 @@
+{
+  "meta": {
+    "docTitle": "Executive Brief: Microsoft 365 Licensing Gaps",
+    "docSubtitle": "MITRE ATT&CK-prioritized remediation roadmap",
+    "preparedForLabel": "Prepared for",
+    "preparedForValue": "Senior leadership (CISO, VP of Information Security) and the security architecture team",
+    "dateLabel": "Report date",
+    "sourceLabel": "Data source",
+    "sourceValue": "Microsoft Defensive Cloud Atlas — executive summary export ({scopeNames})",
+    "classificationLabel": "Classification",
+    "classificationValue": "Confidential — internal use (IR)",
+    "methodNoteLabel": "Methodology note:",
+    "methodNote": "this report translates raw Atlas data into a prioritized risk analysis and action plan. License names, logging capabilities, pricing, and detection catalogs change frequently; validate every recommendation against your Microsoft representative or current Microsoft Learn documentation before any purchasing decision. This document is not legal, financial, or compliance advice.",
+    "unknownLicenseNoteLabel": "Note:",
+    "unknownLicenseNote": "{count} selected license id(s) aren't yet in this tool's internal catalog: {ids}. They were still counted toward coverage wherever a log source explicitly requires them, but display names and any bundle inclusions they might grant couldn't be resolved. Update data/licenses.json to fully recognize them."
+  },
+
+  "toolbar": {
+    "print": "Print / Save as PDF",
+    "language": "Language",
+    "close": "Close"
+  },
+
+  "summary": {
+    "title": "Contents",
+    "s1": "1. Executive Overview",
+    "s2": "2. Telemetry & Visibility Gap Matrix",
+    "s3": "3. MITRE ATT&CK Threat Coverage Analysis",
+    "s4": "4. Incident Response Impact",
+    "s5": "5. Remediation Plan & Roadmap",
+    "s6": "Sources & References"
+  },
+
+  "section1": {
+    "title": "1. Executive Overview",
+    "postureTitle": "1.1 Current Security Posture Summary",
+    "postureIntro": "The current license scope provides access to {activeCount} of {totalCount} mapped log sources ({activePct}% overall coverage). This average hides a sharp imbalance across the environment:",
+    "categoryHeaders": { "category": "Category", "coverage": "Coverage", "reading": "Reading" },
+    "productsWord": "products",
+    "top3Title": "1.2 Top 3 Strategic Risks",
+    "ransomwareTitle": "1.3 Ransomware Exposure Snapshot",
+    "ransomwareIntro": "Ransomware is rarely one gap — it's a chain of six steps, and detection anywhere in the chain can stop it. Each stage below is checked against the current license scope independently of the Top 3 risks above, because a threat this board-level deserves its own answer, not a maybe-mention in a scored list.",
+    "ransomwareBlindHeadline": "{blindCount} of {totalStages} kill-chain stages have zero visibility",
+    "ransomwareStatus": { "covered": "Visible", "partial": "Partial", "blind": "Blind", "unmapped": "Blind" },
+    "stageWord": "Stage",
+    "roiTitle": "1.4 Return on Investment (ROI) & Licensing Trajectory",
+    "roiIntro": "Prioritization below targets the best risk-mitigation-to-cost ratio, from least to most costly (full detail and technical justification in section 5):",
+    "coverageReading": {
+      "high": "Solid baseline coverage",
+      "mid": "Partial coverage — meaningful gaps remain",
+      "low": "Near-total blind spot"
+    }
+  },
+
+  "section2": {
+    "title": "2. Telemetry & Visibility Gap Matrix",
+    "intro": "The table below distinguishes three real telemetry states in the environment — a distinction a surface reading of the raw data misses: sources that are {active}, sources that are {available} (a free fix, no license required), and sources that are {locked}. This distinction directly drives the Track 1 vs. Track 2 prioritization in section 5.",
+    "activeWord": "active",
+    "availableWord": "available but not configured",
+    "lockedWord": "license-locked",
+    "table": {
+      "source": "Log Source / Domain",
+      "license": "License & Configuration State",
+      "status": "Status",
+      "retention": "Retention",
+      "impact": "Forensic & IR Impact"
+    },
+    "status": {
+      "active": "Active",
+      "locked": "Locked",
+      "configGap": "Disabled (config gap)"
+    }
+  },
+
+  "section3": {
+    "title": "3. MITRE ATT&CK Threat Coverage Analysis",
+    "intro": "Techniques below are mapped to the tactic MITRE ATT&CK officially assigns them (current Enterprise matrix version), not an approximate grouping — several form the actual attack chain of a single scenario: credential theft in A/C opens the door to lateral movement in C, which enables collection and then exfiltration in D. Cross-references between sections reflect that continuity.",
+    "techniquesTitle": "Techniques Not Covered (Blind Spots)",
+    "missingTitle": "Missing Alerting Capabilities"
+  },
+
+  "section4": {
+    "title": "4. Incident Response Impact",
+    "mttdTitle": "4.1 Mean Time to Detect (MTTD)",
+    "mttdBody": "Per IBM's 2025 Cost of a Data Breach Report (Ponemon Institute), the average global breach lifecycle — from initial compromise to full containment — is 241 days, the lowest figure in nine years, yet still far longer than this environment's Standard unified-audit-log retention window (180 days). In practice, a meaningful share of breaches detected at industry-average speed will already be losing their oldest logs before the investigation even begins.",
+    "mttdBody2": "With 0% Sentinel coverage, nothing correlates weak signals across products (a risky Entra ID sign-in, an anomalous endpoint action, an unusual Key Vault access) into one prioritized incident — pushing detection toward external notification rather than internal detection, the scenario IBM associates with the highest costs and longest timelines.",
+    "mttrTitle": "4.2 Mean Time to Resolve (MTTR) & Investigation Speed",
+    "mttrIntro": "Short retention windows compound the detection delay above into a resolution delay:",
+    "mttrBullets": [
+      "Entra Sign-in Logs are capped at 30 days (portal, with P1) — past that window, without continuous export to Sentinel/Log Analytics, authentication history is permanently gone.",
+      "Defender for Endpoint advanced hunting (once licensed) is capped at 30 days native retention — Sentinel ingestion is required for anything longer.",
+      "Exchange Message Trace is capped at 90 days regardless of license.",
+      "Unified Audit Log Standard retention is 180 days — and audit logging is NOT on by default on SMB tiers (Business Basic/Standard/Premium); confirming it is actually enabled should be the very first IR action, before any retention discussion."
+    ],
+    "mttrClosing": "These short windows frequently force investigators to close cases as \"inconclusive\" once the retention window has passed, or to engage external DFIR firms to attempt reconstruction from backups, local Windows event logs, or third-party telemetry — an expensive option that's rarely complete.",
+    "firstResponderTitle": "4.3 Compromised Immediate First-Responder Actions",
+    "firstResponderIntro": "Several items on the Atlas immediate preservation checklist are, in this environment, either impossible or degraded:"
+  },
+
+  "section5": {
+    "title": "5. Remediation Plan & Roadmap",
+    "track1Title": "Track 1 — Free Configuration Changes (Immediate)",
+    "track1Intro": "None of these actions require a new security license. Usage-based Log Analytics ingestion charges may apply depending on volume — but no additional security SKU is needed.",
+    "track2Title": "Track 2 — Strategic License Acquisitions (CAPEX/OPEX)",
+    "track2Intro": "Prioritized by the threat-mitigation value established in section 3, not by the order the raw data happened to list them in:",
+    "roadmapTable": {
+      "priority": "#",
+      "license": "License / Add-on",
+      "unlocks": "Sources Unlocked",
+      "mitre": "MITRE Techniques Mitigated",
+      "justification": "Justification"
+    }
+  },
+
+  "references": {
+    "title": "Sources & References",
+    "sourceDataTitle": "Source Data",
+    "msDocsTitle": "Microsoft Documentation",
+    "mitreTitle": "Threat Reference",
+    "industryTitle": "Industry Benchmarks",
+    "finalDisclaimerLabel": "Final disclaimer:",
+    "finalDisclaimer": "this report is a decision-support synthesis and does not replace a formal security assessment. Retention thresholds, detection capabilities, and cited prices reflect the state of Microsoft documentation at the time of writing and should be reconfirmed before any budget decision."
+  },
+
+  "severity": {
+    "critical": "Critical",
+    "high": "High",
+    "medium": "Medium",
+    "info": "Informational"
+  },
+
+  "stats": {
+    "logSourcesAvailable": "Log Sources Active",
+    "logSourcesLocked": "Locked Sources",
+    "licensesActive": "Licenses Active",
+    "dfirCriticalRoles": "DFIR-Critical Sources",
+    "overallCoverage": "Overall Coverage"
+  }
+}

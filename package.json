@@ -1,0 +1,24 @@
+{
+  "name": "atlas-executive-brief",
+  "version": "0.1.0",
+  "description": "Modular, bilingual (EN/FR) Executive Brief: Microsoft 365 Licensing Gaps — for IronBranded/Microsoft-Defensive-Cloud-Atlas",
+  "license": "GPL-3.0",
+  "private": true,
+  "scripts": {
+    "test": "node src/test-engine.js",
+    "validate": "node src/validate-data.js",
+    "i18n:check": "node -e \"const i18n=require('./src/i18n.js');const d=i18n.diffCatalogs(require('./i18n/en.json'),require('./i18n/fr.json'));console.log(JSON.stringify(d,null,2));process.exitCode=d.inSync?0:1;\"",
+    "build:page": "node build/build-report-page.js",
+    "verify:page": "node build/verify-report-page.js",
+    "build:bundle": "node build/build-atlas-bundle.js",
+    "verify:bundle": "node build/verify-inline-bundle.js",
+    "build:docx": "node src/render-docx.js",
+    "check": "npm run validate && npm run test && npm run build:page && npm run verify:page && npm run build:bundle && npm run verify:bundle"
+  },
+  "dependencies": {
+    "docx": "^9.0.0"
+  },
+  "devDependencies": {
+    "playwright": "1.56.0"
+  }
+}

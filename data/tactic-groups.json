@@ -1,0 +1,25 @@
+{
+  "_comment": "Groups MITRE tactics into the four narrative sections of the report. Purely organizational — changing which tactic belongs to which narrative group never touches the MITRE mapping data or the engine logic. TA0112 (Defense Impairment) is grouped with C for narrative continuity with what was formerly the single Defense Evasion tactic before MITRE ATT&CK v19 split it into Stealth (TA0005) and Defense Impairment (TA0112) — see mitre-mapping.json's top comment.",
+  "groups": [
+    {
+      "id": "A",
+      "tactics": ["TA0001", "TA0006"],
+      "title": { "en": "Initial Access & Authentication", "fr": "Accès initial et authentification" }
+    },
+    {
+      "id": "B",
+      "tactics": ["TA0003", "TA0004"],
+      "title": { "en": "Persistence & Privilege Escalation", "fr": "Maintien de l'accès et élévation de privilèges" }
+    },
+    {
+      "id": "C",
+      "tactics": ["TA0005", "TA0008", "TA0112"],
+      "title": { "en": "Defense Evasion & Lateral Movement", "fr": "Évasion de défenses et déplacement latéral" }
+    },
+    {
+      "id": "D",
+      "tactics": ["TA0009", "TA0010", "TA0040"],
+      "title": { "en": "Collection, Exfiltration & Impact", "fr": "Collecte, exfiltration et impact" }
+    }
+  ]
+}

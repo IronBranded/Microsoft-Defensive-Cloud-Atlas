@@ -1,0 +1,59 @@
+{
+  "_comment": "A dedicated, always-shown view (not competing in the scored Top-3 risks) because ransomware is the board-level threat most executive audiences actually came to read about, and 'Defender XDR: 0%' buried in a category table doesn't answer 'are we exposed to ransomware specifically.' Each stage lists the MITRE techniques that represent it (all cross-referenced against mitre-mapping.json — no technique id appears here that isn't defined there, enforced by validate-data.js). The engine (report-engine.js#computeRansomwareExposure) checks which sources are tagged with each stage's techniques and are active vs. locked; nothing about the stage list or its ransomware framing is hardcoded into the renderer, so adding a 7th stage is a data edit, not a code change.",
+  "stages": [
+    {
+      "id": "initial-access",
+      "techniques": ["T1566", "T1078", "T1133"],
+      "title": { "en": "Initial Access", "fr": "Accès initial" },
+      "blurb": {
+        "en": "Phishing, valid-but-compromised credentials, or an exposed RDP/VPN endpoint.",
+        "fr": "Hameçonnage, identifiants compromis mais valides, ou point de terminaison RDP/VPN exposé."
+      }
+    },
+    {
+      "id": "lateral-movement",
+      "techniques": ["T1021.001", "T1550.002"],
+      "title": { "en": "Lateral Movement", "fr": "Déplacement latéral" },
+      "blurb": {
+        "en": "Pivoting host-to-host via RDP or replayed credentials to reach high-value systems.",
+        "fr": "Pivotement d'un hôte à l'autre via RDP ou identifiants rejoués pour atteindre des systèmes de grande valeur."
+      }
+    },
+    {
+      "id": "defense-impairment",
+      "techniques": ["T1685"],
+      "title": { "en": "Disabling Defenses", "fr": "Désactivation des défenses" },
+      "blurb": {
+        "en": "Killing or tampering with EDR/antivirus immediately before deploying the encryptor.",
+        "fr": "Désactivation ou altération de l'EDR/antivirus juste avant le déploiement du chiffreur."
+      }
+    },
+    {
+      "id": "recovery-destruction",
+      "techniques": ["T1489", "T1490"],
+      "title": { "en": "Destroying Recovery Options", "fr": "Destruction des options de récupération" },
+      "blurb": {
+        "en": "Stopping backup services and deleting shadow copies/backup catalogs before encrypting.",
+        "fr": "Arrêt des services de sauvegarde et suppression des copies fantômes / catalogues de sauvegarde avant le chiffrement."
+      }
+    },
+    {
+      "id": "double-extortion",
+      "techniques": ["T1530", "T1567.002"],
+      "title": { "en": "Double Extortion (data theft)", "fr": "Double extorsion (vol de données)" },
+      "blurb": {
+        "en": "Staging and exfiltrating data before encryption, to extort with a leak threat regardless of backup state.",
+        "fr": "Mise en scène et exfiltration des données avant le chiffrement, pour extorquer sous menace de divulgation, peu importe l'état des sauvegardes."
+      }
+    },
+    {
+      "id": "encryption",
+      "techniques": ["T1486"],
+      "title": { "en": "Encryption", "fr": "Chiffrement" },
+      "blurb": {
+        "en": "The final, most visible step — and the one that provides the least warning time of all six.",
+        "fr": "L'étape finale, la plus visible — et celle qui laisse le moins de temps d'alerte des six."
+      }
+    }
+  ]
+}
